@@ -18,15 +18,9 @@ const periods = ['Ιανουάριος', 'Ιούνιος', 'Σεπτέμβριο
 const Home = () => {
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [course, setCourse] = useState('');
-  const [year, setYear] = useState('');
-  const [period, setPeriod] = useState('');
-  const [semester, setSemester] = useState('');
-  const [courses, setCourses] = useState([]);
   const [allCourses, setAllCourses] = useState([]);
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [user, setUser] = useState(null);
-  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const [examFavorites, setExamFavorites] = useState([]);
   const [favLoading, setFavLoading] = useState(false);
   const [courseFavorites, setCourseFavorites] = useState([]);
@@ -49,16 +43,13 @@ const Home = () => {
   useEffect(() => {
     const fetchExams = async () => {
       setLoading(true);
-      let query = supabase.from('exams').select('*').eq('approved', true).order('created_at', { ascending: false });
-      if (course) query = query.eq('course', course);
-      if (year) query = query.eq('year', parseInt(year));
-      if (period) query = query.eq('period', period);
+      let query = supabase.from('exams').select('*').eq('approved', true).order('created_at', { ascending: false }).limit(6);
       const { data, error } = await query;
       if (!error) setExams(data);
       setLoading(false);
     };
     fetchExams();
-  }, [course, year, period]);
+  }, []);
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -69,17 +60,6 @@ const Home = () => {
     };
     fetchCourses();
   }, []);
-
-  useEffect(() => {
-    if (!semester) {
-      setCourses(allCourses.map(c => c.name));
-    } else {
-      setCourses(allCourses.filter(c => c.semester === Number(semester)).map(c => c.name));
-      if (course && !allCourses.find(c => c.name === course && c.semester === Number(semester))) {
-        setCourse('');
-      }
-    }
-  }, [semester, allCourses]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -168,8 +148,8 @@ const Home = () => {
           marginLeft: '-50vw',
           marginRight: '-50vw',
           maxWidth: '100vw',
+          boxShadow: '0 2px 8px 0 rgba(31,38,135,0.03)',
           borderRadius: 0,
-          boxShadow: 6,
           p: { xs: 2.5, sm: 5, md: 7 },
           mb: { xs: 4, md: 6 },
           minHeight: { xs: 320, md: 340 },
@@ -315,174 +295,12 @@ const Home = () => {
           maxWidth: 1100,
           mx: 'auto',
           overflowX: 'clip',
+          pb: { xs: 4, md: 6 },
         }}
       >
-        {/* Header κάτω από το hero section */}
         <Typography variant="h6" align="center" sx={{ fontWeight: 700, mb: 3, color: '#222', letterSpacing: 0.5 }}>
-          Βρες αρχεία εξετάσεων ανά εξάμηνο και μάθημα
+          Δες τα τελευταία αρχεία που προστέθηκαν στην τράπεζα θεμάτων
         </Typography>
-        {/* Filters & List */}
-        {isMobile || isTablet ? (
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
-            <Button
-              variant="outlined"
-              startIcon={<FilterListIcon />}
-              onClick={() => setFilterDrawerOpen(true)}
-              sx={{ borderRadius: 2, fontWeight: 600 }}
-            >
-              ΦΙΛΤΡΑ
-            </Button>
-            <Drawer
-              anchor="bottom"
-              open={filterDrawerOpen}
-              onClose={() => setFilterDrawerOpen(false)}
-              PaperProps={{ sx: { borderTopLeftRadius: 16, borderTopRightRadius: 16, p: { xs: 2.5, sm: 4 }, pb: 3 } }}
-            >
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6" sx={{ fontWeight: 700 }}>Φίλτρα</Typography>
-                <IconButton onClick={() => setFilterDrawerOpen(false)}><CloseIcon /></IconButton>
-              </Box>
-              <Stack spacing={2.5}>
-                <TextField
-                  label="ΕΞΑΜΗΝΟ"
-                  select
-                  value={semester}
-                  onChange={e => setSemester(e.target.value)}
-                  fullWidth
-                  size="small"
-                >
-                  <MenuItem value="">ΟΛΑ</MenuItem>
-                  {[...Array(8)].map((_, i) => (
-                    <MenuItem key={i + 1} value={i + 1}>{i + 1}ο Εξάμηνο</MenuItem>
-                  ))}
-                </TextField>
-                <TextField
-                  label="ΜΑΘΗΜΑ"
-                  select
-                  value={course}
-                  onChange={e => setCourse(e.target.value)}
-                  fullWidth
-                  size="small"
-                >
-                  <MenuItem value="">ΟΛΑ</MenuItem>
-                  {courses.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
-                </TextField>
-                <TextField
-                  label="ΕΤΟΣ"
-                  type="number"
-                  value={year}
-                  onChange={e => setYear(e.target.value)}
-                  fullWidth
-                  size="small"
-                />
-                <TextField
-                  label="ΕΞΕΤΑΣΤΙΚΗ"
-                  select
-                  value={period}
-                  onChange={e => setPeriod(e.target.value)}
-                  fullWidth
-                  size="small"
-                >
-                  <MenuItem value="">ΟΛΕΣ</MenuItem>
-                  {periods.map(p => <MenuItem key={p} value={p}>{p}</MenuItem>)}
-                </TextField>
-                <Button
-                  variant="outlined"
-                  onClick={() => { setCourse(''); setYear(''); setPeriod(''); }}
-                  fullWidth
-                  size="large"
-                >
-                  ΚΑΘΑΡΙΣΜΑ
-                </Button>
-              </Stack>
-            </Drawer>
-          </Box>
-        ) : (
-          <Grid container spacing={isUltraWide ? 4 : isDesktop ? 3 : 2} sx={{ mb: 3 }} alignItems="stretch">
-            <Grid item xs={12} sm={3} md={2} lg={2} xl={2} sx={{ minWidth: 0, flexGrow: 1 }}>
-              <TextField
-                label="ΕΞΑΜΗΝΟ"
-                select
-                value={semester}
-                onChange={e => setSemester(e.target.value)}
-                fullWidth
-                size={isMobile ? 'small' : 'medium'}
-                sx={{ fontSize: isUltraWide ? '1.1rem' : undefined, whiteSpace: 'nowrap' }}
-              >
-                <MenuItem value="">ΟΛΑ</MenuItem>
-                {[...Array(8)].map((_, i) => (
-                  <MenuItem key={i + 1} value={i + 1}>{i + 1}ο Εξάμηνο</MenuItem>
-                ))}
-              </TextField>
-            </Grid>
-            <Grid item xs={12} sm={4} md={3} lg={2} xl={2} sx={{ minWidth: 0, flexGrow: 1 }}>
-              {loading ? (
-                <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
-              ) : (
-                <TextField
-                  label="ΜΑΘΗΜΑ"
-                  select
-                  value={course}
-                  onChange={e => setCourse(e.target.value)}
-                  fullWidth
-                  size={isMobile ? 'small' : 'medium'}
-                  sx={{ fontSize: isUltraWide ? '1.1rem' : undefined, whiteSpace: 'nowrap' }}
-                >
-                  <MenuItem value="">ΟΛΑ</MenuItem>
-                  {courses.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
-                </TextField>
-              )}
-            </Grid>
-            <Grid item xs={6} sm={4} md={2} lg={2} xl={2} sx={{ minWidth: 0, flexGrow: 1 }}>
-              {loading ? (
-                <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
-              ) : (
-                <TextField
-                  label="ΕΤΟΣ"
-                  type="number"
-                  value={year}
-                  onChange={e => setYear(e.target.value)}
-                  fullWidth
-                  size={isMobile ? 'small' : 'medium'}
-                  sx={{ fontSize: isUltraWide ? '1.1rem' : undefined, whiteSpace: 'nowrap' }}
-                />
-              )}
-            </Grid>
-            <Grid item xs={6} sm={4} md={3} lg={2} xl={2} sx={{ minWidth: 0, flexGrow: 1 }}>
-              {loading ? (
-                <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
-              ) : (
-                <TextField
-                  label="ΕΞΕΤΑΣΤΙΚΗ"
-                  select
-                  value={period}
-                  onChange={e => setPeriod(e.target.value)}
-                  fullWidth
-                  size={isMobile ? 'small' : 'medium'}
-                  sx={{ fontSize: isUltraWide ? '1.1rem' : undefined, whiteSpace: 'nowrap' }}
-                >
-                  <MenuItem value="">ΟΛΕΣ</MenuItem>
-                  {periods.map(p => <MenuItem key={p} value={p}>{p}</MenuItem>)}
-                </TextField>
-              )}
-            </Grid>
-            <Grid item xs={12} sm={12} md={2} lg={2} xl={2} display="flex" alignItems="stretch">
-              {loading ? (
-                <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
-              ) : (
-                <Button
-                  variant="outlined"
-                  onClick={() => { setCourse(''); setYear(''); setPeriod(''); }}
-                  fullWidth
-                  size={isMobile ? 'small' : 'medium'}
-                  sx={{ height: '100%', fontSize: isUltraWide ? '1.1rem' : undefined, minHeight: 56 }}
-                >
-                  ΚΑΘΑΡΙΣΜΑ
-                </Button>
-              )}
-            </Grid>
-          </Grid>
-        )}
         {loading ? (
           <Box sx={{ mt: 2 }}>
             <Skeleton variant="rectangular" height={120} sx={{ borderRadius: 2 }} />
