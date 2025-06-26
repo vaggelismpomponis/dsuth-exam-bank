@@ -17,6 +17,7 @@ import Footer from './components/Footer';
 import Favorites from './pages/Favorites';
 import { SnackbarProvider } from 'notistack';
 import AdminUpload from './pages/admin/AdminUpload';
+import RequireAdmin from './components/RequireAdmin';
 
 const theme = createTheme({
   palette: {
@@ -57,7 +58,11 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/upload" element={<Upload />} />
             <Route path="/favorites" element={<Favorites />} />
-            <Route path="/admin" element={<AdminDashboard />}>
+            <Route path="/admin" element={
+              <RequireAdmin>
+                <AdminDashboard />
+              </RequireAdmin>
+            }>
               <Route path="files" element={<Suspense fallback={<div>Loading...</div>}><AdminFiles /></Suspense>} />
               <Route path="users" element={<Suspense fallback={<div>Loading...</div>}><AdminUsers /></Suspense>} />
               <Route path="courses" element={<AdminCourses />} />
