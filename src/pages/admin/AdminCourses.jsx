@@ -95,11 +95,7 @@ const AdminCourses = () => {
   return (
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <Box sx={{ width: '100%', maxWidth: 600, ...cardBg, p: { xs: 2, sm: 4 }, mb: 2 }}>
-<<<<<<< HEAD
-        <Typography variant="h4" color="#111" fontWeight={700} gutterBottom align="left" sx={{ letterSpacing: 1, textTransform: 'none' }}>
-=======
         <Typography variant="h4" color="#212121" fontWeight={700} gutterBottom align="left" sx={{ letterSpacing: 1, textTransform: 'none' }}>
->>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
           Διαχείριση Μαθημάτων
         </Typography>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}

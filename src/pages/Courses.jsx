@@ -4,14 +4,10 @@ import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import SearchIcon from '@mui/icons-material/Search';
-<<<<<<< HEAD
-=======
-import { Link } from 'react-router-dom';
 import MuiLink from '@mui/material/Link';
->>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
@@ -145,13 +141,8 @@ const Courses = () => {
         Object.keys(grouped).sort((a, b) => a - b).map(sem => (
           <Box key={sem} sx={{ mb: 5 }}>
             <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-<<<<<<< HEAD
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#111', letterSpacing: 0.5 }}>{`Εξάμηνο ${sem}`}</Typography>
-              <Divider flexItem sx={{ borderColor: '#111', ml: 2 }} />
-=======
               <Typography variant="h6" sx={{ fontWeight: 700, color: '#212121', letterSpacing: 0.5 }}>{`Εξάμηνο ${sem}`}</Typography>
               <Divider flexItem sx={{ borderColor: '#212121', ml: 2 }} />
->>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
             </Stack>
             <Box
               sx={{

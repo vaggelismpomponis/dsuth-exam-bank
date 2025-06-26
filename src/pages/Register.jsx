@@ -96,11 +96,7 @@ const Register = () => {
   if (loading) return (
     <Container maxWidth="xs" sx={{ mt: 8, mb: 4 }}>
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-<<<<<<< HEAD
-        <Typography variant="h5" color="#222" gutterBottom align={isMobile ? 'center' : 'left'}>
-=======
         <Typography variant="h5" color="#212121" gutterBottom align={isMobile ? 'center' : 'left'}>
->>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
           ΕΓΓΡΑΦΗ
         </Typography>
         <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 2, mb: 2 }} />
@@ -119,11 +115,7 @@ const Register = () => {
   return (
     <Container maxWidth="xs" sx={{ mt: 8, mb: 4 }}>
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-<<<<<<< HEAD
-        <Typography variant="h5" color="#222" gutterBottom align={isMobile ? 'center' : 'left'}>
-=======
         <Typography variant="h5" color="#212121" gutterBottom align={isMobile ? 'center' : 'left'}>
->>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
           ΕΓΓΡΑΦΗ
         </Typography>
         <Button
@@ -132,17 +124,10 @@ const Register = () => {
           startIcon={
             <svg width="18" height="18" viewBox="0 0 18 18" style={{ marginRight: 8 }}>
               <g>
-<<<<<<< HEAD
                 <path d="M17.64 9.2045c0-.638-.0573-1.2518-.1636-1.8363H9v3.4818h4.8445c-.2082 1.1236-.8345 2.0763-1.7763 2.719v2.2582h2.8736c1.6845-1.5527 2.6582-3.8418 2.6582-6.6227z" fill="#4285F4"/>
                 <path d="M9 18c2.43 0 4.4673-.8064 5.9564-2.1864l-2.8736-2.2582c-.7973.5345-1.8136.8491-3.0827.8491-2.3718 0-4.3818-1.6018-5.0982-3.7573H.9391v2.2936C2.4227 16.9782 5.4818 18 9 18z" fill="#34A853"/>
                 <path d="M3.9018 10.6473c-.1818-.5345-.2864-1.1045-.2864-1.6473s.1045-1.1127.2864-1.6473V5.0591H.9391C.3409 6.2373 0 7.5745 0 9c0 1.4255.3409 2.7627.9391 3.9409l2.9627-2.2936z" fill="#FBBC05"/>
                 <path d="M9 3.5791c1.3218 0 2.5027.4545 3.4336 1.3455l2.5755-2.5755C13.4645.8064 11.4273 0 9 0 5.4818 0 2.4227 1.0218.9391 3.0591l2.9627 2.2936C4.6182 4.4282 6.6282 3.5791 9 3.5791z" fill="#EA4335"/>
-=======
-                <path d="M17.64 9.2045c0-.638-.0573-1.2518-.1636-1.8363H9v3.4818h11.7C34.9 33.9 30.2 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.5 29.6 2 24 2 12.9 2 4 10.9 4 22s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.3-4z" fill="#4285F4"/>
-                <path d="M6.3 14.7l7 5.1C15.1 16.2 19.2 13 24 13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.5 29.6 2 24 2 15.3 2 7.7 7.6 6.3 14.7z" fill="#34A853"/>
-                <path d="M24 44c5.2 0 10-1.8 13.7-4.9l-6.3-5.2C29.7 35.5 27 36.5 24 36.5c-6.1 0-11.3-4.1-13.1-9.6l-7 5.4C7.7 40.4 15.3 44 24 44z" fill="#4CAF50"/>
-                <path d="M44.5 20H24v8.5h11.7c-1.1 3.1-4.2 5.5-7.7 5.5-2.2 0-4.2-.7-5.7-2l-7 5.4C15.3 40.4 19.4 44 24 44c7.2 0 13-5.8 13-13 0-1.3-.1-2.7-.3-4z" fill="#1976D2"/>
->>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
               </g>
             </svg>
           }
@@ -238,22 +223,14 @@ const Register = () => {
               </Typography>{' '}
               <MuiLink component={Link} to="/login" underline="none" sx={{
                 fontWeight: 700,
-<<<<<<< HEAD
-                color: '#444',
-=======
                 color: '#212121',
->>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
                 fontSize: '1.05rem',
                 letterSpacing: 0.5,
                 textTransform: 'uppercase',
                 textDecorationThickness: 2,
                 transition: 'color 0.2s',
                 '&:hover': {
-<<<<<<< HEAD
                   color: '#111',
-=======
-                  color: '#212121',
->>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
                   textDecoration: 'none',
                   textShadow: 'none',
                 },

@@ -41,11 +41,7 @@ const AdminUsers = () => {
 
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-<<<<<<< HEAD
       <Typography variant="h4" color="#111" fontWeight={700} gutterBottom align="left">
-=======
-      <Typography variant="h4" color="#212121" fontWeight={700} gutterBottom align="left">
->>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
         ΔΙΑΧΕΙΡΙΣΗ ΧΡΗΣΤΩΝ
       </Typography>
       {roleError && <Alert severity="error" sx={{ mb: 2 }}>{roleError}</Alert>}
