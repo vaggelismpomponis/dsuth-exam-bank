@@ -166,10 +166,17 @@ const Profile = () => {
               <PersonIcon sx={{ color: '#fff', fontSize: 48 }} />
             </Box>
           </Box>
+<<<<<<< HEAD
           <Typography variant="h5" color="#222" gutterBottom sx={{ fontWeight: 800, letterSpacing: '-1px', textAlign: 'center' }}>
             ΠΡΟΦΙΛ ΧΡΗΣΤΗ
           </Typography>
           <Typography variant="subtitle1" color="#222" sx={{ mb: 1, textAlign: 'center' }}>
+=======
+          <Typography variant="h5" color="#212121" gutterBottom sx={{ fontWeight: 800, letterSpacing: '-1px', textAlign: 'center' }}>
+            ΠΡΟΦΙΛ ΧΡΗΣΤΗ
+          </Typography>
+          <Typography variant="subtitle1" color="#212121" sx={{ mb: 1, textAlign: 'center' }}>
+>>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
             {user.email}
           </Typography>
         </Box>

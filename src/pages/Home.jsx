@@ -164,7 +164,11 @@ const Home = () => {
         <Box sx={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: 700, textAlign: { xs: 'center', md: 'left' }, mx: 'auto' }}>
           <Typography
             variant={isMobile ? 'h5' : isTablet ? 'h3' : isUltraWide ? 'h1' : 'h2'}
+<<<<<<< HEAD
             color="#222"
+=======
+            color="#212121"
+>>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
             gutterBottom
             noWrap={false}
             sx={{
@@ -177,7 +181,11 @@ const Home = () => {
               display: 'block',
               width: '100%',
               maxWidth: '100%',
+<<<<<<< HEAD
               color: '#222',
+=======
+              color: '#212121',
+>>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
             }}
           >
             <SchoolIcon sx={{ fontSize: { xs: 36, md: 56, xl: 72 }, mr: 1, mb: -0.5, color: '#1976d2', verticalAlign: 'middle' }} />
@@ -185,13 +193,21 @@ const Home = () => {
           </Typography>
           <Typography
             variant={isMobile ? 'body1' : 'h5'}
+<<<<<<< HEAD
             sx={{ mb: 2, color: '#222', fontWeight: 600, fontSize: isUltraWide ? '1.7rem' : undefined }}
+=======
+            sx={{ mb: 2, color: '#212121', fontWeight: 600, fontSize: isUltraWide ? '1.7rem' : undefined }}
+>>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
           >
             ΨΗΦΙΑΚΑ ΣΥΣΤΗΜΑΤΑ, ΠΑΝΕΠΙΣΤΗΜΙΟ ΘΕΣΣΑΛΙΑΣ
           </Typography>
           <Typography
             variant="body1"
+<<<<<<< HEAD
             sx={{ mb: 3, color: '#222', maxWidth: 600, fontSize: isUltraWide ? '1.25rem' : undefined, fontWeight: 500, mx: { xs: 'auto', md: 0 } }}
+=======
+            sx={{ mb: 3, color: '#212121', maxWidth: 600, fontSize: isUltraWide ? '1.25rem' : undefined, fontWeight: 500, mx: { xs: 'auto', md: 0 } }}
+>>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
           >
             Βρες, κατέβασε ή μοιράσου θέματα και αρχεία προηγούμενων εξετάσεων της σχολής. Η γνώση ανήκει σε όλους!
           </Typography>
@@ -282,7 +298,11 @@ const Home = () => {
           </Stack>
         </Box>
       </Box>
+<<<<<<< HEAD
       {/* Φίλτρα + Λίστα */}
+=======
+      {/* Λίστα τελευταίων αρχείων */}
+>>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
       <Container
         disableGutters
         maxWidth={false}
@@ -295,11 +315,19 @@ const Home = () => {
           maxWidth: 1100,
           mx: 'auto',
           overflowX: 'clip',
+<<<<<<< HEAD
           pb: { xs: 4, md: 6 },
         }}
       >
         <Typography variant="h6" align="center" sx={{ fontWeight: 700, mb: 3, color: '#222', letterSpacing: 0.5 }}>
           Δες τα τελευταία αρχεία που προστέθηκαν στην τράπεζα θεμάτων
+=======
+        }}
+      >
+        {/* Header κάτω από το hero section */}
+        <Typography variant="h6" align="center" sx={{ fontWeight: 700, mb: 3, color: '#212121', letterSpacing: 0.5 }}>
+          Τελευταία εγκεκριμένα αρχεία που ανέβηκαν
+>>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
         </Typography>
         {loading ? (
           <Box sx={{ mt: 2 }}>
@@ -347,10 +375,17 @@ const Home = () => {
             <Table>
               <TableHead>
                 <TableRow>
+<<<<<<< HEAD
                   <TableCell sx={{ fontWeight: 700, color: '#222', fontSize: 16 }}>Μάθημα</TableCell>
                   <TableCell sx={{ fontWeight: 700, color: '#222', fontSize: 16 }}>Έτος</TableCell>
                   <TableCell sx={{ fontWeight: 700, color: '#222', fontSize: 16 }}>Εξεταστική</TableCell>
                   <TableCell sx={{ fontWeight: 700, color: '#222', fontSize: 16 }}>Ενέργειες</TableCell>
+=======
+                  <TableCell sx={{ fontWeight: 700, color: '#212121', fontSize: 16 }}>Μάθημα</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: '#212121', fontSize: 16 }}>Έτος</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: '#212121', fontSize: 16 }}>Εξεταστική</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: '#212121', fontSize: 16 }}>Ενέργειες</TableCell>
+>>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -391,6 +426,59 @@ const Home = () => {
           </TableContainer>
         )}
       </Container>
+<<<<<<< HEAD
+=======
+      {/* Call to Action: Προτροπή για ανέβασμα αρχείων */}
+      <Box
+        sx={{
+          mt: 4,
+          mb: 6,
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'linear-gradient(120deg, #e3eafc 60%, #f4f6f8 100%)',
+          boxShadow: '0 4px 24px 0 rgba(25, 118, 210, 0.10)',
+          px: { xs: 2, sm: 4, md: 6 },
+          py: { xs: 4, sm: 5 },
+          width: '100%',
+        }}
+      >
+        <Typography variant="h6" align="center" sx={{ fontWeight: 700, mb: 2, color: '#1976d2', letterSpacing: 0.5, textTransform: 'none' }}>
+          Έχεις παλιότερα θέματα ή αρχεία εξετάσεων;
+        </Typography>
+        <Typography align="center" sx={{ mb: 2, color: '#212121', maxWidth: 500, textTransform: 'none' }}>
+          Βοήθησε κι εσύ την κοινότητα στέλνοντας τα δικά σου αρχεία! Η γνώση ανήκει σε όλους.
+        </Typography>
+        <Button
+          variant="contained"
+          color="primary"
+          size="large"
+          startIcon={<UploadFileIcon />}
+          href={user ? "/upload" : "/login"}
+          sx={{
+            fontWeight: 700,
+            fontSize: { xs: '1.1rem', sm: '1.15rem' },
+            px: 4,
+            py: 1.5,
+            borderRadius: 2,
+            backgroundColor: '#1976d2',
+            color: '#fff',
+            boxShadow: 'none',
+            transition: 'background 0.2s, color 0.2s',
+            '&:hover': {
+              backgroundColor: '#115293',
+              color: '#fff',
+              boxShadow: 'none',
+            },
+            mt: 1,
+            textTransform: 'none',
+          }}
+        >
+          Ανέβασε θέμα ή αρχείο
+        </Button>
+      </Box>
+>>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
     </Box>
   );
 };

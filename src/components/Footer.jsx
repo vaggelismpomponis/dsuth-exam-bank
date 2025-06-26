@@ -9,7 +9,11 @@ const menuLinks = [
 ];
 
 const Footer = () => (
+<<<<<<< HEAD
   <Box component="footer" sx={{ width: '100%', mt: 6, background: 'rgba(40,40,40,0.04)', borderTop: '1px solid #e0e0e0' }}>
+=======
+  <Box component="footer" sx={{ width: '100%', mt: 0, background: 'rgba(40,40,40,0.04)', borderTop: '1px solid #e0e0e0' }}>
+>>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
     <Box sx={{ maxWidth: 1400, mx: 'auto', px: { xs: 2, sm: 4 }, py: { xs: 5, sm: 7 } }}>
       <Stack
         direction={{ xs: 'column', sm: 'row' }}

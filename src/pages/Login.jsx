@@ -99,7 +99,11 @@ const Login = () => {
   if (loading) return (
     <Container maxWidth="xs" sx={{ mt: 8, mb: 4 }}>
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+<<<<<<< HEAD
         <Typography variant="h5" color="#222" gutterBottom align={isMobile ? 'center' : 'left'}>
+=======
+        <Typography variant="h5" color="#212121" gutterBottom align={isMobile ? 'center' : 'left'}>
+>>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
           ΕΙΣΟΔΟΣ
         </Typography>
         <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 2, mb: 2 }} />
@@ -118,7 +122,11 @@ const Login = () => {
   return (
     <Container maxWidth="xs" sx={{ mt: 8, mb: 4 }}>
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+<<<<<<< HEAD
         <Typography variant="h5" color="#222" gutterBottom align={isMobile ? 'center' : 'left'}>
+=======
+        <Typography variant="h5" color="#212121" gutterBottom align={isMobile ? 'center' : 'left'}>
+>>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
           ΕΙΣΟΔΟΣ
         </Typography>
         {location.state?.registered && (
@@ -230,14 +238,22 @@ const Login = () => {
               </Typography>{' '}
               <MuiLink component={Link} to="/register" underline="none" sx={{
                 fontWeight: 700,
+<<<<<<< HEAD
                 color: '#444',
+=======
+                color: '#212121',
+>>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
                 fontSize: '1.05rem',
                 letterSpacing: 0.5,
                 textTransform: 'uppercase',
                 textDecorationThickness: 2,
                 transition: 'color 0.2s',
                 '&:hover': {
+<<<<<<< HEAD
                   color: '#111',
+=======
+                  color: '#212121',
+>>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
                   textDecoration: 'none',
                   textShadow: 'none',
                 },

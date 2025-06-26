@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Logs
 logs
 *.log
@@ -155,3 +156,9 @@ dist-ssr
 *.sln
 *.sw?
 69b4888 (fix: ensure vite is in devDependencies)
+=======
+node_modules/
+ds-uth-bank/
+.env 
+node_modules
+>>>>>>> 0e5f73e (fix: σωστό .gitignore, προστασία admin routes, cleanup node_modules από git, πλήρες setup για prod)
