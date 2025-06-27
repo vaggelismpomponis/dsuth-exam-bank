@@ -10,6 +10,8 @@ import EmailIcon from '@mui/icons-material/Email';
 import BadgeIcon from '@mui/icons-material/Badge';
 import { validatePassword } from '../utils/passwordValidation';
 import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
+import SaveIcon from '@mui/icons-material/Save';
+import LogoutIcon from '@mui/icons-material/Logout';
 
 const ADMIN_UID = 'ae26da15-7102-4647-8cbb-8f045491433c';
 
@@ -262,11 +264,40 @@ const Profile = () => {
                           aria-label="toggle password visibility"
                           onClick={() => setShowPassword((show) => !show)}
                           edge="end"
+                          sx={{
+                            '&:focus': {
+                              outline: 'none',
+                              boxShadow: 'none',
+                            },
+                            '&:focus-visible': {
+                              outline: 'none',
+                              boxShadow: 'none',
+                            },
+                          }}
                         >
                           {showPassword ? <VisibilityOff /> : <Visibility />}
                         </IconButton>
                       </InputAdornment>
                     ),
+                  }}
+                  sx={{
+                    '& .MuiOutlinedInput-root': {
+                      '&:hover fieldset': {
+                        borderColor: '#212121',
+                        borderWidth: '1px',
+                      },
+                      '&.Mui-focused fieldset': {
+                        borderColor: '#212121',
+                        borderWidth: '1px',
+                        boxShadow: 'none',
+                      },
+                      '&.Mui-focused': {
+                        backgroundColor: 'transparent',
+                      },
+                      '&.MuiInputBase-input': {
+                        backgroundColor: 'transparent',
+                      },
+                    },
                   }}
                 />
                 <PasswordStrengthIndicator password={newPassword} />
@@ -291,22 +322,61 @@ const Profile = () => {
         <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 4, width: '100%' }}>
           <Button
             variant="contained"
-            color="#222"
+            color="primary"
+            startIcon={<SaveIcon />}
             onClick={handleSave}
             fullWidth
             disabled={saving}
-            sx={{ fontWeight: 700, py: 1.2, borderRadius: 2 }}
+            sx={{
+              fontWeight: 700,
+              py: 0,
+              borderRadius: 2,
+              fontSize: '0.95rem',
+              boxShadow: '0 2px 8px rgba(33,33,33,0.08)',
+              letterSpacing: 0.5,
+              transition: 'background 0.2s, box-shadow 0.2s',
+              background: 'linear-gradient(90deg, #1976d2 60%, #42a5f5 100%)',
+              color: '#fff',
+              '&:hover': {
+                background: 'linear-gradient(90deg, #1565c0 60%, #1976d2 100%)',
+                boxShadow: '0 4px 16px rgba(33,33,33,0.12)',
+              },
+              '&:focus': {
+                outline: 'none',
+                boxShadow: '0 0 0 2px #1976d2',
+              },
+            }}
           >
-            ΑΠΟΘΗΚΕΥΣΗ ΣΤΟΙΧΕΙΩΝ
+            Αποθήκευση στοιχείων
           </Button>
           <Button
             variant="outlined"
-            color="#222"
+            color="error"
+            startIcon={<LogoutIcon />}
             onClick={async () => { await supabase.auth.signOut(); navigate('/'); }}
             fullWidth
-            sx={{ fontWeight: 700, py: 1.2, borderRadius: 2 }}
+            sx={{
+              fontWeight: 700,
+              py: 0,
+              borderRadius: 2,
+              fontSize: '0.95rem',
+              letterSpacing: 0.5,
+              color: '#d32f2f',
+              borderColor: '#d32f2f',
+              background: '#fff',
+              transition: 'background 0.2s, color 0.2s, border 0.2s',
+              '&:hover': {
+                background: '#ffebee',
+                borderColor: '#b71c1c',
+                color: '#b71c1c',
+              },
+              '&:focus': {
+                outline: 'none',
+                boxShadow: '0 0 0 2px #d32f2f',
+              },
+            }}
           >
-            ΑΠΟΣΥΝΔΕΣΗ
+            Αποσύνδεση
           </Button>
         </Stack>
         <Snackbar
