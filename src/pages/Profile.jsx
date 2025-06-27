@@ -147,7 +147,7 @@ const Profile = () => {
           p: { xs: 2, sm: 3 },
           borderRadius: 5,
           boxShadow: 6,
-          background: 'linear-gradient(120deg, #e3eafc 60%, #f4f6f8 100%)',
+          background: '#f4f6f8',
           alignItems: 'center',
           display: 'flex',
           flexDirection: 'column',
