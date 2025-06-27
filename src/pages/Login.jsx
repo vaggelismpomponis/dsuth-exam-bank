@@ -158,6 +158,16 @@ const Login = () => {
               borderColor: '#dadce0',
               boxShadow: '0 1px 3px rgba(60,64,67,.15)',
             },
+            '&:focus': {
+              outline: 'none',
+              boxShadow: 'none',
+              borderColor: '#dadce0',
+            },
+            '&:focus-visible': {
+              outline: 'none',
+              boxShadow: 'none',
+              borderColor: '#dadce0',
+            },
           }}
         >
           ΣΥΝΔΕΣΗ ΜΕ GOOGLE
@@ -171,6 +181,25 @@ const Login = () => {
               fullWidth
               value={email}
               onChange={e => setEmail(e.target.value)}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '&:hover fieldset': {
+                    borderColor: '#212121',
+                    borderWidth: '1px',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#212121',
+                    borderWidth: '1px',
+                    boxShadow: 'none',
+                  },
+                  '&.Mui-focused': {
+                    backgroundColor: 'transparent',
+                  },
+                  '&.MuiInputBase-input': {
+                    backgroundColor: 'transparent',
+                  },
+                },
+              }}
             />
             <TextField
               label="Κωδικός"
@@ -185,11 +214,40 @@ const Login = () => {
                       aria-label="toggle password visibility"
                       onClick={() => setShowPassword((show) => !show)}
                       edge="end"
+                      sx={{
+                        '&:focus': {
+                          outline: 'none',
+                          boxShadow: 'none',
+                        },
+                        '&:focus-visible': {
+                          outline: 'none',
+                          boxShadow: 'none',
+                        },
+                      }}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 ),
+              }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '&:hover fieldset': {
+                    borderColor: '#212121',
+                    borderWidth: '1px',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: '#212121',
+                    borderWidth: '1px',
+                    boxShadow: 'none',
+                  },
+                  '&.Mui-focused': {
+                    backgroundColor: 'transparent',
+                  },
+                  '&.MuiInputBase-input': {
+                    backgroundColor: 'transparent',
+                  },
+                },
               }}
             />
             <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
@@ -225,23 +283,20 @@ const Login = () => {
               ΕΙΣΟΔΟΣ
             </Button>
             <Box sx={{ mt: 2, textAlign: 'center' }}>
-              <Typography component="span" sx={{ fontWeight: 500, fontSize: '1.05rem', letterSpacing: 0.5, textTransform: 'uppercase', color: '#888', fontFamily: 'Roboto, Arial, sans-serif' }}>
-                ΔΕΝ ΕΧΕΙΣ ΛΟΓΑΡΙΑΣΜΟ;
+              <Typography component="span" sx={{ fontWeight: 500, fontSize: '1.05rem', letterSpacing: 0.5, textTransform: 'none', color: '#888', fontFamily: 'Roboto, Arial, sans-serif' }}>
+                Δεν έχεις λογαριασμό;
               </Typography>{' '}
               <MuiLink component={Link} to="/register" underline="none" sx={{
                 fontWeight: 700,
                 color: '#212121',
                 fontSize: '1.05rem',
                 letterSpacing: 0.5,
-                textTransform: 'uppercase',
-                textDecorationThickness: 2,
                 transition: 'color 0.2s',
                 '&:hover': {
-                  color: '#111',
+                  color: '#212121',
                   textDecoration: 'none',
                   textShadow: 'none',
                 },
-                fontFamily: 'Roboto, Arial, sans-serif',
               }}>
                 ΕΓΓΡΑΦΗ
               </MuiLink>
