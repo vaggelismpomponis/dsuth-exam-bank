@@ -259,8 +259,12 @@ const Profile = () => {
             fullWidth
             sx={{
               fontWeight: 700,
-              py: { xs: 0.5, sm: 0 },
               borderRadius: 2,
+              minHeight: 48,
+              fontSize: '1.05rem',
+              letterSpacing: 0.5,
+              py: 1.2,
+              px: 2.5,
               color: '#1976d2',
               borderColor: '#1976d2',
               transition: 'background 0.2s, color 0.2s, border 0.2s',
@@ -268,11 +272,7 @@ const Profile = () => {
                 borderColor: '#1976d2',
                 color: '#1976d2',
               },
-              '&:focus': {
-                outline: 'none',
-                borderColor: '#1976d2',
-                color: '#1976d2',
-              },
+              '&:focus': { outline: 'none' },
             }}
           >
             ΑΛΛΑΓΗ ΚΩΔΙΚΟΥ
@@ -336,7 +336,7 @@ const Profile = () => {
                   onClick={handlePasswordChange}
                   fullWidth
                   disabled={!validatePassword(newPassword).isValid}
-                  sx={{ fontWeight: 700, py: { xs: 0.5, sm: 1.2 }, borderRadius: 2 }}
+                  sx={{ fontWeight: 700, py: { xs: 0.5, sm: 1.2 }, borderRadius: 2, '&:focus': { outline: 'none' } }}
                 >
                   ΑΠΟΘΗΚΕΥΣΗ ΚΩΔΙΚΟΥ
                 </Button>
@@ -358,11 +358,13 @@ const Profile = () => {
             disabled={saving}
             sx={{
               fontWeight: 700,
-              py: { xs: 0.5, sm: 0 },
               borderRadius: 2,
-              fontSize: '0.95rem',
-              boxShadow: '0 2px 8px rgba(33,33,33,0.08)',
+              minHeight: 48,
+              fontSize: '1.05rem',
               letterSpacing: 0.5,
+              py: 1.2,
+              px: 2.5,
+              boxShadow: '0 2px 8px rgba(33,33,33,0.08)',
               transition: 'background 0.2s, box-shadow 0.2s',
               background: 'linear-gradient(90deg, #1976d2 60%, #42a5f5 100%)',
               color: '#fff',
@@ -370,13 +372,10 @@ const Profile = () => {
                 background: 'linear-gradient(90deg, #1565c0 60%, #1976d2 100%)',
                 boxShadow: '0 4px 16px rgba(33,33,33,0.12)',
               },
-              '&:focus': {
-                outline: 'none',
-                boxShadow: '0 0 0 2px #1976d2',
-              },
+              '&:focus': { outline: 'none' },
             }}
           >
-            Αποθήκευση στοιχείων
+            Αποθήκευση
           </Button>
           <Button
             variant="outlined"
@@ -386,10 +385,12 @@ const Profile = () => {
             fullWidth
             sx={{
               fontWeight: 700,
-              py: { xs: 0.5, sm: 0 },
               borderRadius: 2,
-              fontSize: '0.95rem',
+              minHeight: 48,
+              fontSize: '1.05rem',
               letterSpacing: 0.5,
+              py: 1.2,
+              px: 2.5,
               color: '#d32f2f',
               borderColor: '#d32f2f',
               background: '#fff',
@@ -399,10 +400,7 @@ const Profile = () => {
                 borderColor: '#b71c1c',
                 color: '#b71c1c',
               },
-              '&:focus': {
-                outline: 'none',
-                boxShadow: '0 0 0 2px #d32f2f',
-              },
+              '&:focus': { outline: 'none' },
             }}
           >
             Αποσύνδεση
@@ -462,7 +460,7 @@ const Profile = () => {
                   a.click();
                   URL.revokeObjectURL(url);
                 }}
-                sx={{ fontWeight: 700, borderRadius: 2 }}
+                sx={{ fontWeight: 700, borderRadius: 2, '&:focus': { outline: 'none' } }}
               >
                 Εξαγωγή δεδομένων
               </Button>
@@ -496,7 +494,7 @@ const Profile = () => {
             </DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setDeleteDialogOpen(false)} color="primary" variant="outlined">
+            <Button onClick={() => setDeleteDialogOpen(false)} color="primary" variant="outlined" sx={{ '&:focus': { outline: 'none' } }}>
               Ακύρωση
             </Button>
             <Button
@@ -511,7 +509,7 @@ const Profile = () => {
               color="error"
               variant="contained"
               disabled={deleting}
-              sx={{ fontWeight: 700 }}
+              sx={{ fontWeight: 700, '&:focus': { outline: 'none' } }}
             >
               Διαγραφή
             </Button>
