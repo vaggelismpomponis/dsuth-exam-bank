@@ -14,6 +14,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import PersonIcon from '@mui/icons-material/Person';
 import SecurityIcon from '@mui/icons-material/Security';
+import InfoIcon from '@mui/icons-material/Info';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 
@@ -755,6 +756,60 @@ const Home = () => {
                   }}
                 >
                   Αυτόματη Επικύρωση
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+
+          {/* Συχνές Ερωτήσεις */}
+          <Box sx={{ display: 'flex', height: '100%' }}>
+            <Card 
+              sx={{ 
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: 0,
+                background: 'linear-gradient(135deg, #e3f2fd 0%, #fffde7 100%)',
+                border: '1px solid #ffe082',
+                borderRadius: 3,
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                }
+              }}
+            >
+              <CardContent sx={{ p: 3, textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <Box>
+                  <InfoIcon 
+                    sx={{ 
+                      fontSize: 48, 
+                      color: '#fbc02d', 
+                      mb: 2,
+                      background: 'rgba(251, 192, 45, 0.1)',
+                      borderRadius: '50%',
+                      p: 1
+                    }} 
+                  />
+                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
+                    Συχνές Ερωτήσεις
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
+                    Βρείτε απαντήσεις σε συχνές ερωτήσεις για τη χρήση της πλατφόρμας
+                  </Typography>
+                </Box>
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  href="/faq"
+                  sx={{ 
+                    borderColor: '#fbc02d', 
+                    color: '#fbc02d',
+                    '&:hover': { borderColor: '#f9a825', backgroundColor: 'rgba(251, 192, 45, 0.04)' }
+                  }}
+                >
+                  Δες FAQ
                 </Button>
               </CardContent>
             </Card>

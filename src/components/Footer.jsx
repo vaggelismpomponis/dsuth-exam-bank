@@ -36,6 +36,12 @@ const Footer = () => (
                 {link.label}
               </Link>
             ))}
+            <Link href="/faq" underline="hover" color="text.secondary" sx={{ fontSize: '1rem' }}>
+              Συχνές Ερωτήσεις
+            </Link>
+            <Link href="/privacy" underline="hover" color="text.secondary" sx={{ fontSize: '1rem', ml: 2 }}>
+              Πολιτική Απορρήτου
+            </Link>
           </Stack>
         </Box>
         <Box flex={1} display="flex" flexDirection="column" alignItems="center" justifyContent="center">

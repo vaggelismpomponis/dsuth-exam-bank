@@ -12,6 +12,17 @@ import { validatePassword } from '../utils/passwordValidation';
 import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
 import SaveIcon from '@mui/icons-material/Save';
 import LogoutIcon from '@mui/icons-material/Logout';
+import DownloadIcon from '@mui/icons-material/Download';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
 
 const ADMIN_UID = 'ae26da15-7102-4647-8cbb-8f045491433c';
 
@@ -27,6 +38,8 @@ const Profile = () => {
   const [passwordError, setPasswordError] = useState('');
   const [passwordSuccess, setPasswordSuccess] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
 
   // Fetch user and profile
@@ -401,6 +414,109 @@ const Profile = () => {
           onClose={() => setSuccess('')}
           message={success}
         />
+        <Accordion sx={{
+          mt: 6,
+          width: '100%',
+          background: '#f8fafc',
+          borderRadius: 4,
+          boxShadow: 2,
+          border: '1px solid #e3eafc',
+          outline: 'none',
+          '&.Mui-expanded': { border: '1px solid #e3eafc', outline: 'none' },
+          '&.Mui-focused': { border: '1px solid #e3eafc', outline: 'none' },
+          '&:focus': { border: '1px solid #e3eafc', outline: 'none' },
+          '&.Mui-active': { border: '1px solid #e3eafc', outline: 'none' },
+          '&:active': { border: '1px solid #e3eafc', outline: 'none' },
+          '& button:hover': { border: '1px solid #e3eafc', outline: 'none' },
+          '&:hover': { outline: 'none' },
+          '& .MuiAccordionSummary-root': { outline: 'none' },
+          '& .MuiAccordionSummary-root:focus': { outline: 'none' },
+          '& .MuiAccordionSummary-root.Mui-focused': { outline: 'none' },
+          '& .MuiAccordionSummary-root:active': { outline: 'none' },
+        }}>
+          <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+            <Typography variant="h6" sx={{ fontWeight: 800, color: '#1976d2' }}>
+              Δικαιώματα Χρήστη (GDPR)
+            </Typography>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              Μπορείτε να εξάγετε ή να διαγράψετε τα προσωπικά σας δεδομένα ανά πάσα στιγμή. Η διαγραφή λογαριασμού είναι οριστική και όλα τα δεδομένα σας θα αφαιρεθούν από το σύστημα.
+            </Typography>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+              <Button
+                variant="outlined"
+                color="primary"
+                startIcon={<DownloadIcon />}
+                fullWidth
+                onClick={async () => {
+                  const exportData = {
+                    user: user,
+                    profile: profile,
+                  };
+                  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement('a');
+                  a.href = url;
+                  a.download = 'my-profile-data.json';
+                  a.click();
+                  URL.revokeObjectURL(url);
+                }}
+                sx={{ fontWeight: 700, borderRadius: 2 }}
+              >
+                Εξαγωγή δεδομένων
+              </Button>
+              <Button
+                variant="outlined"
+                color="error"
+                startIcon={<DeleteIcon />}
+                fullWidth
+                onClick={() => setDeleteDialogOpen(true)}
+                sx={{ fontWeight: 700, borderRadius: 2, '&:focus': { outline: 'none' } }}
+              >
+                Διαγραφή λογαριασμού
+              </Button>
+            </Stack>
+            <Typography variant="caption" color="text.secondary" sx={{ mt: 3, display: 'block' }}>
+              Για οποιοδήποτε αίτημα σχετικά με τα προσωπικά σας δεδομένα, επικοινωνήστε με τους διαχειριστές μέσω της φόρμας επικοινωνίας.
+            </Typography>
+          </AccordionDetails>
+        </Accordion>
+        <Dialog
+          open={deleteDialogOpen}
+          onClose={() => setDeleteDialogOpen(false)}
+          aria-labelledby="delete-account-dialog-title"
+        >
+          <DialogTitle id="delete-account-dialog-title" sx={{ color: '#d32f2f', fontWeight: 800 }}>
+            Οριστική Διαγραφή Λογαριασμού
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText sx={{ color: '#222', fontWeight: 500 }}>
+              Είστε σίγουροι ότι θέλετε να διαγράψετε οριστικά το λογαριασμό σας και όλα τα δεδομένα; Αυτή η ενέργεια δεν αναιρείται!
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setDeleteDialogOpen(false)} color="primary" variant="outlined">
+              Ακύρωση
+            </Button>
+            <Button
+              onClick={async () => {
+                setDeleting(true);
+                await supabase.from('profiles').delete().eq('id', user.id);
+                await supabase.auth.signOut();
+                setDeleting(false);
+                setDeleteDialogOpen(false);
+                navigate('/');
+              }}
+              color="error"
+              variant="contained"
+              disabled={deleting}
+              sx={{ fontWeight: 700 }}
+            >
+              Διαγραφή
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Card>
     </Container>
   );

@@ -18,6 +18,8 @@ import Favorites from './pages/Favorites';
 import { SnackbarProvider } from 'notistack';
 import AdminUpload from './pages/admin/AdminUpload';
 import RequireAdmin from './components/RequireAdmin';
+import FAQ from './pages/FAQ';
+import Privacy from './pages/Privacy';
 
 const theme = createTheme({
   palette: {
@@ -72,6 +74,8 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/courses" element={<Courses />} />
             <Route path="/courses/:id" element={<CourseFiles />} />
+            <Route path="/faq" element={<FAQ />} />
+            <Route path="/privacy" element={<Privacy />} />
           </Routes>
         </Box>
         <Footer />
