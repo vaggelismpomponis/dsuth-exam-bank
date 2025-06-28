@@ -231,7 +231,7 @@ const AdminDashboard = () => {
               )}
             </ListItemButton>
             {/* Admin Menu */}
-            {adminMenu.map((item, idx) => (
+            {adminMenu.map((item) => (
               <ListItemButton
                 key={item.text}
                 selected={location.pathname === item.path}
@@ -240,7 +240,7 @@ const AdminDashboard = () => {
                   if (isMobile) setMobileOpen(false);
                 }}
                 sx={{
-                  mb: idx === adminMenu.length - 1 ? 0 : 1,
+                  mb: item === adminMenu[adminMenu.length - 1] ? 0 : 1,
                   borderRadius: 2,
                   px: drawerOpen || isMobile ? 2.5 : 1.5,
                   justifyContent: 'center',
@@ -478,16 +478,25 @@ const AdminDashboard = () => {
                 </Grid>
               </Grid>
               {/* Επιλογές Admin */}
-              <Grid container spacing={4} justifyContent="center" alignItems="stretch">
+              <Box
+                sx={{
+                  display: 'grid',
+                  gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr', lg: '1fr 1fr 1fr 1fr' },
+                  gap: 4,
+                  gridAutoRows: '1fr',
+                  width: '100%',
+                  mb: 2,
+                }}
+              >
                 {adminMenu.map((item) => (
-                  <Grid item xs={12} sm={6} md={4} key={item.text} sx={{ display: 'flex' }}>
+                  <Box key={item.text} sx={{ display: 'flex', height: '100%', px: { xs: 4, sm: 0 } }}>
                     <Card sx={{
                       borderRadius: 4,
                       boxShadow: 6,
                       background: 'linear-gradient(135deg, #e3eafc 0%, #f4f6f8 100%)',
                       transition: 'transform 0.18s, box-shadow 0.18s',
-                      height: 220,
                       width: '100%',
+                      height: '100%',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'center',
@@ -499,18 +508,18 @@ const AdminDashboard = () => {
                         background: 'linear-gradient(135deg, #e8eaf6 0%, #f4f6f8 100%)',
                       },
                     }}>
-                      <CardActionArea onClick={() => navigate(item.path)} sx={{ p: 4, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'center', width: '100%' }}>
-                        {React.cloneElement(item.icon, { sx: { fontSize: 56, color: '#283593', mb: 2 } })}
+                      <CardActionArea onClick={() => navigate(item.path)} sx={{ p: 2, display: 'flex', flexDirection: 'column', alignItems: 'center', height: '100%', justifyContent: 'center', width: '100%' }}>
+                        {React.cloneElement(item.icon, { sx: { fontSize: 40, color: '#283593', mb: 1 } })}
                         <CardContent sx={{ p: 0 }}>
-                          <Typography variant="h6" align="center" sx={{ fontWeight: 700, textTransform: 'none', fontSize: 20, whiteSpace: 'normal', wordBreak: 'break-word', textAlign: 'center', width: '100%' }}>
+                          <Typography variant="h6" align="center" sx={{ fontWeight: 700, textTransform: 'none', fontSize: 16, whiteSpace: 'normal', wordBreak: 'break-word', textAlign: 'center', width: '100%', m: 0 }}>
                             {item.text}
                           </Typography>
                         </CardContent>
                       </CardActionArea>
                     </Card>
-                  </Grid>
+                  </Box>
                 ))}
-              </Grid>
+              </Box>
             </Box>
           ) : (
             <Box>
