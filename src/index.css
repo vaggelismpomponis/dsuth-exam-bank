@@ -75,3 +75,24 @@ html, body {
 .navbar-title {
   color: #fff !important;
 }
+
+/* Remove gray selection highlight globally */
+*::selection {
+  background: transparent;
+  color: inherit;
+}
+
+input:-webkit-autofill,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:focus,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
+  box-shadow: 0 0 0 1000px #fff inset !important;
+  -webkit-text-fill-color: #222 !important;
+  color: #222 !important;
+  transition: background-color 5000s ease-in-out 0s;
+}

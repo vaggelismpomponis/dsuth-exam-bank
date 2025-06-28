@@ -5,6 +5,28 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Turnstile validation function
+async function validateTurnstile(token: string): Promise<boolean> {
+  try {
+    const response = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        secret: Deno.env.get('TURNSTILE_SECRET_KEY'),
+        response: token,
+      }),
+    });
+
+    const result = await response.json();
+    return result.success === true;
+  } catch (error) {
+    console.error('Turnstile validation error:', error);
+    return false;
+  }
+}
+
 serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -12,7 +34,7 @@ serve(async (req) => {
   }
 
   try {
-    const { name, email, subject, message } = await req.json()
+    const { name, email, subject, message, turnstileToken } = await req.json()
     console.log('Received data:', { name, email, subject, message })
 
     // Validate required fields
@@ -33,6 +55,30 @@ serve(async (req) => {
       console.log('Validation failed: invalid email format')
       return new Response(
         JSON.stringify({ error: 'Invalid email format' }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+
+    // Validate Turnstile token
+    if (!turnstileToken) {
+      console.log('Validation failed: missing turnstile token')
+      return new Response(
+        JSON.stringify({ error: 'Turnstile verification required' }),
+        { 
+          status: 400, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+        }
+      )
+    }
+
+    const isTurnstileValid = await validateTurnstile(turnstileToken)
+    if (!isTurnstileValid) {
+      console.log('Validation failed: invalid turnstile token')
+      return new Response(
+        JSON.stringify({ error: 'Turnstile verification failed' }),
         { 
           status: 400, 
           headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
@@ -153,6 +199,16 @@ serve(async (req) => {
               font-weight: 700;
               margin-bottom: 10px;
             }
+            .security-badge {
+              background-color: #e8f5e8;
+              color: #2e7d32;
+              padding: 8px 12px;
+              border-radius: 4px;
+              font-size: 12px;
+              font-weight: 600;
+              display: inline-block;
+              margin-top: 10px;
+            }
             @media (max-width: 600px) {
               .info-grid {
                 grid-template-columns: 1fr;
@@ -169,6 +225,7 @@ serve(async (req) => {
               <div class="logo">📧 DS UTH Τράπεζα Θεμάτων</div>
               <h1>Νέο Μήνυμα Επικοινωνίας</h1>
               <p>Έχετε λάβει νέο μήνυμα από τη φόρμα επικοινωνίας</p>
+              <div class="security-badge">✅ Επαληθευμένο με Turnstile</div>
             </div>
             
             <div class="content">

@@ -23,6 +23,7 @@ import {
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
 import { supabase } from '../supabaseClient';
+import { Turnstile } from '@marsidev/react-turnstile';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -34,6 +35,7 @@ const Contact = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const { enqueueSnackbar } = useSnackbar();
+  const [turnstileToken, setTurnstileToken] = useState('');
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -60,7 +62,7 @@ const Contact = () => {
     if (!formData.email.trim()) {
       newErrors.email = 'Το email είναι υποχρεωτικό';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Παρακαλώ εισάγετε έγκυρο email';
+      newErrors.email = 'Παρακαλώ εισάγετε ένα έγκυρο email';
     }
     
     if (!formData.subject.trim()) {
@@ -71,6 +73,10 @@ const Contact = () => {
       newErrors.message = 'Το μήνυμα είναι υποχρεωτικό';
     } else if (formData.message.trim().length < 10) {
       newErrors.message = 'Το μήνυμα πρέπει να έχει τουλάχιστον 10 χαρακτήρες';
+    }
+
+    if (!turnstileToken) {
+      newErrors.turnstile = 'Παρακαλώ ολοκληρώστε την επαλήθευση';
     }
     
     setErrors(newErrors);
@@ -93,7 +99,8 @@ const Contact = () => {
           name: formData.name,
           email: formData.email,
           subject: formData.subject,
-          message: formData.message
+          message: formData.message,
+          turnstileToken: turnstileToken
         }
       });
 
@@ -113,6 +120,11 @@ const Contact = () => {
           subject: '',
           message: ''
         });
+        setTurnstileToken('');
+        // Reset Turnstile
+        if (window.turnstile) {
+          window.turnstile.reset();
+        }
       } else {
         throw new Error(data?.error || 'Unknown error occurred');
       }
@@ -125,6 +137,20 @@ const Contact = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleTurnstileVerify = (token) => {
+    setTurnstileToken(token);
+    if (errors.turnstile) {
+      setErrors(prev => ({
+        ...prev,
+        turnstile: ''
+      }));
+    }
+  };
+
+  const handleTurnstileExpire = () => {
+    setTurnstileToken('');
   };
 
   return (
@@ -225,7 +251,7 @@ const Contact = () => {
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 2.5,
-                    background: '#f8fafc',
+                    background: 'white',
                     '&.Mui-focused fieldset': {
                       borderColor: '#1976d2',
                       borderWidth: 2,
@@ -255,7 +281,7 @@ const Contact = () => {
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 2.5,
-                    background: '#f8fafc',
+                    background: 'white',
                     '&.Mui-focused fieldset': {
                       borderColor: '#1976d2',
                       borderWidth: 2,
@@ -284,7 +310,7 @@ const Contact = () => {
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 2.5,
-                    background: '#f8fafc',
+                    background: 'white',
                     '&.Mui-focused fieldset': {
                       borderColor: '#1976d2',
                       borderWidth: 2,
@@ -308,7 +334,7 @@ const Contact = () => {
                 sx={{
                   '& .MuiOutlinedInput-root': {
                     borderRadius: 2.5,
-                    background: '#f8fafc',
+                    background: 'white',
                     '&.Mui-focused fieldset': {
                       borderColor: '#1976d2',
                       borderWidth: 2,
@@ -316,6 +342,22 @@ const Contact = () => {
                   },
                 }}
               />
+
+              {/* Turnstile Captcha */}
+              <Box sx={{ display: 'flex', justifyContent: 'flex-start', mt: 2 }}>
+                <Turnstile
+                  siteKey="0x4AAAAAABiQtKNjlTVw7zFL"
+                  onSuccess={handleTurnstileVerify}
+                  onExpire={handleTurnstileExpire}
+                  onError={handleTurnstileExpire}
+                />
+              </Box>
+              {errors.turnstile && (
+                <Typography variant="caption" color="error" sx={{ mt: 1, display: 'block', textAlign: 'center' }}>
+                  {errors.turnstile}
+                </Typography>
+              )}
+
               <Button
                 type="submit"
                 variant="contained"
