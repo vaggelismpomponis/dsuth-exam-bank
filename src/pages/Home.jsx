@@ -10,6 +10,10 @@ import DownloadIcon from '@mui/icons-material/Download';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import SearchIcon from '@mui/icons-material/Search';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import PersonIcon from '@mui/icons-material/Person';
+import SecurityIcon from '@mui/icons-material/Security';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 
@@ -442,6 +446,321 @@ const Home = () => {
           Ανέβασε θέμα ή αρχείο
         </Button>
       </Box>
+
+      {/* Δυνατότητες Χρηστών */}
+      <Container
+        maxWidth="lg"
+        sx={{
+          mb: 6,
+          px: { xs: 3, sm: 5, md: 7 },
+        }}
+      >
+        <Typography 
+          variant="h5" 
+          align="center" 
+          sx={{ 
+            fontWeight: 800, 
+            mb: 1, 
+            color: '#212121', 
+            letterSpacing: 0.5,
+            fontSize: { xs: '1.5rem', md: '2rem' }
+          }}
+        >
+          Δυνατότητες της Πλατφόρμας
+        </Typography>
+        <Typography 
+          align="center" 
+          sx={{ 
+            mb: 4, 
+            color: '#666', 
+            maxWidth: 600, 
+            mx: 'auto',
+            fontSize: { xs: '1rem', md: '1.1rem' }
+          }}
+        >
+          Ανακαλύψτε όλες τις δυνατότητες που σας προσφέρει η τράπεζα θεμάτων
+        </Typography>
+
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
+            gap: 3,
+            gridAutoRows: '1fr',
+            mb: 6,
+          }}
+        >
+          {/* Αναζήτηση και Προσθήκη */}
+          <Box sx={{ display: 'flex', height: '100%' }}>
+            <Card 
+              sx={{ 
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: 0,
+                background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)',
+                border: '1px solid #e1f5fe',
+                borderRadius: 3,
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                }
+              }}
+            >
+              <CardContent sx={{ p: 3, textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <Box>
+                  <UploadFileIcon 
+                    sx={{ 
+                      fontSize: 48, 
+                      color: '#1976d2', 
+                      mb: 2,
+                      background: 'rgba(25, 118, 210, 0.1)',
+                      borderRadius: '50%',
+                      p: 1
+                    }} 
+                  />
+                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
+                    Ανέβασμα Αρχείων
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
+                    Προσθέστε θέματα και αρχεία εξετάσεων για να βοηθήσετε την κοινότητα
+                  </Typography>
+                </Box>
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  href="/upload"
+                  sx={{ 
+                    borderColor: '#1976d2', 
+                    color: '#1976d2',
+                    '&:hover': { borderColor: '#115293', backgroundColor: 'rgba(25, 118, 210, 0.04)' }
+                  }}
+                >
+                  Ανέβασε Αρχείο
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+
+          {/* Περιήγηση Μαθημάτων */}
+          <Box sx={{ display: 'flex', height: '100%' }}>
+            <Card 
+              sx={{ 
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: 0,
+                background: 'linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%)',
+                border: '1px solid #e8f5e8',
+                borderRadius: 3,
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                }
+              }}
+            >
+              <CardContent sx={{ p: 3, textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <Box>
+                  <MenuBookIcon 
+                    sx={{ 
+                      fontSize: 48, 
+                      color: '#2e7d32', 
+                      mb: 2,
+                      background: 'rgba(46, 125, 50, 0.1)',
+                      borderRadius: '50%',
+                      p: 1
+                    }} 
+                  />
+                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
+                    Περιήγηση Μαθημάτων
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
+                    Εξερευνήστε όλα τα μαθήματα και τα διαθέσιμα αρχεία εξετάσεων
+                  </Typography>
+                </Box>
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  href="/courses"
+                  sx={{ 
+                    borderColor: '#2e7d32', 
+                    color: '#2e7d32',
+                    '&:hover': { borderColor: '#1b5e20', backgroundColor: 'rgba(46, 125, 50, 0.04)' }
+                  }}
+                >
+                  Δες Μαθήματα
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+
+          {/* Αγαπημένα */}
+          <Box sx={{ display: 'flex', height: '100%' }}>
+            <Card 
+              sx={{ 
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: 0,
+                background: 'linear-gradient(135deg, #fce4ec 0%, #f3e5f5 100%)',
+                border: '1px solid #fce4ec',
+                borderRadius: 3,
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                }
+              }}
+            >
+              <CardContent sx={{ p: 3, textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <Box>
+                  <FavoriteIcon 
+                    sx={{ 
+                      fontSize: 48, 
+                      color: '#c2185b', 
+                      mb: 2,
+                      background: 'rgba(194, 24, 91, 0.1)',
+                      borderRadius: '50%',
+                      p: 1
+                    }} 
+                  />
+                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
+                    Αγαπημένα
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
+                    Αποθηκεύστε τα αγαπημένα σας μαθήματα και αρχεία για γρήγορη πρόσβαση
+                  </Typography>
+                </Box>
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  href="/favorites"
+                  sx={{ 
+                    borderColor: '#c2185b', 
+                    color: '#c2185b',
+                    '&:hover': { borderColor: '#880e4f', backgroundColor: 'rgba(194, 24, 91, 0.04)' }
+                  }}
+                >
+                  Δες Αγαπημένα
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+
+          {/* Προφίλ Χρήστη */}
+          <Box sx={{ display: 'flex', height: '100%' }}>
+            <Card 
+              sx={{ 
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: 0,
+                background: 'linear-gradient(135deg, #fff3e0 0%, #fbe9e7 100%)',
+                border: '1px solid #fff3e0',
+                borderRadius: 3,
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                }
+              }}
+            >
+              <CardContent sx={{ p: 3, textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <Box>
+                  <PersonIcon 
+                    sx={{ 
+                      fontSize: 48, 
+                      color: '#f57c00', 
+                      mb: 2,
+                      background: 'rgba(245, 124, 0, 0.1)',
+                      borderRadius: '50%',
+                      p: 1
+                    }} 
+                  />
+                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
+                    Προφίλ Χρήστη
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
+                    Διαχειριστείτε το προφίλ σας και δείτε την δραστηριότητά σας
+                  </Typography>
+                </Box>
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  href="/profile"
+                  sx={{ 
+                    borderColor: '#f57c00', 
+                    color: '#f57c00',
+                    '&:hover': { borderColor: '#e65100', backgroundColor: 'rgba(245, 124, 0, 0.04)' }
+                  }}
+                >
+                  Δες Προφίλ
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+
+          {/* Ασφάλεια */}
+          <Box sx={{ display: 'flex', height: '100%' }}>
+            <Card 
+              sx={{ 
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: 0,
+                background: 'linear-gradient(135deg, #e0f2f1 0%, #e8f5e8 100%)',
+                border: '1px solid #e0f2f1',
+                borderRadius: 3,
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                }
+              }}
+            >
+              <CardContent sx={{ p: 3, textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <Box>
+                  <SecurityIcon 
+                    sx={{ 
+                      fontSize: 48, 
+                      color: '#00695c', 
+                      mb: 2,
+                      background: 'rgba(0, 105, 92, 0.1)',
+                      borderRadius: '50%',
+                      p: 1
+                    }} 
+                  />
+                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
+                    Ασφάλεια & Επικύρωση
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
+                    Όλα τα αρχεία επικυρώνονται πριν δημοσιευθούν για την ποιότητα του περιεχομένου
+                  </Typography>
+                </Box>
+                <Button 
+                  variant="outlined" 
+                  size="small" 
+                  disabled
+                  sx={{ 
+                    borderColor: '#00695c', 
+                    color: '#00695c',
+                    opacity: 0.7
+                  }}
+                >
+                  Αυτόματη Επικύρωση
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+        </Box>
+      </Container>
     </Box>
   );
 };

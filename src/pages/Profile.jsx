@@ -244,7 +244,23 @@ const Profile = () => {
             color="#222"
             onClick={() => setShowPasswordFields((v) => !v)}
             fullWidth
-            sx={{ fontWeight: 700, py: 1.2, borderRadius: 2 }}
+            sx={{
+              fontWeight: 700,
+              py: { xs: 0.5, sm: 0 },
+              borderRadius: 2,
+              color: '#1976d2',
+              borderColor: '#1976d2',
+              transition: 'background 0.2s, color 0.2s, border 0.2s',
+              '&:hover': {
+                borderColor: '#1976d2',
+                color: '#1976d2',
+              },
+              '&:focus': {
+                outline: 'none',
+                borderColor: '#1976d2',
+                color: '#1976d2',
+              },
+            }}
           >
             ΑΛΛΑΓΗ ΚΩΔΙΚΟΥ
           </Button>
@@ -307,7 +323,7 @@ const Profile = () => {
                   onClick={handlePasswordChange}
                   fullWidth
                   disabled={!validatePassword(newPassword).isValid}
-                  sx={{ fontWeight: 700, py: 1.2, borderRadius: 2 }}
+                  sx={{ fontWeight: 700, py: { xs: 0.5, sm: 1.2 }, borderRadius: 2 }}
                 >
                   ΑΠΟΘΗΚΕΥΣΗ ΚΩΔΙΚΟΥ
                 </Button>
@@ -329,7 +345,7 @@ const Profile = () => {
             disabled={saving}
             sx={{
               fontWeight: 700,
-              py: 0,
+              py: { xs: 0.5, sm: 0 },
               borderRadius: 2,
               fontSize: '0.95rem',
               boxShadow: '0 2px 8px rgba(33,33,33,0.08)',
@@ -357,7 +373,7 @@ const Profile = () => {
             fullWidth
             sx={{
               fontWeight: 700,
-              py: 0,
+              py: { xs: 0.5, sm: 0 },
               borderRadius: 2,
               fontSize: '0.95rem',
               letterSpacing: 0.5,
