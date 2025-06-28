@@ -201,60 +201,32 @@ const Home = () => {
             Βρες, κατέβασε ή μοιράσου θέματα και αρχεία προηγούμενων εξετάσεων της σχολής. Η γνώση ανήκει σε όλους!
           </Typography>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2, width: '100%', maxWidth: 500, mx: { xs: 'auto', md: 0 } }}>
-            {user ? (
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                startIcon={<UploadFileIcon />}
-                href="/upload"
-                sx={{
-                  fontWeight: 700,
-                  fontSize: isUltraWide ? '1.2rem' : undefined,
-                  px: 3,
-                  py: 1.2,
-                  borderRadius: 2,
-                  backgroundColor: '#1976d2',
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              startIcon={<UploadFileIcon />}
+              href="/upload"
+              sx={{
+                fontWeight: 700,
+                fontSize: isUltraWide ? '1.2rem' : undefined,
+                px: 3,
+                py: 1.2,
+                borderRadius: 2,
+                backgroundColor: '#1976d2',
+                color: '#fff',
+                boxShadow: 'none',
+                transition: 'background 0.2s, color 0.2s',
+                '&:hover': {
+                  backgroundColor: '#115293',
                   color: '#fff',
                   boxShadow: 'none',
-                  transition: 'background 0.2s, color 0.2s',
-                  '&:hover': {
-                    backgroundColor: '#115293',
-                    color: '#fff',
-                    boxShadow: 'none',
-                  },
-                  width: { xs: '100%', sm: 'auto' },
-                }}
-              >
-                ΑΝΕΒΑΣΕ ΘΕΜΑ
-              </Button>
-            ) : (
-              <Button
-                variant="contained"
-                color="primary"
-                size="large"
-                href="/login"
-                sx={{
-                  fontWeight: 700,
-                  fontSize: isUltraWide ? '1.2rem' : undefined,
-                  px: 3,
-                  py: 1.2,
-                  borderRadius: 2,
-                  backgroundColor: '#1976d2',
-                  color: '#fff',
-                  boxShadow: 'none',
-                  transition: 'background 0.2s, color 0.2s',
-                  '&:hover': {
-                    backgroundColor: '#115293',
-                    color: '#fff',
-                    boxShadow: 'none',
-                  },
-                  width: { xs: '100%', sm: 'auto' },
-                }}
-              >
-                ΣΥΝΔΕΣΗ ΓΙΑ ΑΝΕΒΑΣΜΑ
-              </Button>
-            )}
+                },
+                width: { xs: '100%', sm: 'auto' },
+              }}
+            >
+              ΑΝΕΒΑΣΕ ΘΕΜΑ
+            </Button>
             <Button
               variant="outlined"
               color="primary"
@@ -424,7 +396,7 @@ const Home = () => {
           color="primary"
           size="large"
           startIcon={<UploadFileIcon />}
-          href={user ? "/upload" : "/login"}
+          href="/upload"
           sx={{
             fontWeight: 700,
             fontSize: { xs: '1.1rem', sm: '1.15rem' },

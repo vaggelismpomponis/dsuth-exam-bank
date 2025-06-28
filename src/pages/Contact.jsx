@@ -16,13 +16,13 @@ import {
 } from '@mui/material';
 import {
   Email as EmailIcon,
-  Phone as PhoneIcon,
-  LocationOn as LocationIcon,
   Send as SendIcon,
   Person as PersonIcon,
-  Subject as SubjectIcon
+  Subject as SubjectIcon,
+  GitHub as GitHubIcon
 } from '@mui/icons-material';
 import { useSnackbar } from 'notistack';
+import { supabase } from '../supabaseClient';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -87,22 +87,38 @@ const Contact = () => {
     setLoading(true);
     
     try {
-      // Simulate API call - replace with actual implementation
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      enqueueSnackbar('Το μήνυμά σας στάλθηκε επιτυχώς! Θα σας απαντήσουμε σύντομα.', { 
-        variant: 'success' 
+      // Call the Supabase Edge Function
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: {
+          name: formData.name,
+          email: formData.email,
+          subject: formData.subject,
+          message: formData.message
+        }
       });
-      
-      // Reset form
-      setFormData({
-        name: '',
-        email: '',
-        subject: '',
-        message: ''
-      });
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data?.success) {
+        enqueueSnackbar('Το μήνυμά σας στάλθηκε επιτυχώς! Θα σας απαντήσουμε σύντομα.', { 
+          variant: 'success' 
+        });
+        
+        // Reset form
+        setFormData({
+          name: '',
+          email: '',
+          subject: '',
+          message: ''
+        });
+      } else {
+        throw new Error(data?.error || 'Unknown error occurred');
+      }
       
     } catch (error) {
+      console.error('Error sending email:', error);
       enqueueSnackbar('Σφάλμα στην αποστολή του μηνύματος. Παρακαλώ δοκιμάστε ξανά.', { 
         variant: 'error' 
       });
@@ -118,7 +134,7 @@ const Contact = () => {
       py: { xs: 4, md: 6 },
       px: { xs: 2, sm: 3 }
     }}>
-      <Container maxWidth="lg">
+      <Container maxWidth={false} sx={{ maxWidth: '100%', px: { xs: 0, sm: 2 }, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         {/* Header */}
         <Box sx={{ textAlign: 'center', mb: 6 }}>
           <Typography 
@@ -145,289 +161,330 @@ const Contact = () => {
           </Typography>
         </Box>
 
-        <Grid container spacing={4}>
-          {/* Contact Form */}
-          <Grid item xs={12} lg={8}>
-            <Paper 
-              elevation={0}
+        <Box sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', lg: 'row' },
+          alignItems: 'flex-start',
+          justifyContent: 'center',
+          gap: { xs: 4, lg: 6 },
+          width: '100%',
+          maxWidth: 1400,
+          mx: 'auto',
+        }}>
+          <Paper
+            elevation={0}
+            sx={{
+              p: { xs: 2, sm: 3, md: 5 },
+              borderRadius: 6,
+              background: 'linear-gradient(135deg, #fafdff 60%, #e3f0ff 100%)',
+              boxShadow: '0 6px 32px 0 rgba(25, 118, 210, 0.10), 0 1.5px 8px 0 rgba(25, 118, 210, 0.04) inset',
+              border: 'none',
+              backdropFilter: 'blur(2px)',
+              minHeight: 320,
+              transition: 'box-shadow 0.2s',
+              width: { xs: '100%', sm: 500, md: 700, lg: 800 },
+              maxWidth: { xs: '100%', sm: 500, md: 700, lg: 800 },
+              flexShrink: 0,
+              mx: 'auto',
+            }}
+          >
+            <Typography 
+              variant="h5" 
               sx={{ 
-                p: { xs: 3, md: 4 },
-                borderRadius: 3,
-                background: 'rgba(255, 255, 255, 0.9)',
-                border: '1px solid #e3eafc',
-                backdropFilter: 'blur(10px)'
+                fontWeight: 700, 
+                mb: 3, 
+                color: '#1976d2',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1
               }}
             >
-              <Typography 
-                variant="h5" 
-                sx={{ 
-                  fontWeight: 700, 
-                  mb: 3, 
-                  color: '#212121',
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1
+              <SendIcon sx={{ color: '#1976d2' }} />
+              Φόρμα Επικοινωνίας
+            </Typography>
+
+            <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2, display: 'flex', flexDirection: 'column', gap: 3 }} autoComplete="on" noValidate>
+              <TextField
+                fullWidth
+                required
+                label="Όνομα"
+                name="name"
+                autoComplete="name"
+                aria-label="Όνομα"
+                value={formData.name}
+                onChange={handleChange}
+                error={!!errors.name}
+                helperText={errors.name}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <PersonIcon sx={{ color: '#1976d2' }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2.5,
+                    background: '#f8fafc',
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#1976d2',
+                      borderWidth: 2,
+                    },
+                  },
+                }}
+              />
+              <TextField
+                fullWidth
+                required
+                label="Email"
+                name="email"
+                type="email"
+                autoComplete="email"
+                aria-label="Email"
+                value={formData.email}
+                onChange={handleChange}
+                error={!!errors.email}
+                helperText={errors.email}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <EmailIcon sx={{ color: '#1976d2' }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2.5,
+                    background: '#f8fafc',
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#1976d2',
+                      borderWidth: 2,
+                    },
+                  },
+                }}
+              />
+              <TextField
+                fullWidth
+                required
+                label="Θέμα"
+                name="subject"
+                autoComplete="off"
+                aria-label="Θέμα"
+                value={formData.subject}
+                onChange={handleChange}
+                error={!!errors.subject}
+                helperText={errors.subject}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <SubjectIcon sx={{ color: '#1976d2' }} />
+                    </InputAdornment>
+                  ),
+                }}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2.5,
+                    background: '#f8fafc',
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#1976d2',
+                      borderWidth: 2,
+                    },
+                  },
+                }}
+              />
+              <TextField
+                fullWidth
+                required
+                label="Μήνυμα"
+                name="message"
+                multiline
+                minRows={6}
+                autoComplete="off"
+                aria-label="Μήνυμα"
+                value={formData.message}
+                onChange={handleChange}
+                error={!!errors.message}
+                helperText={errors.message}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    borderRadius: 2.5,
+                    background: '#f8fafc',
+                    '&.Mui-focused fieldset': {
+                      borderColor: '#1976d2',
+                      borderWidth: 2,
+                    },
+                  },
+                }}
+              />
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                disabled={loading}
+                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SendIcon />}
+                sx={{
+                  fontWeight: 700,
+                  fontSize: '1.1rem',
+                  px: 4,
+                  py: 1.5,
+                  borderRadius: 2.5,
+                  backgroundColor: '#1976d2',
+                  color: '#fff',
+                  boxShadow: '0 2px 8px rgba(25, 118, 210, 0.10)',
+                  transition: 'background 0.2s, color 0.2s',
+                  '&:hover': {
+                    backgroundColor: '#115293',
+                    color: '#fff',
+                    boxShadow: '0 4px 16px rgba(25, 118, 210, 0.13)',
+                  },
+                  '&:disabled': {
+                    backgroundColor: '#ccc',
+                    color: '#666',
+                  },
+                  minHeight: 52,
+                  textTransform: 'none',
+                  letterSpacing: 0.5,
                 }}
               >
-                <SendIcon sx={{ color: '#1976d2' }} />
-                Στείλτε μας μήνυμα
-              </Typography>
+                {loading ? 'Αποστολή...' : 'Αποστολή Μηνύματος'}
+              </Button>
+            </Box>
+          </Paper>
 
-              <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-                <Grid container spacing={3}>
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Όνομα"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      error={!!errors.name}
-                      helperText={errors.name}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <PersonIcon sx={{ color: '#666' }} />
-                          </InputAdornment>
-                        ),
-                      }}
-                      sx={{
-                        '& .MuiOutlinedInput-root': {
-                          borderRadius: 2,
-                          '&:hover fieldset': {
-                            borderColor: '#1976d2',
-                          },
-                        },
-                      }}
-                    />
-                  </Grid>
-                  
-                  <Grid item xs={12} sm={6}>
-                    <TextField
-                      fullWidth
-                      label="Email"
-                      name="email"
-                      type="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      error={!!errors.email}
-                      helperText={errors.email}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <EmailIcon sx={{ color: '#666' }} />
-                          </InputAdornment>
-                        ),
-                      }}
-                      sx={{
-                        '& .MuiOutlinedInput-root': {
-                          borderRadius: 2,
-                          '&:hover fieldset': {
-                            borderColor: '#1976d2',
-                          },
-                        },
-                      }}
-                    />
-                  </Grid>
-                  
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Θέμα"
-                      name="subject"
-                      value={formData.subject}
-                      onChange={handleChange}
-                      error={!!errors.subject}
-                      helperText={errors.subject}
-                      InputProps={{
-                        startAdornment: (
-                          <InputAdornment position="start">
-                            <SubjectIcon sx={{ color: '#666' }} />
-                          </InputAdornment>
-                        ),
-                      }}
-                      sx={{
-                        '& .MuiOutlinedInput-root': {
-                          borderRadius: 2,
-                          '&:hover fieldset': {
-                            borderColor: '#1976d2',
-                          },
-                        },
-                      }}
-                    />
-                  </Grid>
-                  
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Μήνυμα"
-                      name="message"
-                      multiline
-                      rows={6}
-                      value={formData.message}
-                      onChange={handleChange}
-                      error={!!errors.message}
-                      helperText={errors.message}
-                      sx={{
-                        '& .MuiOutlinedInput-root': {
-                          borderRadius: 2,
-                          '&:hover fieldset': {
-                            borderColor: '#1976d2',
-                          },
-                        },
-                      }}
-                    />
-                  </Grid>
-                  
-                  <Grid item xs={12}>
-                    <Button
-                      type="submit"
-                      variant="contained"
-                      size="large"
-                      disabled={loading}
-                      startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <SendIcon />}
-                      sx={{
-                        fontWeight: 700,
-                        fontSize: '1.1rem',
-                        px: 4,
-                        py: 1.5,
-                        borderRadius: 2,
-                        backgroundColor: '#1976d2',
-                        color: '#fff',
-                        boxShadow: 'none',
-                        transition: 'background 0.2s, color 0.2s',
-                        '&:hover': {
-                          backgroundColor: '#115293',
-                          color: '#fff',
-                          boxShadow: 'none',
-                        },
-                        '&:disabled': {
-                          backgroundColor: '#ccc',
-                          color: '#666',
-                        },
-                        minHeight: 48,
-                        textTransform: 'none',
-                      }}
-                    >
-                      {loading ? 'Αποστολή...' : 'Αποστολή Μηνύματος'}
-                    </Button>
-                  </Grid>
-                </Grid>
-              </Box>
-            </Paper>
-          </Grid>
-
-          {/* Contact Information */}
-          <Grid item xs={12} lg={4}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-              {/* Info Card */}
-              <Card 
-                sx={{ 
-                  borderRadius: 3,
-                  background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)',
-                  border: '1px solid #e1f5fe',
-                }}
-              >
-                <CardContent sx={{ p: 3 }}>
-                  <Typography 
-                    variant="h6" 
-                    sx={{ 
-                      fontWeight: 700, 
-                      mb: 3, 
-                      color: '#212121',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 1
-                    }}
-                  >
-                    <EmailIcon sx={{ color: '#1976d2' }} />
-                    Πληροφορίες Επικοινωνίας
-                  </Typography>
-                  
-                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <EmailIcon sx={{ color: '#1976d2', fontSize: 20 }} />
-                      <Box>
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#212121' }}>
-                          Email
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#666' }}>
-                          info@dsuth.gr
-                        </Typography>
-                      </Box>
-                    </Box>
-                    
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <PhoneIcon sx={{ color: '#1976d2', fontSize: 20 }} />
-                      <Box>
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#212121' }}>
-                          Τηλέφωνο
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#666' }}>
-                          +30 24210 74900
-                        </Typography>
-                      </Box>
-                    </Box>
-                    
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <LocationIcon sx={{ color: '#1976d2', fontSize: 20 }} />
-                      <Box>
-                        <Typography variant="body2" sx={{ fontWeight: 600, color: '#212121' }}>
-                          Διεύθυνση
-                        </Typography>
-                        <Typography variant="body2" sx={{ color: '#666' }}>
-                          Πανεπιστημιούπολη, Βόλος
-                        </Typography>
-                      </Box>
+          <Box sx={{ flex: 1, minWidth: { xs: '100%', lg: 320 }, maxWidth: 420, display: 'flex', flexDirection: 'column', gap: 3, mt: { xs: 4, lg: 0 } }}>
+            {/* Info Card */}
+            <Card 
+              sx={{ 
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)',
+                border: '1px solid #e1f5fe',
+              }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontWeight: 700, 
+                    mb: 3, 
+                    color: '#212121',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}
+                >
+                  <EmailIcon sx={{ color: '#1976d2' }} />
+                  Πληροφορίες Επικοινωνίας
+                </Typography>
+                
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                    <EmailIcon sx={{ color: '#1976d2', fontSize: 20 }} />
+                    <Box>
+                      <Typography variant="body2" sx={{ fontWeight: 600, color: '#212121' }}>
+                        Email
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#666' }}>
+                        info@dsuth.gr
+                      </Typography>
                     </Box>
                   </Box>
-                </CardContent>
-              </Card>
+                </Box>
+              </CardContent>
+            </Card>
 
-              {/* FAQ Card */}
-              <Card 
-                sx={{ 
-                  borderRadius: 3,
-                  background: 'linear-gradient(135deg, #fff3e0 0%, #fbe9e7 100%)',
-                  border: '1px solid #fff3e0',
-                }}
-              >
-                <CardContent sx={{ p: 3 }}>
-                  <Typography 
-                    variant="h6" 
-                    sx={{ 
-                      fontWeight: 700, 
-                      mb: 2, 
-                      color: '#212121'
-                    }}
-                  >
-                    Συχνές Ερωτήσεις
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
-                    Βρείτε γρήγορα απαντήσεις σε συχνές ερωτήσεις πριν επικοινωνήσετε μαζί μας.
-                  </Typography>
-                  <Button 
-                    variant="outlined" 
-                    href="/faq"
-                    sx={{ 
-                      borderColor: '#f57c00', 
-                      color: '#f57c00',
-                      '&:hover': { 
-                        borderColor: '#e65100', 
-                        backgroundColor: 'rgba(245, 124, 0, 0.04)' 
-                      },
-                      borderRadius: 2,
-                      textTransform: 'none',
-                      fontWeight: 600
-                    }}
-                  >
-                    Δες FAQ
-                  </Button>
-                </CardContent>
-              </Card>
-            </Box>
-          </Grid>
-        </Grid>
+            {/* FAQ Card */}
+            <Card 
+              sx={{ 
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #fff3e0 0%, #fbe9e7 100%)',
+                border: '1px solid #fff3e0',
+              }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontWeight: 700, 
+                    mb: 2, 
+                    color: '#212121'
+                  }}
+                >
+                  Συχνές Ερωτήσεις
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
+                  Βρείτε γρήγορα απαντήσεις σε συχνές ερωτήσεις πριν επικοινωνήσετε μαζί μας.
+                </Typography>
+                <Button 
+                  variant="outlined" 
+                  href="/faq"
+                  sx={{ 
+                    borderColor: '#f57c00', 
+                    color: '#f57c00',
+                    '&:hover': { 
+                      borderColor: '#e65100', 
+                      backgroundColor: 'rgba(245, 124, 0, 0.04)' 
+                    },
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontWeight: 600
+                  }}
+                >
+                  Δες FAQ
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* GitHub Card */}
+            <Card 
+              sx={{ 
+                borderRadius: 3,
+                background: 'linear-gradient(135deg, #24292e 0%, #2f363d 100%)',
+                border: '1px solid #444d56',
+                color: 'white',
+              }}
+            >
+              <CardContent sx={{ p: 3 }}>
+                <Typography 
+                  variant="h6" 
+                  sx={{ 
+                    fontWeight: 700, 
+                    mb: 2, 
+                    color: 'white',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 1
+                  }}
+                >
+                  <GitHubIcon sx={{ color: 'white' }} />
+                  Ακολουθήστε μας
+                </Typography>
+                <Typography variant="body2" sx={{ color: '#c9d1d9', mb: 2 }}>
+                  Βρείτε τον κώδικα του project μας στο GitHub και μείνετε ενημερωμένοι για τις τελευταίες εξελίξεις.
+                </Typography>
+                <Button 
+                  variant="outlined" 
+                  href="https://github.com/vaggelismpomponis/dsuth-exam-bank"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  sx={{ 
+                    borderColor: '#c9d1d9', 
+                    color: '#c9d1d9',
+                    '&:hover': { 
+                      borderColor: 'white', 
+                      backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                      color: 'white'
+                    },
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontWeight: 600
+                  }}
+                >
+                  GitHub Repository
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+        </Box>
       </Container>
     </Box>
   );
