@@ -12,6 +12,7 @@ import LogoutIcon from '@mui/icons-material/Logout';
 import LoginIcon from '@mui/icons-material/Login';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import ContactSupportIcon from '@mui/icons-material/ContactSupport';
 import Divider from '@mui/material/Divider';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -159,6 +160,10 @@ const NavBar = () => {
                   <ListItemButton component={Link} to="/upload" sx={{ my: 0.5, mx: 2, borderRadius: 2, py: 1.5, px: 2, '&:hover': { bgcolor: '#e3f7e3' }, justifyContent: 'flex-start' }}>
                     <ListItemIcon sx={{ minWidth: 36, color: '#43a047' }}><UploadFileIcon /></ListItemIcon>
                     <ListItemText primary="ΑΝΕΒΑΣΜΑ" sx={{ color: '#43a047', fontWeight: 600 }} />
+                  </ListItemButton>
+                  <ListItemButton component={Link} to="/contact" sx={{ my: 0.5, mx: 2, borderRadius: 2, py: 1.5, px: 2, '&:hover': { bgcolor: '#e0f7fa' }, justifyContent: 'flex-start' }}>
+                    <ListItemIcon sx={{ minWidth: 36, color: '#00bcd4' }}><ContactSupportIcon /></ListItemIcon>
+                    <ListItemText primary="ΕΠΙΚΟΙΝΩΝΙΑ" sx={{ color: '#00bcd4', fontWeight: 600 }} />
                   </ListItemButton>
                   {/* Divider */}
                   <Divider sx={{ my: 1, mx: 2 }} />

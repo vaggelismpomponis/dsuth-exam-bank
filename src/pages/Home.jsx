@@ -530,13 +530,23 @@ const Home = () => {
                   </Typography>
                 </Box>
                 <Button 
-                  variant="outlined" 
-                  size="small" 
+                  variant="contained" 
+                  size="medium" 
                   href="/upload"
                   sx={{ 
-                    borderColor: '#1976d2', 
-                    color: '#1976d2',
-                    '&:hover': { borderColor: '#115293', backgroundColor: 'rgba(25, 118, 210, 0.04)' }
+                    backgroundColor: '#1976d2',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: '0.95rem',
+                    px: 3,
+                    py: 1.2,
+                    borderRadius: 2,
+                    border: 'none',
+                    boxShadow: '0 2px 8px rgba(25, 118, 210, 0.3)',
+                    textTransform: 'none',
+                    '&:focus': {
+                      outline: 'none'
+                    }
                   }}
                 >
                   Ανέβασε Αρχείο
@@ -584,13 +594,23 @@ const Home = () => {
                   </Typography>
                 </Box>
                 <Button 
-                  variant="outlined" 
-                  size="small" 
+                  variant="contained" 
+                  size="medium" 
                   href="/courses"
                   sx={{ 
-                    borderColor: '#2e7d32', 
-                    color: '#2e7d32',
-                    '&:hover': { borderColor: '#1b5e20', backgroundColor: 'rgba(46, 125, 50, 0.04)' }
+                    backgroundColor: '#2e7d32',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: '0.95rem',
+                    px: 3,
+                    py: 1.2,
+                    borderRadius: 2,
+                    border: 'none',
+                    boxShadow: '0 2px 8px rgba(46, 125, 50, 0.3)',
+                    textTransform: 'none',
+                    '&:focus': {
+                      outline: 'none'
+                    }
                   }}
                 >
                   Δες Μαθήματα
@@ -638,13 +658,23 @@ const Home = () => {
                   </Typography>
                 </Box>
                 <Button 
-                  variant="outlined" 
-                  size="small" 
+                  variant="contained" 
+                  size="medium" 
                   href="/favorites"
                   sx={{ 
-                    borderColor: '#c2185b', 
-                    color: '#c2185b',
-                    '&:hover': { borderColor: '#880e4f', backgroundColor: 'rgba(194, 24, 91, 0.04)' }
+                    backgroundColor: '#c2185b',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: '0.95rem',
+                    px: 3,
+                    py: 1.2,
+                    borderRadius: 2,
+                    border: 'none',
+                    boxShadow: '0 2px 8px rgba(194, 24, 91, 0.3)',
+                    textTransform: 'none',
+                    '&:focus': {
+                      outline: 'none'
+                    }
                   }}
                 >
                   Δες Αγαπημένα
@@ -692,13 +722,23 @@ const Home = () => {
                   </Typography>
                 </Box>
                 <Button 
-                  variant="outlined" 
-                  size="small" 
+                  variant="contained" 
+                  size="medium" 
                   href="/profile"
                   sx={{ 
-                    borderColor: '#f57c00', 
-                    color: '#f57c00',
-                    '&:hover': { borderColor: '#e65100', backgroundColor: 'rgba(245, 124, 0, 0.04)' }
+                    backgroundColor: '#f57c00',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: '0.95rem',
+                    px: 3,
+                    py: 1.2,
+                    borderRadius: 2,
+                    border: 'none',
+                    boxShadow: '0 2px 8px rgba(245, 124, 0, 0.3)',
+                    textTransform: 'none',
+                    '&:focus': {
+                      outline: 'none'
+                    }
                   }}
                 >
                   Δες Προφίλ
@@ -707,7 +747,7 @@ const Home = () => {
             </Card>
           </Box>
 
-          {/* Ασφάλεια */}
+          {/* Επικοινωνία */}
           <Box sx={{ display: 'flex', height: '100%' }}>
             <Card 
               sx={{ 
@@ -716,8 +756,7 @@ const Home = () => {
                 display: 'flex',
                 flexDirection: 'column',
                 minHeight: 0,
-                background: 'linear-gradient(135deg, #e0f2f1 0%, #e8f5e8 100%)',
-                border: '1px solid #e0f2f1',
+                background: 'linear-gradient(135deg, #e0f7fa 0%, #fffde7 100%)',
                 borderRadius: 3,
                 transition: 'transform 0.2s, box-shadow 0.2s',
                 '&:hover': {
@@ -728,34 +767,44 @@ const Home = () => {
             >
               <CardContent sx={{ p: 3, textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
                 <Box>
-                  <SecurityIcon 
+                  <InfoIcon 
                     sx={{ 
                       fontSize: 48, 
-                      color: '#00695c', 
+                      color: '#00bcd4', 
                       mb: 2,
-                      background: 'rgba(0, 105, 92, 0.1)',
+                      background: 'rgba(0, 188, 212, 0.1)',
                       borderRadius: '50%',
                       p: 1
                     }} 
                   />
                   <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
-                    Ασφάλεια & Επικύρωση
+                    Επικοινωνία
                   </Typography>
                   <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
-                    Όλα τα αρχεία επικυρώνονται πριν δημοσιευθούν για την ποιότητα του περιεχομένου
+                    Στείλτε μας το μήνυμά σας για απορίες, feedback ή τεχνική υποστήριξη
                   </Typography>
                 </Box>
                 <Button 
-                  variant="outlined" 
-                  size="small" 
-                  disabled
+                  variant="contained" 
+                  size="medium" 
+                  href="/contact"
                   sx={{ 
-                    borderColor: '#00695c', 
-                    color: '#00695c',
-                    opacity: 0.7
+                    backgroundColor: '#00bcd4',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: '0.95rem',
+                    px: 3,
+                    py: 1.2,
+                    borderRadius: 2,
+                    border: 'none',
+                    boxShadow: '0 2px 8px rgba(0, 188, 212, 0.3)',
+                    textTransform: 'none',
+                    '&:focus': {
+                      outline: 'none'
+                    }
                   }}
                 >
-                  Αυτόματη Επικύρωση
+                  Επικοινωνήστε μαζί μας
                 </Button>
               </CardContent>
             </Card>
@@ -771,7 +820,6 @@ const Home = () => {
                 flexDirection: 'column',
                 minHeight: 0,
                 background: 'linear-gradient(135deg, #e3f2fd 0%, #fffde7 100%)',
-                border: '1px solid #ffe082',
                 borderRadius: 3,
                 transition: 'transform 0.2s, box-shadow 0.2s',
                 '&:hover': {
@@ -800,13 +848,23 @@ const Home = () => {
                   </Typography>
                 </Box>
                 <Button 
-                  variant="outlined" 
-                  size="small" 
+                  variant="contained" 
+                  size="medium" 
                   href="/faq"
                   sx={{ 
-                    borderColor: '#fbc02d', 
-                    color: '#fbc02d',
-                    '&:hover': { borderColor: '#f9a825', backgroundColor: 'rgba(251, 192, 45, 0.04)' }
+                    backgroundColor: '#fbc02d',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: '0.95rem',
+                    px: 3,
+                    py: 1.2,
+                    borderRadius: 2,
+                    border: 'none',
+                    boxShadow: '0 2px 8px rgba(251, 192, 45, 0.3)',
+                    textTransform: 'none',
+                    '&:focus': {
+                      outline: 'none'
+                    }
                   }}
                 >
                   Δες FAQ

@@ -7,6 +7,7 @@ import Upload from './pages/Upload';
 import AdminPanel from './pages/AdminPanel';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
+import Contact from './pages/Contact';
 import NavBar from './components/NavBar';
 import React, { lazy, Suspense, useEffect } from 'react';
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -60,6 +61,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/upload" element={<Upload />} />
             <Route path="/favorites" element={<Favorites />} />
+            <Route path="/contact" element={<Contact />} />
             <Route path="/admin" element={
               <RequireAdmin>
                 <AdminDashboard />
