@@ -28,6 +28,11 @@ const CourseFiles = () => {
   const theme = useTheme();
   const isMobileOrTablet = useMediaQuery('(max-width:899px)');
 
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUser(data?.session?.user || null);
