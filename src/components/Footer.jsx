@@ -18,10 +18,10 @@ const Footer = () => (
     <Box
       sx={{
         display: 'flex',
-        flexDirection: { xs: 'column', lg: 'row' },
-        alignItems: { xs: 'flex-start', lg: 'center' },
+        flexDirection: { xs: 'column', md: 'row' },
+        alignItems: { xs: 'flex-start', md: 'center' },
         justifyContent: 'space-between',
-        gap: { xs: 4, lg: 0 },
+        gap: { xs: 4, md: 0 },
         width: '100%',
         maxWidth: 1400,
         mx: 'auto',
