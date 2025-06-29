@@ -172,11 +172,12 @@ const Courses = () => {
                     flexDirection: 'column',
                     justifyContent: 'space-between',
                   }}
+                  onClick={() => navigate(`/courses/${course.id}`)}
                 >
                   <CardContent sx={{ width: '100%', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, px: 2, py: 2, pb: 1 }}>
                     <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', gap: 2 }}>
                       <SchoolRoundedIcon color="primary" sx={{ fontSize: 40, flexShrink: 0, mr: 1 }} />
-                      <Box sx={{ flexGrow: 1, minWidth: 0, cursor: 'pointer' }} onClick={() => navigate(`/courses/${course.id}`)}>
+                      <Box sx={{ flexGrow: 1, minWidth: 0 }}>
                         <Typography
                           variant="h6"
                           fontWeight={800}
