@@ -72,9 +72,9 @@ const Footer = () => (
           Find Our Project In:
         </Typography>
         <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 1 }}>
-          <IconButton href="https://github.com/Vaggelisbob/dsuth-exam-bank" target="_blank" rel="noopener" sx={{ color: '#fff', background: 'rgba(144,202,249,0.08)', '&:hover': { background: 'rgba(144,202,249,0.18)' } }}>
-            <GitHubIcon />
-          </IconButton>
+          <Typography variant="body2" sx={{ color: '#90CAF9', fontWeight: 500 }}>
+            GitHub
+          </Typography>
         </Stack>
         <Typography variant="body2" color="#b0bec5" sx={{ fontWeight: 400, mt: 1 }}>
           Open Source στο GitHub
