@@ -28,11 +28,6 @@ const CourseFiles = () => {
   const theme = useTheme();
   const isMobileOrTablet = useMediaQuery('(max-width:899px)');
 
-  // Scroll to top when component mounts
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, []);
-
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setUser(data?.session?.user || null);
@@ -71,6 +66,15 @@ const CourseFiles = () => {
     };
     fetchData();
   }, [id, user]);
+
+  // Scroll to top after data is loaded (try all possible roots)
+  useEffect(() => {
+    if (!loading) {
+      window.scrollTo(0, 0);
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+    }
+  }, [loading]);
 
   const handleApprove = async (fileId) => {
     setError(''); setSuccess('');
