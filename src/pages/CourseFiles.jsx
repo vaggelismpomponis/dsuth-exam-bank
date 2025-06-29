@@ -67,6 +67,13 @@ const CourseFiles = () => {
     fetchData();
   }, [id, user]);
 
+  // Scroll to top immediately when route changes (id changes)
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    document.documentElement.scrollTop = 0;
+    document.body.scrollTop = 0;
+  }, [id]);
+
   // Scroll to top after data is loaded (try all possible roots)
   useEffect(() => {
     if (!loading) {
