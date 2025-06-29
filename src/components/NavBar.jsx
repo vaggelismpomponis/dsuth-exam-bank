@@ -73,7 +73,7 @@ const NavBar = () => {
   };
 
   const menuItems = [
-    { label: 'Ανέβασμα', to: '/upload' },
+    { label: 'Ανέβασμα Αρχείων', to: '/upload' },
     ...(user && user.id === ADMIN_UID ? [{ label: 'Admin', to: '/admin' }] : []),
     user
       ? { label: 'Αποσύνδεση', action: handleLogout }
@@ -159,7 +159,7 @@ const NavBar = () => {
                   </ListItemButton>
                   <ListItemButton component={Link} to="/upload" sx={{ my: 0.5, mx: 2, borderRadius: 2, py: 1.5, px: 2, '&:hover': { bgcolor: '#e3f7e3' }, justifyContent: 'flex-start' }}>
                     <ListItemIcon sx={{ minWidth: 36, color: '#43a047' }}><UploadFileIcon /></ListItemIcon>
-                    <ListItemText primary="ΑΝΕΒΑΣΜΑΤΑ ΑΡΧΕΙΩΝ" sx={{ color: '#43a047', fontWeight: 600 }} />
+                    <ListItemText primary="ΑΝΕΒΑΣΜΑ ΑΡΧΕΙΩΝ" sx={{ color: '#43a047', fontWeight: 600 }} />
                   </ListItemButton>
                   <ListItemButton component={Link} to="/contact" sx={{ my: 0.5, mx: 2, borderRadius: 2, py: 1.5, px: 2, '&:hover': { bgcolor: '#e0f7fa' }, justifyContent: 'flex-start' }}>
                     <ListItemIcon sx={{ minWidth: 36, color: '#00bcd4' }}><ContactSupportIcon /></ListItemIcon>

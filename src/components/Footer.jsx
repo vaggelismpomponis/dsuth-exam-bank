@@ -9,7 +9,7 @@ import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 const menuLinks = [
   { label: 'Αρχική', href: '/' },
   { label: 'Μαθήματα', href: '/courses' },
-  { label: 'Ανεβάσματα Αρχείων', href: '/upload' },
+  { label: 'Ανέβασμα Αρχείων', href: '/upload' },
   { label: 'Προφίλ', href: '/profile' },
 ];
 
