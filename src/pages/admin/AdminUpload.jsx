@@ -7,6 +7,7 @@ const periods = [
   'Ιανουάριος',
   'Ιούνιος',
   'Σεπτέμβριος',
+  'Επαναληπτική',
 ];
 
 // Helper για μετατροπή ελληνικών σε λατινικούς χαρακτήρες
@@ -40,6 +41,7 @@ const AdminUpload = () => {
   const [fileResults, setFileResults] = useState([]); // [{name, status, message}]
   const [courses, setCourses] = useState([]);
   const [coursesLoading, setCoursesLoading] = useState(true);
+  const [dragActive, setDragActive] = useState(false);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -135,6 +137,44 @@ const AdminUpload = () => {
     ? courses.filter((c) => c.semester === Number(semester))
     : [];
 
+  // Drag & Drop handlers
+  const acceptedTypes = [
+    'application/pdf',
+    'application/msword',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'image/png',
+    'image/jpeg',
+  ];
+  const filterFiles = (fileList) => {
+    return Array.from(fileList).filter(f => acceptedTypes.includes(f.type));
+  };
+  const mergeFiles = (oldFiles, newFiles) => {
+    const names = new Set(oldFiles.map(f => f.name));
+    return [...oldFiles, ...newFiles.filter(f => !names.has(f.name))];
+  };
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') {
+      setDragActive(true);
+    } else if (e.type === 'dragleave') {
+      setDragActive(false);
+    }
+  };
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+      const filtered = filterFiles(e.dataTransfer.files);
+      setFiles(prev => mergeFiles(prev, filtered));
+    }
+  };
+  const handleFileInput = (e) => {
+    const filtered = filterFiles(e.target.files);
+    setFiles(prev => mergeFiles(prev, filtered));
+  };
+
   return (
     <Container maxWidth="sm" sx={{ mt: 6, mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <Card sx={{ width: '100%', maxWidth: 480, borderRadius: 4, boxShadow: 6, px: { xs: 1, sm: 3 }, py: 2, background: 'linear-gradient(135deg, #e3eafc 0%, #f4f6f8 100%)' }}>
@@ -217,6 +257,40 @@ const AdminUpload = () => {
                   <MenuItem key={p} value={p}>{p}</MenuItem>
                 ))}
               </TextField>
+              {/* Drag & Drop area */}
+              <Box
+                onDragEnter={handleDrag}
+                onDragOver={handleDrag}
+                onDragLeave={handleDrag}
+                onDrop={handleDrop}
+                sx={{
+                  border: dragActive ? '2px solid #1976d2' : '2px dashed #90caf9',
+                  borderRadius: 2,
+                  p: 3,
+                  textAlign: 'center',
+                  background: dragActive ? 'rgba(25, 118, 210, 0.08)' : 'transparent',
+                  color: '#1976d2',
+                  fontWeight: 600,
+                  mb: 1.5,
+                  cursor: 'pointer',
+                  transition: 'border 0.2s, background 0.2s',
+                  outline: 'none',
+                  userSelect: 'none',
+                }}
+                tabIndex={0}
+                onClick={() => document.getElementById('admin-upload-input').click()}
+              >
+                Σύρε εδώ τα αρχεία ή κάνε κλικ για επιλογή
+                <input
+                  id="admin-upload-input"
+                  type="file"
+                  multiple
+                  hidden
+                  onChange={handleFileInput}
+                  accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                />
+              </Box>
+              {/* Εναλλακτικό κουμπί επιλογής */}
               <Button
                 variant="contained"
                 component="label"
@@ -229,7 +303,7 @@ const AdminUpload = () => {
                   type="file"
                   multiple
                   hidden
-                  onChange={e => setFiles(Array.from(e.target.files))}
+                  onChange={handleFileInput}
                   accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
                 />
               </Button>
