@@ -40,3 +40,20 @@
 .read-the-docs {
   color: #888;
 }
+
+/* Custom width for notistack/MUI Snackbar toasts on mobile */
+@media (max-width: 600px) {
+  .MuiSnackbar-root,
+  .SnackbarContainer-root,
+  .SnackbarItem-variantSuccess,
+  .SnackbarItem-variantError,
+  .SnackbarItem-variantWarning,
+  .SnackbarItem-variantInfo {
+    max-width: 90vw !important;
+    width: 90vw !important;
+    left: 5vw !important;
+    right: 5vw !important;
+    min-width: 0 !important;
+    box-sizing: border-box;
+  }
+}
