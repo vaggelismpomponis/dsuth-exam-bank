@@ -3,6 +3,8 @@ import { startAuthentication } from '@simplewebauthn/browser';
 import { supabase } from '../supabaseClient';
 import { Button, Alert, CircularProgress } from '@mui/material';
 
+const API_BASE = "https://dsuth-api.vercel.app/api";
+
 export default function WebAuthnLogin({ onLogin }) {
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,7 +19,7 @@ export default function WebAuthnLogin({ onLogin }) {
   useEffect(() => {
     if (email && !autoTriggered.current) {
       setLoading(true);
-      fetch('/api/generate-authentication-options', {
+      fetch(`${API_BASE}/generate-authentication-options`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }),
@@ -45,7 +47,7 @@ export default function WebAuthnLogin({ onLogin }) {
       // 2. Ξεκίνα το authentication με το browser
       const asseResp = await startAuthentication(options);
       // 3. Στείλε το αποτέλεσμα στο backend για verify
-      const res2 = await fetch('/api/verify-authentication', {
+      const res2 = await fetch(`${API_BASE}/verify-authentication`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -68,7 +70,7 @@ export default function WebAuthnLogin({ onLogin }) {
     setError('');
     setLoading(true);
     // Ζήτα options από το backend
-    const res1 = await fetch('/api/generate-authentication-options', {
+    const res1 = await fetch(`${API_BASE}/generate-authentication-options`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email }),
