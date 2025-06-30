@@ -303,7 +303,10 @@ const Login = () => {
               </MuiLink>
             </Box>
             {/* WebAuthn Login (Fingerprint/FaceID) */}
-            <WebAuthnLogin onLogin={() => navigate('/')} />
+            <WebAuthnLogin onLogin={() => {
+              enqueueSnackbar('Επιτυχής είσοδος!', { variant: 'success' });
+              navigate('/');
+            }} />
           </Stack>
         </Box>
       </Box>
