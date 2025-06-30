@@ -3,6 +3,8 @@ import { startRegistration } from '@simplewebauthn/browser';
 import { supabase } from '../supabaseClient';
 import { Button, Alert, CircularProgress } from '@mui/material';
 
+const API_BASE = "https://dsuth-api.vercel.app/api";
+
 export default function WebAuthnRegister({ user }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -31,7 +33,7 @@ export default function WebAuthnRegister({ user }) {
     setLoading(true);
     try {
       // 1. Ζήτα registration options από το backend
-      const res1 = await fetch('/api/generate-registration-options', {
+      const res1 = await fetch(`${API_BASE}/generate-registration-options`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id, email: user.email }),
@@ -44,7 +46,7 @@ export default function WebAuthnRegister({ user }) {
       // 2. Ξεκίνα το registration με το browser
       const regResp = await startRegistration(options);
       // 3. Στείλε το αποτέλεσμα στο backend για verify
-      const res2 = await fetch('/api/verify-registration', {
+      const res2 = await fetch(`${API_BASE}/verify-registration`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
