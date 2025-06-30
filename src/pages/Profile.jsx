@@ -23,6 +23,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
+import WebAuthnRegister from '../components/WebAuthnRegister';
 
 const ADMIN_UID = 'ae26da15-7102-4647-8cbb-8f045491433c';
 
@@ -187,6 +188,13 @@ const Profile = () => {
           <Typography variant="subtitle1" color="#212121" sx={{ mb: 1, textAlign: 'center' }}>
             {user.email}
           </Typography>
+          {/* Fingerprint/FaceID Registration */}
+          <Box sx={{ mt: 2, mb: 1, width: '100%' }}>
+            <Typography variant="subtitle2" color="#1976d2" sx={{ fontWeight: 700, mb: 1 }}>
+              Ενεργοποίηση Εισόδου με Δακτυλικό Αποτύπωμα / FaceID
+            </Typography>
+            <WebAuthnRegister user={user} />
+          </Box>
         </Box>
         <Stack spacing={2} sx={{ width: '100%' }}>
           <TextField

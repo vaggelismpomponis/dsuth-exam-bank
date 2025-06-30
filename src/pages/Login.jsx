@@ -7,6 +7,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { validateTurnstileToken } from '../utils/turnstileValidation';
+import WebAuthnLogin from '../components/WebAuthnLogin';
 
 // Επίσημο Google G logo
 const GoogleLogo = (
@@ -301,6 +302,8 @@ const Login = () => {
                 ΕΓΓΡΑΦΗ
               </MuiLink>
             </Box>
+            {/* WebAuthn Login (Fingerprint/FaceID) */}
+            <WebAuthnLogin onLogin={() => navigate('/')} />
           </Stack>
         </Box>
       </Box>
