@@ -1,4 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
+import { Routes, Route, useLocation } from 'react-router-dom';
 import { ThemeProvider, createTheme, CssBaseline } from '@mui/material';
 import Box from '@mui/material/Box';
 import Home from './pages/Home';
@@ -42,6 +42,18 @@ const theme = createTheme({
 const AdminFiles = lazy(() => import('./pages/admin/AdminFiles'));
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  React.useEffect(() => {
+    setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      document.documentElement.scrollTo({ top: 0, behavior: 'smooth' });
+      document.body.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 0);
+  }, [pathname]);
+  return null;
+}
+
 function App() {
   // Καθαρισμός του # από το URL μετά το Google OAuth login
   useEffect(() => {
@@ -52,6 +64,7 @@ function App() {
 
   return (
     <ThemeProvider theme={theme}>
+      <ScrollToTop />
       <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} autoHideDuration={2500}>
         <CssBaseline />
         <Box sx={{ overflowX: 'hidden', maxWidth: '100vw', pt: { xs: '56px', md: '64px' } }}>
