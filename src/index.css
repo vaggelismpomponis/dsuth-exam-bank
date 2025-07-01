@@ -96,3 +96,8 @@ textarea:-webkit-autofill:active {
   color: #222 !important;
   transition: background-color 5000s ease-in-out 0s;
 }
+
+::selection {
+  background: #b3d4fc;
+  color: #212121;
+}

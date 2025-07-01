@@ -152,70 +152,74 @@ const Courses = () => {
               }}
             >
               {grouped[sem].map(course => (
-                <Card
+                <Link
+                  to={`/courses/${course.id}`}
                   key={course.id}
-                  sx={{
-                    cursor: 'pointer',
-                    borderRadius: 3,
-                    boxShadow: 3,
-                    background: `linear-gradient(120deg, #f4f6fb 0%, #dbeafe 60%, #f4f6f8 100%)`,
-                    backdropFilter: 'blur(1.5px)',
-                    border: '1.5px solid #e3eafc',
-                    transition: 'transform 0.18s, box-shadow 0.18s, background 0.18s',
-                    '&:hover': {
-                      boxShadow: 8,
-                      transform: 'translateY(-4px) scale(1.03)',
-                      background: 'linear-gradient(120deg, #e3eafc 0%, #b6d6fa 60%, #f4f6fb 100%)',
-                    },
-                    minHeight: { xs: 110, md: 200 },
-                    display: 'flex',
-                    flexDirection: 'column',
-                    justifyContent: 'space-between',
-                  }}
-                  onClick={() => navigate(`/courses/${course.id}`)}
+                  style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
                 >
-                  <CardContent sx={{ width: '100%', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, px: 2, py: 2, pb: 1 }}>
-                    <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', gap: 2 }}>
-                      <SchoolRoundedIcon color="primary" sx={{ fontSize: 40, flexShrink: 0, mr: 1 }} />
-                      <Box sx={{ flexGrow: 1, minWidth: 0 }}>
-                        <Typography
-                          variant="h6"
-                          fontWeight={800}
-                          sx={{
-                            color: theme.palette.primary.dark,
-                            mb: 0.5,
-                            fontSize: { xs: '1.1rem', sm: '1.18rem', md: '1.22rem' },
-                            wordBreak: 'break-word',
-                            whiteSpace: 'normal',
-                          }}
-                        >
-                          {course.name}
-                        </Typography>
-                        <Chip label={`Εξάμηνο ${course.semester}`} size="small" sx={{ mt: 0.5, background: '#e3eafc', color: theme.palette.primary.dark, fontWeight: 600, fontSize: '0.95em' }} />
+                  <Card
+                    sx={{
+                      cursor: 'pointer',
+                      borderRadius: 3,
+                      boxShadow: 3,
+                      background: `linear-gradient(120deg, #f4f6fb 0%, #dbeafe 60%, #f4f6f8 100%)`,
+                      backdropFilter: 'blur(1.5px)',
+                      border: '1.5px solid #e3eafc',
+                      transition: 'transform 0.18s, box-shadow 0.18s, background 0.18s',
+                      '&:hover': {
+                        boxShadow: 8,
+                        transform: 'translateY(-4px) scale(1.03)',
+                        background: 'linear-gradient(120deg, #e3eafc 0%, #b6d6fa 60%, #f4f6fb 100%)',
+                      },
+                      minHeight: { xs: 110, md: 200 },
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <CardContent sx={{ width: '100%', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, px: 2, py: 2, pb: 1 }}>
+                      <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <SchoolRoundedIcon color="primary" sx={{ fontSize: 40, flexShrink: 0, mr: 1 }} />
+                        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                          <Typography
+                            variant="h6"
+                            fontWeight={800}
+                            sx={{
+                              color: theme.palette.primary.dark,
+                              mb: 0.5,
+                              fontSize: { xs: '1.1rem', sm: '1.18rem', md: '1.22rem' },
+                              wordBreak: 'break-word',
+                              whiteSpace: 'normal',
+                            }}
+                          >
+                            {course.name}
+                          </Typography>
+                          <Chip label={`Εξάμηνο ${course.semester}`} size="small" sx={{ mt: 0.5, background: '#e3eafc', color: theme.palette.primary.dark, fontWeight: 600, fontSize: '0.95em' }} />
+                        </Box>
                       </Box>
-                    </Box>
-                  </CardContent>
-                  <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1, px: 2, pb: 1, mt: 'auto' }}>
-                    <Tooltip title="Διαθέσιμα αρχεία">
-                      <Badge badgeContent={examCounts[course.name] || 0} color="info" sx={{ '& .MuiBadge-badge': { fontSize: '0.85em', minWidth: 20, height: 20 } }} showZero>
-                        <InsertDriveFileIcon color="action" sx={{ fontSize: 28 }} />
-                      </Badge>
-                    </Tooltip>
-                    {user && (
-                      <Tooltip title={favorites.includes(course.id) ? 'Αφαίρεση από αγαπημένα' : 'Προσθήκη στα αγαπημένα'}>
-                        <IconButton
-                          aria-label={favorites.includes(course.id) ? 'Αφαίρεση από αγαπημένα' : 'Προσθήκη στα αγαπημένα'}
-                          onClick={e => { e.stopPropagation(); toggleFavorite(course.id); }}
-                          color="error"
-                          sx={{ transition: 'transform 0.15s', '&:hover': { transform: 'scale(1.18)' } }}
-                          disabled={favLoading}
-                        >
-                          {favorites.includes(course.id) ? <FavoriteIcon sx={{ fontSize: 28 }} /> : <FavoriteBorderIcon sx={{ fontSize: 28 }} />}
-                        </IconButton>
+                    </CardContent>
+                    <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1, px: 2, pb: 1, mt: 'auto' }}>
+                      <Tooltip title="Διαθέσιμα αρχεία">
+                        <Badge badgeContent={examCounts[course.name] || 0} color="info" sx={{ '& .MuiBadge-badge': { fontSize: '0.85em', minWidth: 20, height: 20 } }} showZero>
+                          <InsertDriveFileIcon color="action" sx={{ fontSize: 28 }} />
+                        </Badge>
                       </Tooltip>
-                    )}
-                  </Box>
-                </Card>
+                      {user && (
+                        <Tooltip title={favorites.includes(course.id) ? 'Αφαίρεση από αγαπημένα' : 'Προσθήκη στα αγαπημένα'}>
+                          <IconButton
+                            aria-label={favorites.includes(course.id) ? 'Αφαίρεση από αγαπημένα' : 'Προσθήκη στα αγαπημένα'}
+                            onClick={e => { e.preventDefault(); e.stopPropagation(); toggleFavorite(course.id); }}
+                            color="error"
+                            sx={{ transition: 'transform 0.15s', '&:hover': { transform: 'scale(1.18)' } }}
+                            disabled={favLoading}
+                          >
+                            {favorites.includes(course.id) ? <FavoriteIcon sx={{ fontSize: 28 }} /> : <FavoriteBorderIcon sx={{ fontSize: 28 }} />}
+                          </IconButton>
+                        </Tooltip>
+                      )}
+                    </Box>
+                  </Card>
+                </Link>
               ))}
             </Box>
           </Box>
