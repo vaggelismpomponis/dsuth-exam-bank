@@ -101,3 +101,52 @@ textarea:-webkit-autofill:active {
   background: #b3d4fc;
   color: #212121;
 }
+
+/* Center text and center the Snackbar itself horizontally */
+.notistack-Snackbar, .SnackbarContent-root {
+  text-align: center !important;
+}
+
+/* Center the Snackbar container horizontally */
+.notistack-Snackbar {
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  right: auto !important;
+}
+
+@media (max-width: 600px) {
+  .notistack-Snackbar, .SnackbarContent-root, .MuiSnackbarContent-root {
+    min-width: 55vw !important;
+    max-width: 55vw !important;
+    width: 95vw !important;
+    box-sizing: border-box !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    right: auto !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  .MuiSnackbarContent-message {
+    gap: 0.4em !important;
+    padding-left: 0.2em !important;
+    padding-right: 0.2em !important;
+  }
+}
+
+/* Center content (icon and text) inside the Snackbar */
+.SnackbarContent-root,
+.MuiSnackbarContent-root,
+.notistack-SnackbarContent {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  text-align: center !important;
+}
+
+/* Center only the Snackbar message text, regardless of icon */
+.MuiSnackbarContent-message {
+  width: 100%;
+  justify-content: center;
+  display: flex;
+  text-align: center;
+}
