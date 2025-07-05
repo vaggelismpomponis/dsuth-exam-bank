@@ -148,8 +148,15 @@ const CourseFiles = () => {
   // Utility για καθαρισμό URL
   const getCleanUrl = url => (url ? url.trim().replace(/\?$/, '') : '');
 
+  // Βοηθητική συνάρτηση για να παίρνει το filename από το URL
+  const getFilenameFromUrl = (url) => {
+    const lastPart = url.split('/').pop().split('?')[0];
+    return lastPart;
+  };
+
   // Force download function
-  const handleDownload = async (url, filename) => {
+  const handleDownload = async (url) => {
+    const filename = getFilenameFromUrl(url);
     try {
       const response = await fetch(url, { mode: 'cors' });
       if (!response.ok) throw new Error('Download failed');
@@ -297,7 +304,7 @@ const CourseFiles = () => {
               <Typography variant="body2" sx={{ fontWeight: 600 }}>Εξεταστική: <span style={{ fontWeight: 400 }}>{file.period}</span></Typography>
               <Box sx={{ mt: 1 }}>
                 <Button color="info" size="small" href={getCleanUrl(file.file_url)} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: '#e3f2fd', borderRadius: 1, '&:hover': { background: '#bbdefb' }, mr: 1 }}><VisibilityIcon /></Button>
-                <Button color="primary" size="small" onClick={() => handleDownload(getCleanUrl(file.file_url), file.file_url.split('/').pop())} sx={{ textTransform: 'none', background: '#e3eafc', borderRadius: 1, '&:hover': { background: '#c5cae9' }, mr: 1 }}><DownloadIcon /></Button>
+                <Button color="primary" size="small" onClick={() => handleDownload(getCleanUrl(file.file_url))} sx={{ textTransform: 'none', background: '#e3eafc', borderRadius: 1, '&:hover': { background: '#c5cae9' }, mr: 1 }}><DownloadIcon /></Button>
                 {user && user.id === ADMIN_UID && !file.approved && (
                   <Button variant="outlined" color="success" onClick={() => handleApprove(file.id)} size="small" sx={{ borderRadius: 1, mr: 1 }}><CheckIcon /></Button>
                 )}
@@ -342,7 +349,7 @@ const CourseFiles = () => {
                   </TableCell>
                   <TableCell>
                     <Button color="info" size="small" href={getCleanUrl(file.file_url)} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: '#e3f2fd', borderRadius: 1, '&:hover': { background: '#bbdefb' }, mr: 1 }}><VisibilityIcon /></Button>
-                    <Button color="primary" size="small" onClick={() => handleDownload(getCleanUrl(file.file_url), file.file_url.split('/').pop())} sx={{ textTransform: 'none', background: '#e3eafc', borderRadius: 1, '&:hover': { background: '#c5cae9' }, mr: 1 }}><DownloadIcon /></Button>
+                    <Button color="primary" size="small" onClick={() => handleDownload(getCleanUrl(file.file_url))} sx={{ textTransform: 'none', background: '#e3eafc', borderRadius: 1, '&:hover': { background: '#c5cae9' }, mr: 1 }}><DownloadIcon /></Button>
                     {user && user.id === ADMIN_UID && !file.approved && (
                       <Button variant="outlined" color="success" onClick={() => handleApprove(file.id)} size="small" sx={{ borderRadius: 1, mr: 1 }}><CheckIcon /></Button>
                     )}
