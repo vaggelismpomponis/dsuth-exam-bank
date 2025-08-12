@@ -1,31 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { Navigate, useLocation } from 'react-router-dom';
-
-const ADMIN_UID = 'ae26da15-7102-4647-8cbb-8f045491433c';
+import { isUserAdmin } from '../utils/adminUtils';
 
 const RequireAdmin = ({ children }) => {
   const [user, setUser] = useState(undefined); // undefined: loading, null: not logged in, object: logged in
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [loading, setLoading] = useState(true);
   const location = useLocation();
 
   useEffect(() => {
+    const checkAdminStatus = async (user) => {
+      if (!user) {
+        setIsAdmin(false);
+        setLoading(false);
+        return;
+      }
+      
+      const adminStatus = await isUserAdmin(user.id);
+      setIsAdmin(adminStatus);
+      setLoading(false);
+    };
+
     supabase.auth.getSession().then(({ data }) => {
-      setUser(data?.session?.user || null);
+      const currentUser = data?.session?.user || null;
+      setUser(currentUser);
+      checkAdminStatus(currentUser);
     });
+    
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
+      const currentUser = session?.user || null;
+      setUser(currentUser);
+      checkAdminStatus(currentUser);
     });
+    
     return () => {
       listener?.subscription.unsubscribe();
     };
   }, []);
 
-  if (user === undefined) {
+  if (loading) {
     // Still loading
     return null;
   }
 
-  if (!user || user.id !== ADMIN_UID) {
+  if (!user || !isAdmin) {
     // Not logged in or not admin
     return <Navigate to="/" state={{ from: location }} replace />;
   }

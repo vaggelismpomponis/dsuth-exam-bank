@@ -40,3 +40,37 @@ Set the following environment variables:
 3. Run the script
 
 **⚠️ Security Note:** The `bulk_upload.py` file is gitignored for security reasons. Always use environment variables for API keys and never commit sensitive credentials to the repository.
+
+## add_admin.py
+
+A Python script for adding admin users to the system.
+
+### Features:
+- Adds admin role to existing users
+- Creates admin profiles for new users
+- Uses Supabase Admin API for user management
+
+### Usage:
+```bash
+cd scripts
+python add_admin.py
+```
+
+### Requirements:
+- Python 3.7+
+- `supabase` library
+- `requests` library
+- Valid Supabase service role key
+
+### Configuration:
+Set the following environment variables:
+- `SUPABASE_URL`: Your Supabase project URL
+- `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase service role key
+
+### Setup:
+1. Copy `add_admin_template.py` to `add_admin.py`
+2. Edit the `ADMIN_EMAIL` variable in the script
+3. Set your environment variables
+4. Run the script
+
+**⚠️ Security Note:** The actual `add_admin.py` file is gitignored because it contains sensitive credentials. Always use environment variables for API keys.

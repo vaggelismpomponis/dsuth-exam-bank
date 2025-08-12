@@ -17,11 +17,11 @@ import Divider from '@mui/material/Divider';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { useSnackbar } from 'notistack';
-
-const ADMIN_UID = 'ae26da15-7102-4647-8cbb-8f045491433c';
+import { isUserAdmin } from '../utils/adminUtils';
 
 const NavBar = () => {
   const [user, setUser] = useState(undefined);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
@@ -33,12 +33,27 @@ const NavBar = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   useEffect(() => {
-    const session = supabase.auth.getSession().then(({ data }) => {
-      setUser(data?.session?.user || null);
+    const checkAdminStatus = async (user) => {
+      if (!user) {
+        setIsAdmin(false);
+        return;
+      }
+      const adminStatus = await isUserAdmin(user.id);
+      setIsAdmin(adminStatus);
+    };
+
+    supabase.auth.getSession().then(({ data }) => {
+      const currentUser = data?.session?.user || null;
+      setUser(currentUser);
+      checkAdminStatus(currentUser);
     });
+    
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user || null);
+      const currentUser = session?.user || null;
+      setUser(currentUser);
+      checkAdminStatus(currentUser);
     });
+    
     return () => {
       listener?.subscription.unsubscribe();
     };
@@ -75,7 +90,7 @@ const NavBar = () => {
   const menuItems = [
     { label: 'Αιτήματα Αρχείων', to: '/requests' },
     { label: 'Ανέβασμα Αρχείων', to: '/upload' },
-    ...(user && user.id === ADMIN_UID ? [{ label: 'Admin', to: '/admin' }] : []),
+    ...(user && isAdmin ? [{ label: 'Admin', to: '/admin' }] : []),
     user
       ? { label: 'Αποσύνδεση', action: handleLogout }
       : { label: 'Είσοδος', to: '/login' },
@@ -175,7 +190,7 @@ const NavBar = () => {
                   {/* Profile/Admin/Login/Logout */}
                   {user && (
                     <>
-                      {user.id === ADMIN_UID && (
+                      {isAdmin && (
                         <ListItemButton component={Link} to="/admin" sx={{ my: 0.5, mx: 2, borderRadius: 2, py: 1.5, px: 2, '&:hover': { bgcolor: '#fffbe3' }, justifyContent: 'flex-start' }}>
                           <ListItemIcon sx={{ minWidth: 36, color: '#fbc02d' }}><SettingsIcon /></ListItemIcon>
                           <ListItemText primary="ΡΥΘΜΙΣΕΙΣ ADMIN" sx={{ color: '#fbc02d', fontWeight: 600 }} />
