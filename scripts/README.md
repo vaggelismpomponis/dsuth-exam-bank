@@ -32,7 +32,11 @@ Set the following environment variables:
 
 ### Setup:
 1. Copy `bulk_upload_template.py` to `bulk_upload.py`
-2. Set your environment variables
+2. Set your environment variables:
+   ```bash
+   export SUPABASE_URL="https://your-project.supabase.co"
+   export SUPABASE_SERVICE_ROLE_KEY="your-service-role-key"
+   ```
 3. Run the script
 
-**⚠️ Security Note:** The actual `bulk_upload.py` file is gitignored because it contains sensitive credentials. Always use environment variables for API keys.
+**⚠️ Security Note:** The `bulk_upload.py` file is gitignored for security reasons. Always use environment variables for API keys and never commit sensitive credentials to the repository.
