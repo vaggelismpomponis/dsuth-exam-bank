@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Typography, Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, Skeleton, Select, FormControl, MenuItem, useMediaQuery } from '@mui/material';
 import { supabase } from '../../supabaseClient';
 
-const ADMIN_UID = 'ae26da15-7102-4647-8cbb-8f045491433c';
+import { isUserAdminSync } from '../../utils/adminUtils';
 
 const AdminUsers = () => {
   const [allUsers, setAllUsers] = useState([]);

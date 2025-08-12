@@ -15,7 +15,7 @@ import { supabase } from '../supabaseClient';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 
-const ADMIN_UID = 'ae26da15-7102-4647-8cbb-8f045491433c';
+import { isUserAdminSync } from '../utils/adminUtils';
 
 const periods = [
   'Ιανουάριος',
@@ -49,6 +49,8 @@ const CourseFiles = () => {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [profile, setProfile] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [uploaders, setUploaders] = useState({});
@@ -83,9 +85,23 @@ const CourseFiles = () => {
   });
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setUser(data?.session?.user || null);
-    });
+    const fetchUserData = async () => {
+      const { data } = await supabase.auth.getSession();
+      const currentUser = data?.session?.user || null;
+      setUser(currentUser);
+      
+      if (currentUser) {
+        const { data: profileData } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', currentUser.id)
+          .single();
+        setProfile(profileData);
+        setIsAdmin(profileData?.role === 'admin');
+      }
+    };
+    
+    fetchUserData();
   }, []);
 
   useEffect(() => {
@@ -98,7 +114,7 @@ const CourseFiles = () => {
       setCourse(courseData);
       // Fetch files
       let query = supabase.from('exams').select('*').eq('course', courseData.name).order('created_at', { ascending: false });
-      if (!user || user.id !== ADMIN_UID) query = query.eq('approved', true);
+      if (!user || !isAdmin) query = query.eq('approved', true);
       const { data: filesData, error: filesError } = await query;
       if (filesError) { setError('Σφάλμα ανάκτησης αρχείων'); setLoading(false); return; }
       setFiles(filesData);
@@ -336,10 +352,10 @@ const CourseFiles = () => {
               <Box sx={{ mt: 1 }}>
                 <Button color="info" size="small" href={getCleanUrl(file.file_url)} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: '#e3f2fd', borderRadius: 1, '&:hover': { background: '#bbdefb' }, mr: 1 }}><VisibilityIcon /></Button>
                 <Button color="primary" size="small" onClick={() => handleDownload(getCleanUrl(file.file_url))} sx={{ textTransform: 'none', background: '#e3eafc', borderRadius: 1, '&:hover': { background: '#c5cae9' }, mr: 1 }}><DownloadIcon /></Button>
-                {user && user.id === ADMIN_UID && !file.approved && (
+                {user && isAdmin && !file.approved && (
                   <Button variant="outlined" color="success" onClick={() => handleApprove(file.id)} size="small" sx={{ borderRadius: 1, mr: 1 }}><CheckIcon /></Button>
                 )}
-                {user && user.id === ADMIN_UID && (
+                {user && isAdmin && (
                   <Button variant="outlined" color="error" onClick={() => handleDelete(file.id, file.file_url)} size="small" sx={{ borderRadius: 1 }}><DeleteIcon /></Button>
                 )}
               </Box>
@@ -383,10 +399,10 @@ const CourseFiles = () => {
                   <TableCell>
                     <Button color="info" size="small" href={getCleanUrl(file.file_url)} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: '#e3f2fd', borderRadius: 1, '&:hover': { background: '#bbdefb' }, mr: 1 }}><VisibilityIcon /></Button>
                     <Button color="primary" size="small" onClick={() => handleDownload(getCleanUrl(file.file_url))} sx={{ textTransform: 'none', background: '#e3eafc', borderRadius: 1, '&:hover': { background: '#c5cae9' }, mr: 1 }}><DownloadIcon /></Button>
-                    {user && user.id === ADMIN_UID && !file.approved && (
+                    {user && isAdmin && !file.approved && (
                       <Button variant="outlined" color="success" onClick={() => handleApprove(file.id)} size="small" sx={{ borderRadius: 1, mr: 1 }}><CheckIcon /></Button>
                     )}
-                    {user && user.id === ADMIN_UID && (
+                    {user && isAdmin && (
                       <Button variant="outlined" color="error" onClick={() => handleDelete(file.id, file.file_url)} size="small" sx={{ borderRadius: 1 }}><DeleteIcon /></Button>
                     )}
                   </TableCell>

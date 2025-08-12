@@ -24,7 +24,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 
-const ADMIN_UID = 'ae26da15-7102-4647-8cbb-8f045491433c';
+import { isUserAdminSync } from '../utils/adminUtils';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -96,7 +96,7 @@ const Profile = () => {
       last_name: profile.last_name,
       updated_at: new Date().toISOString(),
     };
-    if (user.id === ADMIN_UID) {
+    if (isUserAdminSync(user, profile)) {
       updateObj.role = profile.role;
     }
     const { error: updateErr } = await supabase
@@ -230,7 +230,7 @@ const Profile = () => {
               ),
             }}
           />
-          {user.id === ADMIN_UID ? (
+          {isUserAdminSync(user, profile) ? (
             <TextField
               select
               label="ΡΟΛΟΣ"
@@ -249,7 +249,7 @@ const Profile = () => {
               value={profile.role || 'student'}
               fullWidth
               InputProps={{ readOnly: true }}
-              helperText={user.id === ADMIN_UID ? 'Μόνο ο admin μπορεί να αλλάξει το ρόλο.' : ''}
+              helperText={isUserAdminSync(user, profile) ? 'Μόνο ο admin μπορεί να αλλάξει το ρόλο.' : ''}
             />
           )}
           <Button
