@@ -123,3 +123,4 @@ playwright/.cache/
 
 # Sensitive files
 notes.txt
+scripts/bulk_upload.py
