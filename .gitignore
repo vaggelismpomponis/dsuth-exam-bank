@@ -120,3 +120,6 @@ playwright/.cache/
 
 # Vercel
 .vercel
+
+# Sensitive files
+notes.txt
