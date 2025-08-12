@@ -10,6 +10,7 @@ import PeopleIcon from '@mui/icons-material/People';
 import HomeIcon from '@mui/icons-material/Home';
 import BookIcon from '@mui/icons-material/Book';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import HelpIcon from '@mui/icons-material/Help';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import SchoolIcon from '@mui/icons-material/School';
@@ -26,6 +27,7 @@ const adminMenu = [
   { text: 'Διαχείριση Χρηστών', icon: <PeopleIcon />, path: '/admin/users' },
   { text: 'Διαχείριση Μαθημάτων', icon: <BookIcon />, path: '/admin/courses' },
   { text: 'Μαζικό Upload', icon: <CloudUploadIcon />, path: '/admin/upload' },
+  { text: 'Αιτήματα Αρχείων', icon: <HelpIcon />, path: '/admin/requests' },
 ];
 
 const cardBg = {

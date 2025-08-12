@@ -24,6 +24,25 @@ const periods = [
   'Επαναληπτική',
 ];
 
+// Mapping απο τιμές που μπορεί να βρίσκονται στη βάση -> ελληνικές labels UI
+const periodDisplayMap = {
+  'Ιανουάριος': 'Ιανουάριος',
+  'Ιουνιος': 'Ιούνιος',
+  'Ιούνιος': 'Ιούνιος',
+  'Σεπτέμβριος': 'Σεπτέμβριος',
+  'Σεπτεμβριος': 'Σεπτέμβριος',
+  'Επαναληπτική': 'Επαναληπτική',
+  'Epanaliptiki': 'Επαναληπτική',
+  'Xeimerino': 'Ιανουάριος',
+  'Χειμερινό': 'Ιανουάριος',
+  'Earino': 'Ιούνιος',
+  'Εαρινό': 'Ιούνιος',
+  'September': 'Σεπτέμβριος',
+  'Septemvrios': 'Σεπτέμβριος',
+};
+
+const toDisplayPeriod = (value) => periodDisplayMap[value] || value;
+
 const CourseFiles = () => {
   const { id } = useParams();
   const [course, setCourse] = useState(null);
@@ -44,12 +63,23 @@ const CourseFiles = () => {
   // Υπολογισμός μοναδικών ετών από τα αρχεία
   const yearOptions = Array.from(new Set(files.map(f => f.year))).sort((a, b) => b - a);
 
-  // Εφαρμογή φίλτρων στα αρχεία
+  // Εφαρμογή φίλτρων στα αρχεία (με κανονικοποίηση περιόδου σε ελληνικά labels)
   const filteredFiles = files.filter(f => {
+    const displayPeriod = toDisplayPeriod(f.period);
     return (
       (!yearFilter || String(f.year) === String(yearFilter)) &&
-      (!periodFilter || f.period === periodFilter)
+      (!periodFilter || displayPeriod === periodFilter)
     );
+  });
+
+  // Ταξινόμηση σε χρονολογική σειρά: έτος (αύξουσα) και εξεταστική με βάση τη σειρά στο periods
+  const getPeriodIndex = (p) => {
+    const idx = periods.indexOf(toDisplayPeriod(p));
+    return idx === -1 ? Number.MAX_SAFE_INTEGER : idx;
+  };
+  const sortedFiles = [...filteredFiles].sort((a, b) => {
+    if (a.year !== b.year) return a.year - b.year; // έτος σε αύξουσα σειρά
+    return getPeriodIndex(a.period) - getPeriodIndex(b.period); // σειρά εξεταστικής
   });
 
   useEffect(() => {
@@ -134,10 +164,9 @@ const CourseFiles = () => {
       try {
         const response = await fetch(file.file_url);
         const blob = await response.blob();
-        // Όνομα αρχείου: <course>_<year>_<period>_<id>.pdf
-        const safeCourse = (course?.name || 'file').replace(/[^a-zA-Z0-9_\-]/g, '_');
-        const filename = `${safeCourse}_${file.year}_${file.period}_${file.id}.pdf`;
-        zip.file(filename, blob);
+        // Χρησιμοποιούμε το αυθεντικό όνομα του αρχείου από το URL
+        const originalName = getFilenameFromUrl(file.file_url);
+        zip.file(originalName, blob);
       } catch (e) {}
     }));
     const content = await zip.generateAsync({ type: 'blob' });
@@ -177,27 +206,26 @@ const CourseFiles = () => {
 
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Button
-        startIcon={<ArrowBackIcon />}
-        variant="outlined"
-        color="primary"
-        onClick={() => window.history.length > 1 ? window.history.back() : window.location.assign('/courses')}
-        sx={{ mb: 2, borderRadius: 2, fontWeight: 600, textTransform: 'none' }}
-      >
-        Πίσω
-      </Button>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleDownloadAll}
-        disabled={files.length === 0 || downloadingAll}
-        sx={{ mb: 2, ml: 1, borderRadius: 2, fontWeight: 600, textTransform: 'none' }}
-      >
-        {downloadingAll ? 'Δημιουργία zip...' : 'Κατέβασμα όλων σε zip'}
-      </Button>
-      {/* Φίλτρα: Drawer για mobile, inline για desktop/tablet */}
-      {isMobile ? (
-        <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+        <Button
+          startIcon={<ArrowBackIcon />}
+          variant="outlined"
+          color="primary"
+          onClick={() => window.history.length > 1 ? window.history.back() : window.location.assign('/courses')}
+          sx={{ borderRadius: 2, fontWeight: 600, textTransform: 'none' }}
+        >
+          Πίσω
+        </Button>
+        <Button
+          variant="contained"
+          color="primary"
+          onClick={handleDownloadAll}
+          disabled={files.length === 0 || downloadingAll}
+          sx={{ borderRadius: 2, fontWeight: 600, textTransform: 'none' }}
+        >
+          {downloadingAll ? 'Δημιουργία zip...' : 'Κατέβασμα όλων σε zip'}
+        </Button>
+        {isMobile && (
           <Button
             variant="outlined"
             startIcon={<FilterListIcon />}
@@ -206,52 +234,55 @@ const CourseFiles = () => {
           >
             Φίλτρα
           </Button>
-          <Drawer
-            anchor="bottom"
-            open={filterDrawerOpen}
-            onClose={() => setFilterDrawerOpen(false)}
-            PaperProps={{ sx: { borderRadius: '18px 18px 0 0', p: 2 } }}
-          >
-            <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-              <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
-                Φίλτρα
-              </Typography>
-              <IconButton onClick={() => setFilterDrawerOpen(false)}>
-                <CloseIcon />
-              </IconButton>
-            </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <TextField
-                label="Έτος"
-                select
-                size="small"
-                value={yearFilter}
-                onChange={e => setYearFilter(e.target.value)}
-                sx={{ minWidth: 140 }}
-                helperText="Επιλέξτε έτος για να φιλτράρετε τα αρχεία"
-              >
-                <MenuItem value="">Όλα τα έτη</MenuItem>
-                {yearOptions.map(y => (
-                  <MenuItem key={y} value={y}>{y}</MenuItem>
-                ))}
-              </TextField>
-              <TextField
-                label="Εξεταστική"
-                select
-                size="small"
-                value={periodFilter}
-                onChange={e => setPeriodFilter(e.target.value)}
-                sx={{ minWidth: 170 }}
-                helperText="Επιλέξτε εξεταστική περίοδο για φιλτράρισμα"
-              >
-                <MenuItem value="">Όλες οι εξεταστικές</MenuItem>
-                {periods.map(p => (
-                  <MenuItem key={p} value={p}>{p}</MenuItem>
-                ))}
-              </TextField>
-            </Box>
-          </Drawer>
-        </Box>
+        )}
+      </Box>
+      {/* Φίλτρα: Drawer για mobile, inline για desktop/tablet */}
+      {isMobile ? (
+        <Drawer
+          anchor="bottom"
+          open={filterDrawerOpen}
+          onClose={() => setFilterDrawerOpen(false)}
+          PaperProps={{ sx: { borderRadius: '18px 18px 0 0', p: 2 } }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
+              Φίλτρα
+            </Typography>
+            <IconButton onClick={() => setFilterDrawerOpen(false)}>
+              <CloseIcon />
+            </IconButton>
+          </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
+              label="Έτος"
+              select
+              size="small"
+              value={yearFilter}
+              onChange={e => setYearFilter(e.target.value)}
+              sx={{ minWidth: 140 }}
+              helperText="Επιλέξτε έτος για να φιλτράρετε τα αρχεία"
+            >
+              <MenuItem value="">Όλα τα έτη</MenuItem>
+              {yearOptions.map(y => (
+                <MenuItem key={y} value={y}>{y}</MenuItem>
+              ))}
+            </TextField>
+            <TextField
+              label="Εξεταστική"
+              select
+              size="small"
+              value={periodFilter}
+              onChange={e => setPeriodFilter(e.target.value)}
+              sx={{ minWidth: 170 }}
+              helperText="Επιλέξτε εξεταστική περίοδο για φιλτράρισμα"
+            >
+              <MenuItem value="">Όλες οι εξεταστικές</MenuItem>
+              {periods.map(p => (
+                <MenuItem key={p} value={p}>{p}</MenuItem>
+              ))}
+            </TextField>
+          </Box>
+        </Drawer>
       ) : (
         <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 2, alignItems: { sm: 'center' } }}>
           <TextField
@@ -291,17 +322,17 @@ const CourseFiles = () => {
         <Stack spacing={2}>
           {[1,2].map(i => <Skeleton key={i} variant="rounded" height={110} />)}
         </Stack>
-      ) : filteredFiles.length === 0 ? (
+      ) : sortedFiles.length === 0 ? (
         <Box sx={{ textAlign: 'center', mt: 6 }}>
           <SentimentDissatisfiedIcon color="disabled" sx={{ fontSize: 60, mb: 1 }} />
           <Typography variant="h6" color="#222">Δεν υπάρχουν αρχεία για τα επιλεγμένα φίλτρα.</Typography>
         </Box>
       ) : isMobileOrTablet ? (
         <Stack spacing={2} sx={{ mt: 2 }}>
-          {filteredFiles.map(file => (
+          {sortedFiles.map(file => (
             <Box key={file.id} sx={{ background: '#f8fafc', boxShadow: '0 2px 12px 0 rgba(31,38,135,0.08)', borderRadius: '18px', border: '1px solid #e3eafc', p: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
               <Typography variant="body2" sx={{ fontWeight: 600 }}>Έτος: <span style={{ fontWeight: 400 }}>{file.year}</span></Typography>
-              <Typography variant="body2" sx={{ fontWeight: 600 }}>Εξεταστική: <span style={{ fontWeight: 400 }}>{file.period}</span></Typography>
+              <Typography variant="body2" sx={{ fontWeight: 600 }}>Εξεταστική: <span style={{ fontWeight: 400 }}>{toDisplayPeriod(file.period)}</span></Typography>
               <Box sx={{ mt: 1 }}>
                 <Button color="info" size="small" href={getCleanUrl(file.file_url)} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: '#e3f2fd', borderRadius: 1, '&:hover': { background: '#bbdefb' }, mr: 1 }}><VisibilityIcon /></Button>
                 <Button color="primary" size="small" onClick={() => handleDownload(getCleanUrl(file.file_url))} sx={{ textTransform: 'none', background: '#e3eafc', borderRadius: 1, '&:hover': { background: '#c5cae9' }, mr: 1 }}><DownloadIcon /></Button>
@@ -320,6 +351,7 @@ const CourseFiles = () => {
           <Table>
             <TableHead>
               <TableRow>
+                <TableCell sx={{ fontWeight: 700, color: '#222', fontSize: 16, width: 60 }}>#</TableCell>
                 <TableCell sx={{ fontWeight: 700, color: '#222', fontSize: 16 }}>Έτος</TableCell>
                 <TableCell sx={{ fontWeight: 700, color: '#222', fontSize: 16 }}>Εξεταστική</TableCell>
                 <TableCell sx={{ fontWeight: 700, color: '#222', fontSize: 16 }}>Status</TableCell>
@@ -327,10 +359,11 @@ const CourseFiles = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {filteredFiles.map(file => (
+              {sortedFiles.map((file, idx) => (
                 <TableRow key={file.id}>
+                  <TableCell>{idx + 1}</TableCell>
                   <TableCell>{file.year}</TableCell>
-                  <TableCell>{file.period}</TableCell>
+                  <TableCell>{toDisplayPeriod(file.period)}</TableCell>
                   <TableCell>
                     <Box sx={{
                       bgcolor: file.approved ? 'success.main' : 'warning.main',
