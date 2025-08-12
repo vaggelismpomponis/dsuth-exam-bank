@@ -27,5 +27,12 @@ python bulk_upload.py
 ### Configuration:
 Set the following environment variables:
 - `SUPABASE_URL`: Your Supabase project URL
-- `SUPABASE_KEY`: Your Supabase service role key
+- `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase service role key
 - `BUCKET`: The storage bucket name (default: "exams")
+
+### Setup:
+1. Copy `bulk_upload_template.py` to `bulk_upload.py`
+2. Set your environment variables
+3. Run the script
+
+**⚠️ Security Note:** The actual `bulk_upload.py` file is gitignored because it contains sensitive credentials. Always use environment variables for API keys.
