@@ -83,14 +83,9 @@ const Footer = () => (
     </Box>
     <Divider sx={{ my: 0, borderColor: 'rgba(255,255,255,0.10)' }} />
     <Box sx={{ py: 2, px: 2, background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1} alignItems="center">
-        <Typography variant="body2" color="#b0bec5" sx={{ fontWeight: 400 }}>
-          © {new Date().getFullYear()} Τράπεζα Θεμάτων UTH
-        </Typography>
-        <Typography variant="body2" color="#b0bec5" sx={{ fontWeight: 400 }}>
-          | Developed by <span style={{ color: '#90CAF9' }}>Vaggelis Mpomponis</span>
-        </Typography>
-      </Stack>
+      <Typography variant="body2" color="#b0bec5" sx={{ fontWeight: 400 }}>
+        © {new Date().getFullYear()} Τράπεζα Θεμάτων UTH
+      </Typography>
     </Box>
   </Box>
 );
