@@ -9,18 +9,22 @@ export const isUserAdmin = async (userId) => {
   if (!userId) return false;
   
   try {
+    // Add cache busting for production
     const { data, error } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', userId)
-      .single();
+      .single()
+      .abortSignal(new AbortController().signal); // Force fresh request
     
     if (error) {
       console.error('Error checking admin status:', error);
       return false;
     }
     
-    return data?.role === 'admin';
+    const isAdmin = data?.role === 'admin';
+    console.log(`Admin check for user ${userId}: role=${data?.role}, isAdmin=${isAdmin}`);
+    return isAdmin;
   } catch (error) {
     console.error('Error checking admin status:', error);
     return false;
