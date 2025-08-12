@@ -1,55 +1,96 @@
-HEAD
-# dsuth-exam-bank
+# DS UTH Exam Bank
 
-# React + Vite
+A comprehensive web application for managing and accessing exam materials for the Department of Computer Science at the University of Thessaly.
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 🚀 Features
 
-Currently, two official plugins are available:
+- **File Management**: Upload, download, and organize exam files by course and semester
+- **Course Organization**: Structured by academic years and semesters
+- **Admin Panel**: Comprehensive content management system
+- **File Requests**: Users can request missing exam materials
+- **Responsive Design**: Optimized for desktop, tablet, and mobile devices
+- **Search & Filtering**: Advanced filtering by year, semester, and exam period
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
-
-## Περιβάλλον (Supabase)
-
-Δημιούργησε ένα αρχείο `.env` στη ρίζα του project με τα παρακάτω:
+## 🏗️ Project Structure
 
 ```
-VITE_SUPABASE_URL=το_supabase_url_σου
-VITE_SUPABASE_ANON_KEY=το_anon_key_σου
+/
+├── src/                    # React application source code
+│   ├── components/         # Reusable UI components
+│   ├── pages/             # Application pages
+│   ├── utils/             # Utility functions and helpers
+│   └── assets/            # Static assets
+├── supabase/               # Supabase Edge Functions
+│   └── functions/          # Backend functions
+├── scripts/                # Utility scripts
+│   └── bulk_upload.py     # Bulk file upload script
+├── docs/                   # Project documentation
+├── public/                 # Public static assets
+└── config files            # Configuration files
 ```
 
-Τα βρίσκεις στο Supabase Project Settings > API.
+## 🛠️ Technology Stack
 
-## Development
+- **Frontend**: React 18, Material-UI (MUI), React Router
+- **Backend**: Supabase (PostgreSQL, Storage, Auth)
+- **Testing**: Vitest, React Testing Library
+- **Deployment**: Vercel
+- **Build Tool**: Vite
 
-1. Κλωνοποίησε το repo ή αντέγραψε τα αρχεία.
-2. Τρέξε `npm install` για να εγκαταστήσεις τα dependencies.
-3. Πρόσθεσε το `.env` με τα Supabase στοιχεία σου (δες παραπάνω).
-4. Τρέξε `npm run dev` για να ξεκινήσεις το τοπικό dev server.
+## 📦 Installation
 
-## GitHub
-
-Για να το ανεβάσεις στο GitHub:
-
+1. Clone the repository:
 ```bash
-git init
-git add .
-git commit -m "Initial commit"
-git branch -M main
-git remote add origin https://github.com/ΤΟ_USERNAME_ΣΟΥ/ΤΟ_REPO_ΣΟΥ.git
-git push -u origin main
+git clone https://github.com/vaggelismpomponis/dsuth-exam-bank.git
+cd dsuth-exam-bank
 ```
 
-## Deployment στο Vercel
+2. Install dependencies:
+```bash
+npm install
+```
 
-1. Κάνε import το repo στο [Vercel](https://vercel.com/).
-2. Πρόσθεσε τα περιβάλλοντα VITE_SUPABASE_URL και VITE_SUPABASE_ANON_KEY στα project settings του Vercel.
-3. Deploy!
+3. Set up environment variables:
+```bash
+cp .env.example .env
+# Edit .env with your Supabase credentials
+```
 
----
-69b4888 (fix: ensure vite is in devDependencies)
+4. Start development server:
+```bash
+npm run dev
+```
+
+## 🧪 Testing
+
+Run tests:
+```bash
+npm test
+```
+
+Run tests in watch mode:
+```bash
+npm run test:watch
+```
+
+## 🚀 Deployment
+
+The application is automatically deployed to Vercel on push to the main branch.
+
+## 📚 Documentation
+
+See the `/docs` folder for detailed documentation:
+- [Deploy Turnstile Guide](docs/deploy-turnstile.md)
+- [Scripts Documentation](scripts/README.md)
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.

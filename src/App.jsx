@@ -21,6 +21,7 @@ import AdminUpload from './pages/admin/AdminUpload';
 import RequireAdmin from './components/RequireAdmin';
 import FAQ from './pages/FAQ';
 import Privacy from './pages/Privacy';
+import Requests from './pages/Requests';
 
 const theme = createTheme({
   palette: {
@@ -41,6 +42,7 @@ const theme = createTheme({
 
 const AdminFiles = lazy(() => import('./pages/admin/AdminFiles'));
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
+const AdminRequests = lazy(() => import('./pages/admin/AdminRequests'));
 
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -84,6 +86,7 @@ function App() {
               <Route path="users" element={<Suspense fallback={<div>Loading...</div>}><AdminUsers /></Suspense>} />
               <Route path="courses" element={<AdminCourses />} />
               <Route path="upload" element={<AdminUpload />} />
+              <Route path="requests" element={<Suspense fallback={<div>Loading...</div>}><AdminRequests /></Suspense>} />
             </Route>
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />
@@ -91,6 +94,7 @@ function App() {
             <Route path="/courses/:id" element={<CourseFiles />} />
             <Route path="/faq" element={<FAQ />} />
             <Route path="/privacy" element={<Privacy />} />
+            <Route path="/requests" element={<Requests />} />
           </Routes>
         </Box>
         <Footer />

@@ -15,6 +15,7 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import PersonIcon from '@mui/icons-material/Person';
 import SecurityIcon from '@mui/icons-material/Security';
 import InfoIcon from '@mui/icons-material/Info';
+import HelpIcon from '@mui/icons-material/Help';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 
@@ -522,6 +523,70 @@ const Home = () => {
                   }}
                 >
                   Ανέβασε Αρχείο
+                </Button>
+              </CardContent>
+            </Card>
+          </Box>
+
+          {/* Αίτηση Αρχείων */}
+          <Box sx={{ display: 'flex', height: '100%' }}>
+            <Card 
+              sx={{ 
+                width: '100%',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                minHeight: 0,
+                background: 'linear-gradient(135deg, #fff8e1 0%, #fce4ec 100%)',
+                border: '1px solid #fff8e1',
+                borderRadius: 3,
+                transition: 'transform 0.2s, box-shadow 0.2s',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+                }
+              }}
+            >
+              <CardContent sx={{ p: 3, textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                <Box>
+                  <HelpIcon 
+                    sx={{ 
+                      fontSize: 48, 
+                      color: '#ff9800', 
+                      mb: 2,
+                      background: 'rgba(255, 152, 0, 0.1)',
+                      borderRadius: '50%',
+                      p: 1
+                    }} 
+                  />
+                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
+                    Αίτηση Αρχείων
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
+                    Ζητήστε αρχεία που δεν βρίσκονται στην πλατφόρμα και βοηθήστε άλλους φοιτητές
+                  </Typography>
+                </Box>
+                <Button 
+                  variant="contained" 
+                  size="medium" 
+                  href="/requests"
+                  sx={{ 
+                    backgroundColor: '#ff9800',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: '0.95rem',
+                    px: 3,
+                    py: 1.2,
+                    borderRadius: 2,
+                    border: 'none',
+                    boxShadow: '0 2px 8px rgba(255, 152, 0, 0.3)',
+                    textTransform: 'none',
+                    '&:focus': {
+                      outline: 'none'
+                    }
+                  }}
+                >
+                  Ζήτησε Αρχείο
                 </Button>
               </CardContent>
             </Card>
