@@ -169,7 +169,7 @@ const Home = () => {
       >
         <Box sx={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: 700, textAlign: { xs: 'center', md: 'left' }, mx: 'auto' }}>
           <Typography
-            variant={isMobile ? 'h5' : isTablet ? 'h3' : isUltraWide ? 'h1' : 'h2'}
+            variant={isMobile ? 'h5' : isTablet ? 'h3' : 'h2'}
             color="#212121"
             gutterBottom
             noWrap={false}
@@ -177,8 +177,9 @@ const Home = () => {
               fontWeight: 900,
               mb: 1,
               letterSpacing: '-1px',
-              fontSize: isUltraWide ? '3.2rem' : undefined,
-              whiteSpace: !isMobile ? 'nowrap' : 'normal',
+              // Keep consistent size on very large screens
+              fontSize: 'clamp(2rem, 4vw, 3rem)',
+              whiteSpace: 'normal',
               wordBreak: 'normal',
               display: 'block',
               width: '100%',
@@ -191,13 +192,13 @@ const Home = () => {
           </Typography>
           <Typography
             variant={isMobile ? 'body1' : 'h5'}
-            sx={{ mb: 2, color: '#212121', fontWeight: 600, fontSize: isUltraWide ? '1.7rem' : undefined }}
+            sx={{ mb: 2, color: '#212121', fontWeight: 600, fontSize: 'clamp(1rem, 2.2vw, 1.5rem)' }}
           >
             ΨΗΦΙΑΚΑ ΣΥΣΤΗΜΑΤΑ, ΠΑΝΕΠΙΣΤΗΜΙΟ ΘΕΣΣΑΛΙΑΣ
           </Typography>
           <Typography
             variant="body1"
-            sx={{ mb: 3, color: '#212121', maxWidth: 600, fontSize: isUltraWide ? '1.25rem' : undefined, fontWeight: 500, mx: { xs: 'auto', md: 0 } }}
+            sx={{ mb: 3, color: '#212121', maxWidth: 600, fontSize: 'clamp(0.95rem, 1.6vw, 1.125rem)', fontWeight: 500, mx: { xs: 'auto', md: 0 } }}
           >
             Βρες, κατέβασε ή μοιράσου θέματα και αρχεία προηγούμενων εξετάσεων της σχολής. Η γνώση ανήκει σε όλους!
           </Typography>
@@ -210,7 +211,7 @@ const Home = () => {
               href="/upload"
               sx={{
                 fontWeight: 700,
-                fontSize: isUltraWide ? '1.2rem' : undefined,
+                fontSize: 'clamp(1rem, 1.5vw, 1.1rem)',
                 px: 3,
                 py: 1.2,
                 borderRadius: 2,
@@ -236,7 +237,7 @@ const Home = () => {
               href="/courses"
               sx={{
                 fontWeight: 700,
-                fontSize: isUltraWide ? '1.2rem' : undefined,
+                fontSize: 'clamp(1rem, 1.5vw, 1.1rem)',
                 px: 3,
                 py: 1.2,
                 borderRadius: 2,
