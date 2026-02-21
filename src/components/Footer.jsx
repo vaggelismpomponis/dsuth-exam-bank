@@ -14,7 +14,7 @@ const Footer = () => (
     sx={{
       width: '100%',
       mt: 0,
-      bgcolor: '#f1f3f4',
+      bgcolor: 'background.default',
       borderTop: '1px solid',
       borderColor: 'divider',
     }}
@@ -37,7 +37,7 @@ const Footer = () => (
       <Box flex={1} display="flex" flexDirection="column" alignItems="flex-start" minWidth={240}>
         <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1.5 }}>
           <img src="/dsuth-favicon.png" alt="DSUth Logo" style={{ height: 48, width: 48, borderRadius: 12 }} />
-          <Typography variant="h6" sx={{ fontWeight: 700, color: '#1f1f1f', fontSize: '1.1rem' }}>
+          <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary', fontSize: '1.1rem' }}>
             DSUth Exam Bank
           </Typography>
         </Box>
@@ -48,13 +48,13 @@ const Footer = () => (
           label="Open source"
           size="small"
           variant="outlined"
-          sx={{ mt: 2, borderColor: '#dadce0', color: 'text.secondary', fontWeight: 500, fontSize: '0.75rem' }}
+          sx={{ mt: 2, borderColor: 'divider', color: 'text.secondary', fontWeight: 500, fontSize: '0.75rem' }}
         />
       </Box>
 
       {/* Links */}
       <Box flex={1} display="flex" flexDirection="column" alignItems="flex-start" minWidth={160}>
-        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, color: '#1f1f1f', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, color: 'text.primary', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           Σύνδεσμοι
         </Typography>
         <Stack spacing={1.2} alignItems="flex-start">
@@ -88,7 +88,7 @@ const Footer = () => (
 
       {/* Contact */}
       <Box flex={1} display="flex" flexDirection="column" alignItems="flex-start" minWidth={220}>
-        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, color: '#1f1f1f', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, color: 'text.primary', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           Επικοινωνία
         </Typography>
         <Stack direction="row" alignItems="center" spacing={1}>
@@ -105,7 +105,7 @@ const Footer = () => (
             target="_blank"
             rel="noopener"
             aria-label="GitHub"
-            sx={{ color: 'text.secondary', '&:hover': { color: '#1f1f1f', bgcolor: '#e8eaed' } }}
+            sx={{ color: 'text.secondary', '&:hover': { color: 'text.primary', bgcolor: 'action.hover' } }}
           >
             <GitHubIcon fontSize="small" />
           </IconButton>
@@ -114,7 +114,7 @@ const Footer = () => (
             component={Link}
             href="mailto:dsuthexambank@gmail.com"
             aria-label="Email"
-            sx={{ color: 'text.secondary', '&:hover': { color: '#1f1f1f', bgcolor: '#e8eaed' } }}
+            sx={{ color: 'text.secondary', '&:hover': { color: 'text.primary', bgcolor: 'action.hover' } }}
           >
             <EmailIcon fontSize="small" />
           </IconButton>
@@ -122,7 +122,7 @@ const Footer = () => (
       </Box>
     </Box>
 
-    <Divider sx={{ borderColor: '#dadce0' }} />
+    <Divider sx={{ borderColor: 'divider' }} />
 
     <Box sx={{ py: 2.5, px: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', maxWidth: 1100, mx: 'auto' }}>
       <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>
