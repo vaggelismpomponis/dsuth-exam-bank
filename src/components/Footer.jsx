@@ -8,96 +8,128 @@ import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import HomeIcon from '@mui/icons-material/Home';
 
-const menuLinks = [
-  { label: 'Αρχική', href: '/' },
-  { label: 'Μαθήματα', href: '/courses' },
-  { label: 'Ανέβασμα Αρχείων', href: '/upload' },
-  { label: 'Προφίλ', href: '/profile' },
-];
-
 const Footer = () => (
-  <Box component="footer" sx={{ width: '100%', mt: 0, background: 'linear-gradient(120deg, #1f2430 0%, #2b3242 100%)', color: '#fff', borderTop: 'none', boxShadow: '0 -2px 16px 0 rgba(25, 30, 50, 0.10)' }}>
+  <Box
+    component="footer"
+    sx={{
+      width: '100%',
+      mt: 0,
+      bgcolor: '#f1f3f4',
+      borderTop: '1px solid',
+      borderColor: 'divider',
+    }}
+  >
     <Box
       sx={{
         display: 'flex',
         flexDirection: { xs: 'column', md: 'row' },
-        alignItems: { xs: 'flex-start', md: 'flex-start' },
+        alignItems: 'flex-start',
         justifyContent: 'space-between',
         gap: { xs: 4, md: 6 },
         width: '100%',
-        maxWidth: 1200,
+        maxWidth: 1100,
         mx: 'auto',
         py: 5,
-        px: { xs: 2, sm: 4, md: 6 },
+        px: { xs: 3, sm: 4, md: 5 },
       }}
     >
-      {/* Contact/Logo/Description */}
-      <Box flex={1} display="flex" flexDirection="column" alignItems="flex-start" justifyContent="flex-start" minWidth={280}>
-        <Box sx={{ mb: 2, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
-          <img src="/dsuth-favicon.png" alt="DSUth Exam Bank Logo" style={{ height: 80, width: 80, borderRadius: 8, boxShadow: '0 2px 8px rgba(25,30,50,0.10)' }} />
+      {/* Brand */}
+      <Box flex={1} display="flex" flexDirection="column" alignItems="flex-start" minWidth={240}>
+        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <img src="/dsuth-favicon.png" alt="DSUth Logo" style={{ height: 48, width: 48, borderRadius: 12 }} />
+          <Typography variant="h6" sx={{ fontWeight: 700, color: '#1f1f1f', fontSize: '1.1rem' }}>
+            DSUth Exam Bank
+          </Typography>
         </Box>
-        <Typography variant="body2" sx={{ color: '#b0bec5', fontWeight: 400, maxWidth: 320, lineHeight: 1.7 }}>
-          Η Τράπεζα Θεμάτων UTH είναι μια ανοιχτή πλατφόρμα διαμοιρασμού αρχείων εξετάσεων και σημειώσεων για φοιτητές του τμήματος Ψηφιακών Συστημάτων.
+        <Typography variant="body2" sx={{ color: 'text.secondary', maxWidth: 300, lineHeight: 1.7, fontSize: '0.875rem' }}>
+          Ανοιχτή πλατφόρμα διαμοιρασμού αρχείων εξετάσεων και σημειώσεων για φοιτητές Ψηφιακών Συστημάτων UTH.
         </Typography>
-        {/* social icons moved to Contact section */}
+        <Chip
+          label="Open source"
+          size="small"
+          variant="outlined"
+          sx={{ mt: 2, borderColor: '#dadce0', color: 'text.secondary', fontWeight: 500, fontSize: '0.75rem' }}
+        />
       </Box>
-      {/* Menu */}
-      <Box flex={1} display="flex" flexDirection="column" alignItems="flex-start" justifyContent="flex-start" minWidth={200}>
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: '#fff', letterSpacing: 0.5 }}>
-          Μενού
+
+      {/* Links */}
+      <Box flex={1} display="flex" flexDirection="column" alignItems="flex-start" minWidth={160}>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, color: '#1f1f1f', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          Σύνδεσμοι
         </Typography>
         <Stack spacing={1.2} alignItems="flex-start">
-          <Link href="/" underline="hover" color="#e3eafc" sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '1rem', fontWeight: 500, '&:hover': { color: '#90caf9' } }}>
-            <HomeIcon fontSize="small" /> Αρχική
-          </Link>
-          <Link href="/courses" underline="hover" color="#e3eafc" sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '1rem', fontWeight: 500, '&:hover': { color: '#90caf9' } }}>
-            <MenuBookIcon fontSize="small" /> Μαθήματα
-          </Link>
-          <Link href="/upload" underline="hover" color="#e3eafc" sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '1rem', fontWeight: 500, '&:hover': { color: '#90caf9' } }}>
-            <UploadFileIcon fontSize="small" /> Ανέβασμα Αρχείων
-          </Link>
-          <Link href="/faq" underline="hover" color="#e3eafc" sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '1rem', fontWeight: 500, '&:hover': { color: '#90caf9' } }}>
-            <QuestionAnswerIcon fontSize="small" /> Συχνές Ερωτήσεις
-          </Link>
-          <Link href="/privacy" underline="hover" color="#e3eafc" sx={{ display: 'flex', alignItems: 'center', gap: 1, fontSize: '1rem', fontWeight: 500, '&:hover': { color: '#90caf9' } }}>
-            <LockIcon fontSize="small" /> Πολιτική Απορρήτου
-          </Link>
+          {[
+            { href: '/', icon: <HomeIcon sx={{ fontSize: 18 }} />, label: 'Αρχική' },
+            { href: '/courses', icon: <MenuBookIcon sx={{ fontSize: 18 }} />, label: 'Μαθήματα' },
+            { href: '/upload', icon: <UploadFileIcon sx={{ fontSize: 18 }} />, label: 'Ανέβασμα' },
+            { href: '/faq', icon: <QuestionAnswerIcon sx={{ fontSize: 18 }} />, label: 'FAQ' },
+            { href: '/privacy', icon: <LockIcon sx={{ fontSize: 18 }} />, label: 'Απόρρητο' },
+          ].map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              underline="none"
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1,
+                fontSize: '0.875rem',
+                fontWeight: 500,
+                color: 'text.secondary',
+                transition: 'color 0.15s',
+                '&:hover': { color: 'primary.main' },
+              }}
+            >
+              {link.icon} {link.label}
+            </Link>
+          ))}
         </Stack>
       </Box>
+
       {/* Contact */}
-      <Box flex={1} display="flex" flexDirection="column" alignItems="flex-start" justifyContent="flex-start" minWidth={280}>
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: 700, color: '#fff', letterSpacing: 0.5 }}>
+      <Box flex={1} display="flex" flexDirection="column" alignItems="flex-start" minWidth={220}>
+        <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, color: '#1f1f1f', fontSize: '0.875rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
           Επικοινωνία
         </Typography>
-        <Stack direction="row" alignItems="center" spacing={1.5}>
-          <EmailIcon sx={{ color: '#90caf9', fontSize: 24 }} />
-          <Link href="mailto:dsuthexambank@gmail.com" underline="hover" color="#90caf9" sx={{ fontWeight: 500, fontSize: '1rem', '&:hover': { color: '#e3eafc' } }}>
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <EmailIcon sx={{ color: 'text.secondary', fontSize: 18 }} />
+          <Link href="mailto:dsuthexambank@gmail.com" underline="hover" sx={{ fontWeight: 500, fontSize: '0.875rem', color: 'text.secondary', '&:hover': { color: 'primary.main' } }}>
             dsuthexambank@gmail.com
           </Link>
         </Stack>
-        {/* Social icons under Contact */}
-        <Typography variant="h6" sx={{ mt:2, fontWeight: 700, color: '#fff', letterSpacing: 0.5 }}>
-          Socials
-        </Typography>
-        <Stack direction="row" spacing={1.5}>
-          <IconButton size="small" color="inherit" component={Link} href="https://github.com/vaggelismpomponis/dsuth-exam-bank" target="_blank" rel="noopener" aria-label="GitHub" sx={{ color: '#90caf9' }}>
-            <GitHubIcon />
+        <Stack direction="row" spacing={0.5} sx={{ mt: 2 }}>
+          <IconButton
+            size="small"
+            component={Link}
+            href="https://github.com/vaggelismpomponis/dsuth-exam-bank"
+            target="_blank"
+            rel="noopener"
+            aria-label="GitHub"
+            sx={{ color: 'text.secondary', '&:hover': { color: '#1f1f1f', bgcolor: '#e8eaed' } }}
+          >
+            <GitHubIcon fontSize="small" />
           </IconButton>
-          <IconButton size="small" color="inherit" component={Link} href="mailto:dsuthexambank@gmail.com" aria-label="Email" sx={{ color: '#90caf9' }}>
-            <EmailIcon />
+          <IconButton
+            size="small"
+            component={Link}
+            href="mailto:dsuthexambank@gmail.com"
+            aria-label="Email"
+            sx={{ color: 'text.secondary', '&:hover': { color: '#1f1f1f', bgcolor: '#e8eaed' } }}
+          >
+            <EmailIcon fontSize="small" />
           </IconButton>
         </Stack>
-        <Chip label="Open source" size="small" sx={{ mt: 2, backgroundColor: 'rgba(144,202,249,0.15)', color: '#90caf9', borderColor: '#90caf9' }} variant="outlined" />
       </Box>
     </Box>
-    <Divider sx={{ my: 0, borderColor: 'rgba(255,255,255,0.10)' }} />
-    <Box sx={{ py: 3, px: 2, background: 'transparent', display: 'flex', alignItems: 'center', justifyContent: 'center', maxWidth: 1200, mx: 'auto' }}>
-      <Typography variant="body2" color="#b0bec5" sx={{ fontWeight: 400, fontSize: '0.95rem' }}>
+
+    <Divider sx={{ borderColor: '#dadce0' }} />
+
+    <Box sx={{ py: 2.5, px: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', maxWidth: 1100, mx: 'auto' }}>
+      <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.8rem' }}>
         © {new Date().getFullYear()} Τράπεζα Θεμάτων UTH
       </Typography>
-      <span />
     </Box>
   </Box>
 );
 
-export default Footer; 
+export default Footer;

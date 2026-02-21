@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, Skeleton, Select, FormControl, MenuItem, useMediaQuery } from '@mui/material';
+import { Container, Typography, Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, Skeleton, Select, FormControl, MenuItem, useMediaQuery, useTheme } from '@mui/material';
 import { supabase } from '../../supabaseClient';
 
 import { isUserAdminSync } from '../../utils/adminUtils';
@@ -12,11 +12,13 @@ const AdminUsers = () => {
   const [roleSuccess, setRoleSuccess] = useState('');
   const isMobile = useMediaQuery('(max-width:600px)');
 
+  const theme = useTheme();
+
   const cardBg = {
-    background: '#f8fafc',
-    boxShadow: '0 2px 12px 0 rgba(31,38,135,0.08)',
+    background: theme.palette.mode === 'light' ? '#f8fafc' : 'background.paper',
+    boxShadow: theme.palette.mode === 'light' ? '0 2px 12px 0 rgba(31,38,135,0.08)' : '0 4px 20px 0 rgba(0,0,0,0.4)',
     borderRadius: '18px',
-    border: '1px solid #e3eafc',
+    border: `1px solid ${theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(255,255,255,0.05)'}`,
   };
 
   useEffect(() => {
@@ -41,7 +43,7 @@ const AdminUsers = () => {
 
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" color="#111" fontWeight={700} gutterBottom align="left">
+      <Typography variant="h4" color={theme.palette.mode === 'light' ? '#111' : 'text.primary'} fontWeight={700} gutterBottom align="left">
         ΔΙΑΧΕΙΡΙΣΗ ΧΡΗΣΤΩΝ
       </Typography>
       {roleError && <Alert severity="error" sx={{ mb: 2 }}>{roleError}</Alert>}
@@ -64,7 +66,7 @@ const AdminUsers = () => {
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>Email: <span style={{ fontWeight: 400 }}>{u.email}</span></Typography>
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>Όνομα: <span style={{ fontWeight: 400 }}>{u.first_name}</span></Typography>
                 <Typography variant="body2" sx={{ fontWeight: 600 }}>Επώνυμο: <span style={{ fontWeight: 400 }}>{u.last_name}</span></Typography>
-                <FormControl size="small" fullWidth sx={{ background: '#f4f6fa', borderRadius: 1, mt: 1 }}>
+                <FormControl size="small" fullWidth sx={{ background: theme.palette.mode === 'light' ? '#f4f6fa' : 'background.default', borderRadius: 1, mt: 1 }}>
                   <Select
                     value={u.role || 'student'}
                     onChange={e => handleRoleChange(u.id, e.target.value)}
@@ -81,7 +83,7 @@ const AdminUsers = () => {
                   size="small"
                   disabled={roleSaving[u.id] || !u.role}
                   onClick={() => handleRoleSave(u.id, u.role)}
-                  sx={{ borderRadius: 1, fontWeight: 600, px: 2, background: '#e3eafc', color: '#1a237e', '&:hover': { background: '#c5cae9' }, mt: 1 }}
+                  sx={{ borderRadius: 1, fontWeight: 600, px: 2, background: theme.palette.mode === 'light' ? '#e3eafc' : 'primary.dark', color: theme.palette.mode === 'light' ? '#1a237e' : '#fff', '&:hover': { background: theme.palette.mode === 'light' ? '#c5cae9' : 'primary.main' }, mt: 1 }}
                 >
                   ΑΠΟΘΗΚΕΥΣΗ
                 </Button>
@@ -93,12 +95,12 @@ const AdminUsers = () => {
         <TableContainer component={Paper} sx={{ ...cardBg, mt: 2 }}>
           <Table>
             <TableHead>
-              <TableRow sx={{ background: '#f4f6fa' }}>
-                <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Email</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Όνομα</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Επώνυμο</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Ρόλος</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Ενέργεια</TableCell>
+              <TableRow sx={{ background: theme.palette.mode === 'light' ? '#f4f6fa' : 'background.default' }}>
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Email</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Όνομα</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Επώνυμο</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Ρόλος</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Ενέργεια</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -119,7 +121,7 @@ const AdminUsers = () => {
                     <TableCell>{u.first_name}</TableCell>
                     <TableCell>{u.last_name}</TableCell>
                     <TableCell>
-                      <FormControl size="small" fullWidth sx={{ background: '#f4f6fa', borderRadius: 1 }}>
+                      <FormControl size="small" fullWidth sx={{ background: theme.palette.mode === 'light' ? '#f4f6fa' : 'background.default', borderRadius: 1 }}>
                         <Select
                           value={u.role || 'student'}
                           onChange={e => handleRoleChange(u.id, e.target.value)}
@@ -138,7 +140,7 @@ const AdminUsers = () => {
                         size="small"
                         disabled={roleSaving[u.id] || !u.role}
                         onClick={() => handleRoleSave(u.id, u.role)}
-                        sx={{ borderRadius: 1, fontWeight: 600, px: 2, background: '#e3eafc', color: '#1a237e', '&:hover': { background: '#c5cae9' } }}
+                        sx={{ borderRadius: 1, fontWeight: 600, px: 2, background: theme.palette.mode === 'light' ? '#e3eafc' : 'primary.dark', color: theme.palette.mode === 'light' ? '#1a237e' : '#fff', '&:hover': { background: theme.palette.mode === 'light' ? '#c5cae9' : 'primary.main' } }}
                       >
                         ΑΠΟΘΗΚΕΥΣΗ
                       </Button>

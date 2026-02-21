@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, TablePagination, TextField, InputAdornment, Card, CardContent, CardActions, Stack, Skeleton, Tabs, Tab, Chip, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, useMediaQuery } from '@mui/material';
+import { Container, Typography, Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, TablePagination, TextField, InputAdornment, Card, CardContent, CardActions, Stack, Skeleton, Tabs, Tab, Chip, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, useMediaQuery, useTheme } from '@mui/material';
 import { supabase } from '../../supabaseClient';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -8,6 +8,9 @@ import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DownloadIcon from '@mui/icons-material/Download';
 import DoneIcon from '@mui/icons-material/Done';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import CloseIcon from '@mui/icons-material/Close';
+import { Capacitor } from '@capacitor/core';
 
 const AdminFiles = () => {
   const [exams, setExams] = useState([]);
@@ -22,11 +25,25 @@ const AdminFiles = () => {
   const [tab, setTab] = useState(0);
   const [confirmDelete, setConfirmDelete] = useState({ open: false, id: null, file_url: null });
 
+  const theme = useTheme();
+
   const cardBg = {
-    background: '#f8fafc',
-    boxShadow: '0 2px 12px 0 rgba(31,38,135,0.08)',
+    background: theme.palette.mode === 'light' ? '#f8fafc' : 'background.paper',
+    boxShadow: theme.palette.mode === 'light' ? '0 2px 12px 0 rgba(31,38,135,0.08)' : '0 4px 20px 0 rgba(0,0,0,0.4)',
     borderRadius: '18px',
-    border: '1px solid #e3eafc',
+    border: `1px solid ${theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(255,255,255,0.05)'}`,
+  };
+
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewFile, setPreviewFile] = useState(null);
+
+  const handleOpenPreview = (exam) => {
+    setPreviewFile(exam);
+    setPreviewOpen(true);
+  };
+  const handleClosePreview = () => {
+    setPreviewOpen(false);
+    setPreviewFile(null);
   };
 
   useEffect(() => {
@@ -108,7 +125,7 @@ const AdminFiles = () => {
 
   return (
     <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" color="#111" fontWeight={700} gutterBottom align="left">
+      <Typography variant="h4" color={theme.palette.mode === 'light' ? '#111' : 'text.primary'} fontWeight={700} gutterBottom align="left">
         ΔΙΑΧΕΙΡΙΣΗ ΑΡΧΕΙΩΝ
       </Typography>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -153,13 +170,13 @@ const AdminFiles = () => {
             <TableContainer component={Paper} sx={{ ...cardBg, boxShadow: 'none', mt: 2 }}>
               <Table>
                 <TableHead>
-                  <TableRow sx={{ background: '#f4f6fa' }}>
-                    <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Μάθημα</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Έτος</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Εξεταστική</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Uploader</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Status</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Ενέργειες</TableCell>
+                  <TableRow sx={{ background: theme.palette.mode === 'light' ? '#f4f6fa' : 'background.default' }}>
+                    <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Μάθημα</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Έτος</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Εξεταστική</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Uploader</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Status</TableCell>
+                    <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Ενέργειες</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -200,17 +217,17 @@ const AdminFiles = () => {
                 <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
                   {!exam.approved && (
                     <Tooltip title="Έγκριση">
-                      <Button color="success" size="small" onClick={() => handleApprove(exam.id)} sx={{ textTransform: 'none', background: '#e8f5e9', borderRadius: 1, '&:hover': { background: '#c8e6c9' } }}><DoneIcon /></Button>
+                      <Button color="success" size="small" onClick={() => handleApprove(exam.id)} sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#e8f5e9' : 'rgba(76, 175, 80, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#c8e6c9' : 'rgba(76, 175, 80, 0.2)' } }}><DoneIcon /></Button>
                     </Tooltip>
                   )}
                   <Tooltip title="Προβολή">
-                    <Button color="info" size="small" href={exam.file_url} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: '#e3f2fd', borderRadius: 1, '&:hover': { background: '#bbdefb' } }}><VisibilityIcon /></Button>
+                    <Button color="info" size="small" onClick={() => handleOpenPreview(exam)} sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#e3f2fd' : 'rgba(33, 150, 243, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#bbdefb' : 'rgba(33, 150, 243, 0.2)' } }}><VisibilityIcon /></Button>
                   </Tooltip>
                   <Tooltip title="Διαγραφή">
-                    <Button color="error" size="small" onClick={() => handleOpenDelete(exam.id, exam.file_url)} sx={{ textTransform: 'none', background: '#ffebee', borderRadius: 1, '&:hover': { background: '#ffcdd2' } }}><DeleteIcon /></Button>
+                    <Button color="error" size="small" onClick={() => handleOpenDelete(exam.id, exam.file_url)} sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#ffebee' : 'rgba(244, 67, 54, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#ffcdd2' : 'rgba(244, 67, 54, 0.2)' } }}><DeleteIcon /></Button>
                   </Tooltip>
                   <Tooltip title="Λήψη">
-                    <Button color="primary" size="small" href={exam.file_url} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: '#e3eafc', borderRadius: 1, '&:hover': { background: '#c5cae9' } }}><DownloadIcon /></Button>
+                    <Button color="primary" size="small" href={exam.file_url} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(25, 118, 210, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#c5cae9' : 'rgba(25, 118, 210, 0.2)' } }}><DownloadIcon /></Button>
                   </Tooltip>
                 </Stack>
               </Box>
@@ -221,13 +238,13 @@ const AdminFiles = () => {
         <TableContainer component={Paper} sx={{ ...cardBg, boxShadow: 'none', mt: 2 }}>
           <Table>
             <TableHead>
-              <TableRow sx={{ background: '#f4f6fa' }}>
-                <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Μάθημα</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Έτος</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Εξεταστική</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Uploader</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16 }}>Ενέργειες</TableCell>
+              <TableRow sx={{ background: theme.palette.mode === 'light' ? '#f4f6fa' : 'background.default' }}>
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Μάθημα</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Έτος</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Εξεταστική</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Uploader</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Status</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Ενέργειες</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -254,17 +271,17 @@ const AdminFiles = () => {
                       <Stack direction="row" spacing={1}>
                         {!exam.approved && (
                           <Tooltip title="Έγκριση">
-                            <Button color="success" size="small" onClick={() => handleApprove(exam.id)} sx={{ textTransform: 'none', background: '#e8f5e9', borderRadius: 1, '&:hover': { background: '#c8e6c9' } }}><DoneIcon /></Button>
+                            <Button color="success" size="small" onClick={() => handleApprove(exam.id)} sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#e8f5e9' : 'rgba(76, 175, 80, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#c8e6c9' : 'rgba(76, 175, 80, 0.2)' } }}><DoneIcon /></Button>
                           </Tooltip>
                         )}
                         <Tooltip title="Προβολή">
-                          <Button color="info" size="small" href={exam.file_url} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: '#e3f2fd', borderRadius: 1, '&:hover': { background: '#bbdefb' } }}><VisibilityIcon /></Button>
+                          <Button color="info" size="small" onClick={() => handleOpenPreview(exam)} sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#e3f2fd' : 'rgba(33, 150, 243, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#bbdefb' : 'rgba(33, 150, 243, 0.2)' } }}><VisibilityIcon /></Button>
                         </Tooltip>
                         <Tooltip title="Διαγραφή">
-                          <Button color="error" size="small" onClick={() => handleOpenDelete(exam.id, exam.file_url)} sx={{ textTransform: 'none', background: '#ffebee', borderRadius: 1, '&:hover': { background: '#ffcdd2' } }}><DeleteIcon /></Button>
+                          <Button color="error" size="small" onClick={() => handleOpenDelete(exam.id, exam.file_url)} sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#ffebee' : 'rgba(244, 67, 54, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#ffcdd2' : 'rgba(244, 67, 54, 0.2)' } }}><DeleteIcon /></Button>
                         </Tooltip>
                         <Tooltip title="Λήψη">
-                          <Button color="primary" size="small" href={exam.file_url} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: '#e3eafc', borderRadius: 1, '&:hover': { background: '#c5cae9' } }}><DownloadIcon /></Button>
+                          <Button color="primary" size="small" href={exam.file_url} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(25, 118, 210, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#c5cae9' : 'rgba(25, 118, 210, 0.2)' } }}><DownloadIcon /></Button>
                         </Tooltip>
                       </Stack>
                     </TableCell>
@@ -290,6 +307,33 @@ const AdminFiles = () => {
         <DialogActions>
           <Button onClick={handleCloseDelete} sx={{ textTransform: 'none' }}>Ακύρωση</Button>
           <Button onClick={handleConfirmDelete} color="error" sx={{ textTransform: 'none' }}>Διαγραφή</Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={previewOpen} onClose={handleClosePreview} fullWidth maxWidth="md" PaperProps={{ sx: { ...cardBg, p: 2, height: '80vh' } }}>
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 700 }}>{previewFile?.course} ({previewFile?.period} {previewFile?.year})</Typography>
+          <IconButton onClick={handleClosePreview}><CloseIcon /></IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ p: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+          {previewFile && (
+            <Box sx={{ flex: 1, width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', bgcolor: 'background.default', borderRadius: 2 }}>
+              {previewFile.file_url.match(/\.(jpg|jpeg|png|gif)$/i) ? (
+                <Box component="img" src={previewFile.file_url} sx={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
+              ) : previewFile.file_url.match(/\.pdf$/i) && !Capacitor.isNativePlatform() ? (
+                <Box component="iframe" src={`${previewFile.file_url}#toolbar=0`} sx={{ width: '100%', height: '100%', border: 'none' }} />
+              ) : (
+                <Stack spacing={2} alignItems="center">
+                  <InsertDriveFileIcon sx={{ fontSize: 60, color: 'primary.main' }} />
+                  <Typography variant="body1">Δεν υποστηρίζεται ζωντανή προβολή για αυτόν τον τύπο αρχείου στη συσκευή σου.</Typography>
+                  <Button variant="contained" href={previewFile.file_url} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', borderRadius: 2 }}>Λήψη Αρχείου</Button>
+                </Stack>
+              )}
+            </Box>
+          )}
+        </DialogContent>
+        <DialogActions sx={{ pt: 2 }}>
+          <Button onClick={handleClosePreview} sx={{ textTransform: 'none', fontWeight: 600 }}>Κλείσιμο</Button>
         </DialogActions>
       </Dialog>
     </Container>

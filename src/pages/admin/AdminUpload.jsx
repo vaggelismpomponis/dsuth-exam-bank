@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Box, Button, TextField, MenuItem, Alert, CircularProgress, Stack, Skeleton, Card, CardContent } from '@mui/material';
+import { Container, Typography, Box, Button, TextField, MenuItem, Alert, CircularProgress, Stack, Skeleton, Card, CardContent, Autocomplete } from '@mui/material';
 import { supabase } from '../../supabaseClient';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import { convertToPdf } from '../../utils/pdfConversion';
+import { Capacitor } from '@capacitor/core';
 
 const periods = [
   'Ιανουάριος',
@@ -42,6 +45,19 @@ const AdminUpload = () => {
   const [courses, setCourses] = useState([]);
   const [coursesLoading, setCoursesLoading] = useState(true);
   const [dragActive, setDragActive] = useState(false);
+  const [conversionMessage, setConversionMessage] = useState('');
+  const [filePreviews, setFilePreviews] = useState({});
+
+  useEffect(() => {
+    const urls = {};
+    files.forEach(f => {
+      urls[f.name] = URL.createObjectURL(f);
+    });
+    setFilePreviews(urls);
+    return () => {
+      Object.values(urls).forEach(url => URL.revokeObjectURL(url));
+    };
+  }, [files]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -152,9 +168,28 @@ const AdminUpload = () => {
     const names = new Set(oldFiles.map(f => f.name));
     return [...oldFiles, ...newFiles.filter(f => !names.has(f.name))];
   };
+  const handleFilesSelection = async (fileList) => {
+    const filtered = filterFiles(fileList);
+    if (filtered.length === 0) return;
+
+    setConversionMessage(`Αρχικοποίηση μετατροπής για ${filtered.length} αρχεία...`);
+    const processedFiles = [];
+
+    for (let i = 0; i < filtered.length; i++) {
+      const file = filtered[i];
+      const progressPrefix = `[${i + 1}/${filtered.length}]`;
+      const processed = await convertToPdf(file, (msg) => setConversionMessage(`${progressPrefix} ${msg}`));
+      processedFiles.push(processed);
+    }
+
+    setFiles(prev => mergeFiles(prev, processedFiles));
+    setConversionMessage('');
+  };
+
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (conversionMessage) return; // disable drag while converting
     if (e.type === 'dragenter' || e.type === 'dragover') {
       setDragActive(true);
     } else if (e.type === 'dragleave') {
@@ -164,15 +199,18 @@ const AdminUpload = () => {
   const handleDrop = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    if (conversionMessage) return;
     setDragActive(false);
     if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      const filtered = filterFiles(e.dataTransfer.files);
-      setFiles(prev => mergeFiles(prev, filtered));
+      handleFilesSelection(e.dataTransfer.files);
     }
   };
   const handleFileInput = (e) => {
-    const filtered = filterFiles(e.target.files);
-    setFiles(prev => mergeFiles(prev, filtered));
+    if (e.target.files && e.target.files.length > 0) {
+      handleFilesSelection(e.target.files);
+    }
+    // reset input value so the same files can be selected again if removed
+    e.target.value = null;
   };
 
   return (
@@ -218,27 +256,29 @@ const AdminUpload = () => {
                   <MenuItem key={i + 1} value={i + 1}>{i + 1}ο Εξάμηνο</MenuItem>
                 ))}
               </TextField>
-              <TextField
-                label="ΜΑΘΗΜΑ"
-                select
+              <Autocomplete
                 fullWidth
-                value={course}
-                onChange={e => setCourse(e.target.value)}
-                disabled={coursesLoading || !semester}
-                helperText={
-                  coursesLoading
-                    ? 'Φόρτωση μαθημάτων...'
-                    : !semester
-                    ? 'Επίλεξε πρώτα εξάμηνο.'
-                    : filteredCourses.length === 0
-                    ? 'Δεν υπάρχουν διαθέσιμα μαθήματα για το εξάμηνο.'
-                    : ''
-                }
-              >
-                {filteredCourses.map((c) => (
-                  <MenuItem key={c.id} value={c.name}>{c.name}</MenuItem>
-                ))}
-              </TextField>
+                disabled={coursesLoading || !semester || filteredCourses.length === 0}
+                options={filteredCourses.map(c => c.name)}
+                value={course || null}
+                onChange={(e, newValue) => setCourse(newValue || '')}
+                isOptionEqualToValue={(option, value) => option === value}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="ΜΑΘΗΜΑ"
+                    helperText={
+                      coursesLoading
+                        ? 'Φόρτωση μαθημάτων...'
+                        : !semester
+                          ? 'Επίλεξε πρώτα εξάμηνο.'
+                          : filteredCourses.length === 0
+                            ? 'Δεν υπάρχουν διαθέσιμα μαθήματα για το εξάμηνο.'
+                            : ''
+                    }
+                  />
+                )}
+              />
               <TextField
                 label="ΕΤΟΣ ΑΡΧΕΙΟΥ"
                 type="number"
@@ -258,38 +298,47 @@ const AdminUpload = () => {
                 ))}
               </TextField>
               {/* Drag & Drop area */}
-              <Box
-                onDragEnter={handleDrag}
-                onDragOver={handleDrag}
-                onDragLeave={handleDrag}
-                onDrop={handleDrop}
-                sx={{
-                  border: dragActive ? '2px solid #1976d2' : '2px dashed #90caf9',
-                  borderRadius: 2,
-                  p: 3,
-                  textAlign: 'center',
-                  background: dragActive ? 'rgba(25, 118, 210, 0.08)' : 'transparent',
-                  color: '#1976d2',
-                  fontWeight: 600,
-                  mb: 1.5,
-                  cursor: 'pointer',
-                  transition: 'border 0.2s, background 0.2s',
-                  outline: 'none',
-                  userSelect: 'none',
-                }}
-                tabIndex={0}
-                onClick={() => document.getElementById('admin-upload-input').click()}
-              >
-                Σύρε εδώ τα αρχεία ή κάνε κλικ για επιλογή
-                <input
-                  id="admin-upload-input"
-                  type="file"
-                  multiple
-                  hidden
-                  onChange={handleFileInput}
-                  accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-                />
-              </Box>
+              {conversionMessage ? (
+                <Stack direction="column" alignItems="center" justifyContent="center" spacing={2} sx={{ py: 4, mb: 1.5, border: '2px solid #1976d2', borderRadius: 2, bgcolor: 'rgba(25, 118, 210, 0.04)' }}>
+                  <CircularProgress size={32} />
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main', textAlign: 'center' }}>
+                    {conversionMessage}
+                  </Typography>
+                </Stack>
+              ) : (
+                <Box
+                  onDragEnter={handleDrag}
+                  onDragOver={handleDrag}
+                  onDragLeave={handleDrag}
+                  onDrop={handleDrop}
+                  sx={{
+                    border: dragActive ? '2px solid #1976d2' : '2px dashed #90caf9',
+                    borderRadius: 2,
+                    p: 3,
+                    textAlign: 'center',
+                    background: dragActive ? 'rgba(25, 118, 210, 0.08)' : 'transparent',
+                    color: '#1976d2',
+                    fontWeight: 600,
+                    mb: 1.5,
+                    cursor: 'pointer',
+                    transition: 'border 0.2s, background 0.2s',
+                    outline: 'none',
+                    userSelect: 'none',
+                  }}
+                  tabIndex={0}
+                  onClick={() => document.getElementById('admin-upload-input').click()}
+                >
+                  Σύρε εδώ τα αρχεία ή κάνε κλικ για επιλογή
+                  <input
+                    id="admin-upload-input"
+                    type="file"
+                    multiple
+                    hidden
+                    onChange={handleFileInput}
+                    accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
+                  />
+                </Box>
+              )}
               {/* Εναλλακτικό κουμπί επιλογής */}
               <Button
                 variant="contained"
@@ -297,6 +346,7 @@ const AdminUpload = () => {
                 startIcon={<UploadFileIcon />}
                 sx={{ fontWeight: 700, borderRadius: 2 }}
                 color="primary"
+                disabled={!!conversionMessage}
               >
                 Επιλογή Αρχείων
                 <input
@@ -308,8 +358,24 @@ const AdminUpload = () => {
                 />
               </Button>
               {files.length > 0 && (
-                <Box sx={{ fontSize: 14, color: '#1976d2', fontWeight: 500 }}>
-                  {files.length} αρχεία επιλεγμένα: {files.map(f => f.name).join(', ')}
+                <Box sx={{ mt: 1 }}>
+                  <Typography variant="subtitle2" sx={{ mb: 1, color: '#1976d2', fontWeight: 600 }}>
+                    {files.length} αρχεία επιλεγμένα:
+                  </Typography>
+                  <Stack spacing={1.5}>
+                    {files.map(f => (
+                      <Box key={f.name} sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+                        {f.type.startsWith('image/') ? (
+                          <Box component="img" src={filePreviews[f.name]} sx={{ maxHeight: 150, maxWidth: '100%', objectFit: 'contain', borderRadius: 1 }} />
+                        ) : f.type === 'application/pdf' && !Capacitor.isNativePlatform() ? (
+                          <Box component="iframe" src={`${filePreviews[f.name]}#toolbar=0`} sx={{ width: '100%', height: 250, border: 'none', borderRadius: 1 }} />
+                        ) : (
+                          <InsertDriveFileIcon sx={{ color: 'primary.main', fontSize: 40, alignSelf: 'center', my: 2 }} />
+                        )}
+                        <Typography variant="body2" sx={{ fontWeight: 500, wordBreak: 'break-all' }}>{f.name}</Typography>
+                      </Box>
+                    ))}
+                  </Stack>
                 </Box>
               )}
               <Button

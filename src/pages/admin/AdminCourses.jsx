@@ -5,25 +5,17 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
 import { supabase } from '../../supabaseClient';
 
-const cardBg = {
-  background: '#f8fafc',
-  boxShadow: '0 2px 12px 0 rgba(31,38,135,0.08)',
-  borderRadius: '18px',
-  border: '1px solid #e3eafc',
-};
-
 const AdminCourses = () => {
-  const [courses, setCourses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [editCourse, setEditCourse] = useState(null);
-  const [courseName, setCourseName] = useState('');
-  const [courseSemester, setCourseSemester] = useState(1);
-  const [saving, setSaving] = useState(false);
-
   const theme = useTheme();
+
+  const cardBg = {
+    background: theme.palette.mode === 'light' ? '#f8fafc' : 'background.paper',
+    boxShadow: theme.palette.mode === 'light' ? '0 2px 12px 0 rgba(31,38,135,0.08)' : '0 4px 20px 0 rgba(0,0,0,0.4)',
+    borderRadius: '18px',
+    border: `1px solid ${theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(255,255,255,0.05)'}`,
+  };
+
+  const [saving, setSaving] = useState(false);
   const isMobileOrTablet = useMediaQuery('(max-width:899px)');
 
   const fetchCourses = async () => {
@@ -95,7 +87,7 @@ const AdminCourses = () => {
   return (
     <Container maxWidth="sm" sx={{ mt: 4, mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
       <Box sx={{ width: '100%', maxWidth: 600, ...cardBg, p: { xs: 2, sm: 4 }, mb: 2 }}>
-        <Typography variant="h4" color="#212121" fontWeight={700} gutterBottom align="left" sx={{ letterSpacing: 1, textTransform: 'none' }}>
+        <Typography variant="h4" color={theme.palette.mode === 'light' ? '#212121' : 'text.primary'} fontWeight={700} gutterBottom align="left" sx={{ letterSpacing: 1, textTransform: 'none' }}>
           Διαχείριση Μαθημάτων
         </Typography>
         {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
@@ -124,10 +116,10 @@ const AdminCourses = () => {
           <TableContainer component={Paper} sx={{ ...cardBg, boxShadow: 'none', mt: 2 }}>
             <Table>
               <TableHead>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16, textTransform: 'none' }}>Όνομα Μαθήματος</TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16, textTransform: 'none' }}>Εξάμηνο</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 700, color: '#1a237e', fontSize: 16, textTransform: 'none' }}>Ενέργειες</TableCell>
+                <TableRow sx={{ background: theme.palette.mode === 'light' ? '#f4f6fa' : 'background.default' }}>
+                  <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16, textTransform: 'none' }}>Όνομα Μαθήματος</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16, textTransform: 'none' }}>Εξάμηνο</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16, textTransform: 'none' }}>Ενέργειες</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -151,7 +143,7 @@ const AdminCourses = () => {
         )}
       </Box>
       <Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth maxWidth="xs" PaperProps={{ sx: { ...cardBg, p: 2 } }}>
-        <DialogTitle sx={{ fontWeight: 700, color: '#1a237e', textAlign: 'center', textTransform: 'none' }}>{editCourse ? 'Επεξεργασία Μαθήματος' : 'Προσθήκη Μαθήματος'}</DialogTitle>
+        <DialogTitle sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', textAlign: 'center', textTransform: 'none' }}>{editCourse ? 'Επεξεργασία Μαθήματος' : 'Προσθήκη Μαθήματος'}</DialogTitle>
         <DialogContent>
           <TextField
             label="Όνομα Μαθήματος"

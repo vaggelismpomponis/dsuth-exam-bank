@@ -1,20 +1,23 @@
+/* ── DSUth Exam Bank — Global Styles ── */
+
 :root {
-  font-family: Roboto, Arial, sans-serif;
-  line-height: 1.5;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
   font-weight: 400;
-  color-scheme: light; /* pin to light to avoid UA dark overrides */
-  color: #213547;
-  background-color: #ffffff;
+  color-scheme: light dark;
+  color: #1f1f1f;
+  background-color: #f8fafb;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
+/* ── Reset ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
@@ -22,39 +25,44 @@ body {
   min-width: 320px;
   min-height: 100dvh;
   width: 100vw;
-  height: 100dvh;
 }
 
-h1 {
-  font-size: clamp(2rem, 4vw, 3rem);
-  line-height: 1.1;
-}
-
-/* Let component libraries style buttons; avoid global overrides that differ per browser */
-
-/* Remove prefers-color-scheme overrides to keep consistent visuals */
-
-#root {
-  width: 100vw;
-  min-height: 100dvh;
-  height: 100%;
-}
-
-html, body {
+html,
+body {
   overflow-x: hidden !important;
   width: 100vw;
 }
 
-.navbar-title {
-  color: #fff !important;
+#root {
+  width: 100vw;
+  min-height: 100dvh;
 }
 
-/* Remove gray selection highlight globally */
-*::selection {
-  background: transparent;
-  color: inherit;
+/* ── Typography ── */
+h1 {
+  font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+  line-height: 1.2;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
+a {
+  font-weight: 500;
+  color: #1a73e8;
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* ── Selection ── */
+::selection {
+  background: #d2e3fc;
+  color: #1f1f1f;
+}
+
+/* ── Autofill fix ── */
 input:-webkit-autofill,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:hover,
@@ -65,48 +73,60 @@ textarea:-webkit-autofill:hover,
 textarea:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 1000px #fff inset !important;
   box-shadow: 0 0 0 1000px #fff inset !important;
-  -webkit-text-fill-color: #222 !important;
-  color: #222 !important;
+  -webkit-text-fill-color: #1f1f1f !important;
   transition: background-color 5000s ease-in-out 0s;
 }
 
-::selection {
-  background: #b3d4fc;
-  color: #212121;
+/* ── Dark-mode autofill fix ── */
+[data-mui-color-scheme="dark"] input:-webkit-autofill,
+[data-mui-color-scheme="dark"] input:-webkit-autofill:focus,
+[data-mui-color-scheme="dark"] input:-webkit-autofill:hover,
+[data-mui-color-scheme="dark"] input:-webkit-autofill:active,
+[data-mui-color-scheme="dark"] textarea:-webkit-autofill,
+[data-mui-color-scheme="dark"] textarea:-webkit-autofill:focus,
+[data-mui-color-scheme="dark"] textarea:-webkit-autofill:hover,
+[data-mui-color-scheme="dark"] textarea:-webkit-autofill:active,
+.MuiInputBase-root.dark-autofill input:-webkit-autofill,
+body.dark-mode input:-webkit-autofill,
+body.dark-mode input:-webkit-autofill:focus,
+body.dark-mode input:-webkit-autofill:hover,
+body.dark-mode input:-webkit-autofill:active,
+body.dark-mode textarea:-webkit-autofill,
+body.dark-mode textarea:-webkit-autofill:focus,
+body.dark-mode textarea:-webkit-autofill:hover,
+body.dark-mode textarea:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px #2d2e30 inset !important;
+  box-shadow: 0 0 0 1000px #2d2e30 inset !important;
+  -webkit-text-fill-color: #e8eaed !important;
+  transition: background-color 5000s ease-in-out 0s;
 }
 
-/* Center text and center the Snackbar itself horizontally */
-.notistack-Snackbar, .SnackbarContent-root {
-  text-align: center !important;
+/* ── Scrollbar (Webkit) ── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
 }
 
-/* Center the Snackbar container horizontally */
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c4c7c9;
+  border-radius: 100px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #9aa0a6;
+}
+
+/* ── Snackbar centering ── */
 .notistack-Snackbar {
   left: 50% !important;
   transform: translateX(-50%) !important;
   right: auto !important;
 }
 
-@media (max-width: 600px) {
-  .notistack-Snackbar, .SnackbarContent-root, .MuiSnackbarContent-root {
-    min-width: 55vw !important;
-    max-width: 55vw !important;
-    width: 95vw !important;
-    box-sizing: border-box !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    right: auto !important;
-    padding-left: 8px !important;
-    padding-right: 8px !important;
-  }
-  .MuiSnackbarContent-message {
-    gap: 0.4em !important;
-    padding-left: 0.2em !important;
-    padding-right: 0.2em !important;
-  }
-}
-
-/* Center content (icon and text) inside the Snackbar */
 .SnackbarContent-root,
 .MuiSnackbarContent-root,
 .notistack-SnackbarContent {
@@ -114,12 +134,29 @@ textarea:-webkit-autofill:active {
   align-items: center !important;
   justify-content: center !important;
   text-align: center !important;
+  border-radius: 12px !important;
 }
 
-/* Center only the Snackbar message text, regardless of icon */
 .MuiSnackbarContent-message {
   width: 100%;
   justify-content: center;
   display: flex;
   text-align: center;
+}
+
+@media (max-width: 600px) {
+
+  .notistack-Snackbar,
+  .SnackbarContent-root,
+  .MuiSnackbarContent-root {
+    min-width: 55vw !important;
+    max-width: 90vw !important;
+    width: 90vw !important;
+    box-sizing: border-box !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    right: auto !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
 }
