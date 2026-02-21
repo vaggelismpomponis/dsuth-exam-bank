@@ -1,50 +1,38 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
-import { Container, Typography, Box, Card, CardContent, CardActions, Button, Skeleton, Stack, Alert, Tooltip, Avatar, useTheme, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, useMediaQuery, TextField, MenuItem, Drawer, IconButton } from '@mui/material';
-import PictureAsPdfRoundedIcon from '@mui/icons-material/PictureAsPdfRounded';
+import { useParams, useNavigate } from 'react-router-dom';
+import { Container, Typography, Box, Button, Skeleton, Stack, Alert, Tooltip, Chip, useTheme, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, useMediaQuery, TextField, MenuItem, Drawer, IconButton, Snackbar } from '@mui/material';
+import DescriptionIcon from '@mui/icons-material/Description';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
-import PersonIcon from '@mui/icons-material/Person';
 import SentimentDissatisfiedIcon from '@mui/icons-material/SentimentDissatisfied';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import CloseIcon from '@mui/icons-material/Close';
+import FolderZipIcon from '@mui/icons-material/FolderZip';
+import ShareIcon from '@mui/icons-material/Share';
 import { supabase } from '../supabaseClient';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
+import { downloadFile, shareFile } from '../utils/nativeDownload';
 
-import { isUserAdminSync } from '../utils/adminUtils';
+const periods = ['Ιανουάριος', 'Ιούνιος', 'Σεπτέμβριος', 'Επαναληπτική'];
 
-const periods = [
-  'Ιανουάριος',
-  'Ιούνιος',
-  'Σεπτέμβριος',
-  'Επαναληπτική',
-];
-
-// Mapping απο τιμές που μπορεί να βρίσκονται στη βάση -> ελληνικές labels UI
 const periodDisplayMap = {
   'Ιανουάριος': 'Ιανουάριος',
-  'Ιουνιος': 'Ιούνιος',
-  'Ιούνιος': 'Ιούνιος',
-  'Σεπτέμβριος': 'Σεπτέμβριος',
-  'Σεπτεμβριος': 'Σεπτέμβριος',
-  'Επαναληπτική': 'Επαναληπτική',
-  'Epanaliptiki': 'Επαναληπτική',
-  'Xeimerino': 'Ιανουάριος',
-  'Χειμερινό': 'Ιανουάριος',
-  'Earino': 'Ιούνιος',
-  'Εαρινό': 'Ιούνιος',
-  'September': 'Σεπτέμβριος',
-  'Septemvrios': 'Σεπτέμβριος',
+  'Ιουνιος': 'Ιούνιος', 'Ιούνιος': 'Ιούνιος',
+  'Σεπτέμβριος': 'Σεπτέμβριος', 'Σεπτεμβριος': 'Σεπτέμβριος',
+  'Επαναληπτική': 'Επαναληπτική', 'Epanaliptiki': 'Επαναληπτική',
+  'Xeimerino': 'Ιανουάριος', 'Χειμερινό': 'Ιανουάριος',
+  'Earino': 'Ιούνιος', 'Εαρινό': 'Ιούνιος',
+  'September': 'Σεπτέμβριος', 'Septemvrios': 'Σεπτέμβριος',
 };
-
 const toDisplayPeriod = (value) => periodDisplayMap[value] || value;
 
 const CourseFiles = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [course, setCourse] = useState(null);
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -61,11 +49,11 @@ const CourseFiles = () => {
   const [periodFilter, setPeriodFilter] = useState('');
   const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
   const isMobile = useMediaQuery('(max-width:599px)');
+  const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const showNotification = (message, severity = 'success') => setSnackbar({ open: true, message, severity });
 
-  // Υπολογισμός μοναδικών ετών από τα αρχεία
   const yearOptions = Array.from(new Set(files.map(f => f.year))).sort((a, b) => b - a);
 
-  // Εφαρμογή φίλτρων στα αρχεία (με κανονικοποίηση περιόδου σε ελληνικά labels)
   const filteredFiles = files.filter(f => {
     const displayPeriod = toDisplayPeriod(f.period);
     return (
@@ -74,14 +62,10 @@ const CourseFiles = () => {
     );
   });
 
-  // Ταξινόμηση σε χρονολογική σειρά: έτος (αύξουσα) και εξεταστική με βάση τη σειρά στο periods
-  const getPeriodIndex = (p) => {
-    const idx = periods.indexOf(toDisplayPeriod(p));
-    return idx === -1 ? Number.MAX_SAFE_INTEGER : idx;
-  };
+  const getPeriodIndex = (p) => { const idx = periods.indexOf(toDisplayPeriod(p)); return idx === -1 ? Number.MAX_SAFE_INTEGER : idx; };
   const sortedFiles = [...filteredFiles].sort((a, b) => {
-    if (a.year !== b.year) return a.year - b.year; // έτος σε αύξουσα σειρά
-    return getPeriodIndex(a.period) - getPeriodIndex(b.period); // σειρά εξεταστικής
+    if (a.year !== b.year) return a.year - b.year;
+    return getPeriodIndex(a.period) - getPeriodIndex(b.period);
   });
 
   useEffect(() => {
@@ -89,45 +73,33 @@ const CourseFiles = () => {
       const { data } = await supabase.auth.getSession();
       const currentUser = data?.session?.user || null;
       setUser(currentUser);
-      
       if (currentUser) {
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', currentUser.id)
-          .single();
+        const { data: profileData } = await supabase.from('profiles').select('*').eq('id', currentUser.id).single();
         setProfile(profileData);
         setIsAdmin(profileData?.role === 'admin');
       }
     };
-    
     fetchUserData();
   }, []);
 
   useEffect(() => {
     const fetchData = async () => {
-      setLoading(true);
-      setError('');
-      // Fetch course
+      setLoading(true); setError('');
       const { data: courseData, error: courseError } = await supabase.from('courses').select('*').eq('id', id).single();
       if (courseError) { setError('Σφάλμα ανάκτησης μαθήματος'); setLoading(false); return; }
       setCourse(courseData);
-      // Fetch files
       let query = supabase.from('exams').select('*').eq('course', courseData.name).order('created_at', { ascending: false });
       if (!user || !isAdmin) query = query.eq('approved', true);
       const { data: filesData, error: filesError } = await query;
       if (filesError) { setError('Σφάλμα ανάκτησης αρχείων'); setLoading(false); return; }
       setFiles(filesData);
-      // Fetch uploader names
       const uploaderIds = [...new Set((filesData || []).map(f => f.uploader).filter(Boolean))];
       if (uploaderIds.length > 0) {
         const { data: uploaderProfiles } = await supabase.from('profiles').select('id,first_name,last_name,email').in('id', uploaderIds);
         if (uploaderProfiles) {
           const map = {};
           uploaderProfiles.forEach(u => {
-            map[u.id] = (u.first_name || u.last_name)
-              ? `${u.first_name || ''} ${u.last_name || ''}`.trim()
-              : (u.email || u.id);
+            map[u.id] = (u.first_name || u.last_name) ? `${u.first_name || ''} ${u.last_name || ''}`.trim() : (u.email || u.id);
           });
           setUploaders(map);
         }
@@ -137,21 +109,8 @@ const CourseFiles = () => {
     fetchData();
   }, [id, user]);
 
-  // Scroll to top immediately when route changes (id changes)
-  useEffect(() => {
-    window.scrollTo(0, 0);
-    document.documentElement.scrollTop = 0;
-    document.body.scrollTop = 0;
-  }, [id]);
-
-  // Scroll to top after data is loaded (try all possible roots)
-  useEffect(() => {
-    if (!loading) {
-      window.scrollTo(0, 0);
-      document.documentElement.scrollTop = 0;
-      document.body.scrollTop = 0;
-    }
-  }, [loading]);
+  useEffect(() => { window.scrollTo(0, 0); }, [id]);
+  useEffect(() => { if (!loading) window.scrollTo(0, 0); }, [loading]);
 
   const handleApprove = async (fileId) => {
     setError(''); setSuccess('');
@@ -159,14 +118,11 @@ const CourseFiles = () => {
     if (error) setError('Σφάλμα έγκρισης: ' + error.message);
     else { setSuccess('Εγκρίθηκε!'); setFiles(files => files.map(f => f.id === fileId ? { ...f, approved: true } : f)); }
   };
+
   const handleDelete = async (fileId, file_url) => {
     setError(''); setSuccess('');
-    // Διαγραφή από storage
     const filePath = file_url.split('/exams/')[1];
-    if (filePath) {
-      await supabase.storage.from('exams').remove([filePath]);
-    }
-    // Διαγραφή από DB
+    if (filePath) await supabase.storage.from('exams').remove([filePath]);
     const { error } = await supabase.from('exams').delete().eq('id', fileId);
     if (error) setError('Σφάλμα διαγραφής: ' + error.message);
     else { setSuccess('Διαγράφηκε!'); setFiles(files => files.filter(f => f.id !== fileId)); }
@@ -175,236 +131,235 @@ const CourseFiles = () => {
   const handleDownloadAll = async () => {
     setDownloadingAll(true);
     const zip = new JSZip();
-    // Προσθέτουμε κάθε αρχείο στο zip
     await Promise.all(files.map(async (file) => {
       try {
         const response = await fetch(file.file_url);
         const blob = await response.blob();
-        // Χρησιμοποιούμε το αυθεντικό όνομα του αρχείου από το URL
-        const originalName = getFilenameFromUrl(file.file_url);
-        zip.file(originalName, blob);
-      } catch (e) {}
+        zip.file(getFilenameFromUrl(file.file_url), blob);
+      } catch (e) { }
     }));
     const content = await zip.generateAsync({ type: 'blob' });
-    saveAs(content, `${course?.name || 'files'}.zip`);
+    await downloadFile(content, `DSUth_Mathima_${course?.name || 'files'}.zip`);
     setDownloadingAll(false);
   };
 
-  // Utility για καθαρισμό URL
   const getCleanUrl = url => (url ? url.trim().replace(/\?$/, '') : '');
+  const getFilenameFromUrl = (url) => url.split('/').pop().split('?')[0];
 
-  // Βοηθητική συνάρτηση για να παίρνει το filename από το URL
-  const getFilenameFromUrl = (url) => {
-    const lastPart = url.split('/').pop().split('?')[0];
-    return lastPart;
+  const handleDownload = async (url) => {
+    const filename = getFilenameFromUrl(url);
+    try {
+      showNotification('Γίνεται λήψη...', 'info');
+      await downloadFile(url, filename);
+      showNotification('Αρχείο αποθηκεύτηκε στα Έγγραφα!', 'success');
+    } catch (e) { showNotification('Αποτυχία λήψης αρχείου!', 'error'); }
   };
 
-  // Force download function
-  const handleDownload = async (url) => {
+  const handleShare = async (url) => {
     const filename = getFilenameFromUrl(url);
     try {
       const response = await fetch(url, { mode: 'cors' });
       if (!response.ok) throw new Error('Download failed');
       const blob = await response.blob();
-      const link = document.createElement('a');
-      link.href = window.URL.createObjectURL(blob);
-      link.download = filename;
-      document.body.appendChild(link);
-      link.click();
-      setTimeout(() => {
-        window.URL.revokeObjectURL(link.href);
-        document.body.removeChild(link);
-      }, 200);
-    } catch (e) {
-      alert('Αποτυχία λήψης αρχείου!');
-    }
+      await shareFile(blob, filename);
+    } catch (e) { showNotification('Αποτυχία κοινοποίησης αρχείου!', 'error'); }
   };
 
+  /* ── Filter Controls Component ── */
+  const FilterControls = ({ direction = 'row' }) => (
+    <Stack direction={direction} spacing={2} sx={{ mb: direction === 'column' ? 0 : 2 }}>
+      <TextField label="Έτος" select size="small" fullWidth value={yearFilter} onChange={e => setYearFilter(e.target.value)} sx={{ maxWidth: direction === 'row' ? 160 : 'none' }}>
+        <MenuItem value="">Όλα τα έτη</MenuItem>
+        {yearOptions.map(y => <MenuItem key={y} value={y}>{y}</MenuItem>)}
+      </TextField>
+      <TextField label="Εξεταστική" select size="small" fullWidth value={periodFilter} onChange={e => setPeriodFilter(e.target.value)} sx={{ maxWidth: direction === 'row' ? 190 : 'none' }}>
+        <MenuItem value="">Όλες</MenuItem>
+        {periods.map(p => <MenuItem key={p} value={p}>{p}</MenuItem>)}
+      </TextField>
+    </Stack>
+  );
+
+  const handleView = (file) => {
+    const url = getCleanUrl(file.file_url);
+    const params = new URLSearchParams({
+      url,
+      name: getFilenameFromUrl(url),
+      course: course?.name || '',
+      period: toDisplayPeriod(file.period) || '',
+      year: String(file.year || ''),
+    });
+    navigate(`/viewer?${params.toString()}`);
+  };
+
+  const ActionButtons = ({ file }) => (
+    <Stack direction="row" spacing={0.5}>
+      <Tooltip title="Προβολή">
+        <IconButton size="small" onClick={() => handleView(file)} sx={{ color: 'text.secondary', border: '1px solid', borderColor: 'divider', borderRadius: 2, '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#e8f0fe' : 'rgba(255,255,255,0.08)', color: 'primary.main' } }}>
+          <VisibilityIcon sx={{ fontSize: 18 }} />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Λήψη">
+        <IconButton size="small" onClick={() => handleDownload(getCleanUrl(file.file_url))} sx={{ color: 'text.secondary', border: '1px solid', borderColor: 'divider', borderRadius: 2, '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#e8f0fe' : 'rgba(255,255,255,0.08)', color: 'primary.main' } }}>
+          <DownloadIcon sx={{ fontSize: 18 }} />
+        </IconButton>
+      </Tooltip>
+      <Tooltip title="Κοινοποίηση">
+        <IconButton size="small" onClick={() => handleShare(getCleanUrl(file.file_url))} sx={{ color: 'text.secondary', border: '1px solid', borderColor: 'divider', borderRadius: 2, '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#e8f0fe' : 'rgba(255,255,255,0.08)', color: 'primary.main' } }}>
+          <ShareIcon sx={{ fontSize: 18 }} />
+        </IconButton>
+      </Tooltip>
+      {user && isAdmin && !file.approved && (
+        <Tooltip title="Έγκριση">
+          <IconButton size="small" onClick={() => handleApprove(file.id)} sx={{ color: 'success.main', border: '1px solid', borderColor: 'divider', borderRadius: 2, '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#e6f4ea' : 'rgba(46,125,50,0.15)' } }}>
+            <CheckIcon sx={{ fontSize: 18 }} />
+          </IconButton>
+        </Tooltip>
+      )}
+      {user && isAdmin && (
+        <Tooltip title="Διαγραφή">
+          <IconButton size="small" onClick={() => handleDelete(file.id, file.file_url)} sx={{ color: 'error.main', border: '1px solid', borderColor: 'divider', borderRadius: 2, '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#fce8e6' : 'rgba(211,47,47,0.15)' } }}>
+            <DeleteIcon sx={{ fontSize: 18 }} />
+          </IconButton>
+        </Tooltip>
+      )}
+    </Stack>
+  );
+
   return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-        <Button
-          startIcon={<ArrowBackIcon />}
-          variant="outlined"
-          color="primary"
+    <Container maxWidth="md" sx={{ pt: { xs: 2, md: 5 }, pb: { xs: 12, md: 5 } }}>
+      {/* Header */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
+        <IconButton
           onClick={() => window.history.length > 1 ? window.history.back() : window.location.assign('/courses')}
-          sx={{ borderRadius: 2, fontWeight: 600, textTransform: 'none' }}
+          sx={{ color: 'text.secondary', border: '1px solid', borderColor: 'divider', borderRadius: 2.5 }}
         >
-          Πίσω
-        </Button>
+          <ArrowBackIcon sx={{ fontSize: 20 }} />
+        </IconButton>
+        {course && (
+          <Box>
+            <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary', lineHeight: 1.2 }}>
+              {course.name}
+            </Typography>
+            <Chip label={`Εξάμηνο ${course.semester}`} size="small" sx={{ mt: 0.5, bgcolor: theme.palette.mode === 'light' ? '#e8f0fe' : 'rgba(138,180,248,0.15)', color: 'primary.main', fontWeight: 600 }} />
+          </Box>
+        )}
+      </Box>
+
+      {/* Actions row */}
+      <Stack direction="row" spacing={1} sx={{ my: 2.5 }}>
         <Button
-          variant="contained"
-          color="primary"
+          variant="outlined"
+          startIcon={<FolderZipIcon />}
           onClick={handleDownloadAll}
           disabled={files.length === 0 || downloadingAll}
-          sx={{ borderRadius: 2, fontWeight: 600, textTransform: 'none' }}
+          size="small"
         >
-          {downloadingAll ? 'Δημιουργία zip...' : 'Κατέβασμα όλων σε zip'}
+          {downloadingAll ? 'Δημιουργία...' : 'Λήψη zip'}
         </Button>
         {isMobile && (
-          <Button
-            variant="outlined"
-            startIcon={<FilterListIcon />}
-            onClick={() => setFilterDrawerOpen(true)}
-            sx={{ borderRadius: 2, fontWeight: 600, textTransform: 'none' }}
-          >
+          <Button variant="outlined" startIcon={<FilterListIcon />} onClick={() => setFilterDrawerOpen(true)} size="small">
             Φίλτρα
           </Button>
         )}
-      </Box>
-      {/* Φίλτρα: Drawer για mobile, inline για desktop/tablet */}
+      </Stack>
+
+      {/* Filters */}
       {isMobile ? (
         <Drawer
           anchor="bottom"
           open={filterDrawerOpen}
           onClose={() => setFilterDrawerOpen(false)}
-          PaperProps={{ sx: { borderRadius: '18px 18px 0 0', p: 2 } }}
+          PaperProps={{ sx: { borderRadius: '20px 20px 0 0', p: 3 } }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-            <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>
-              Φίλτρα
-            </Typography>
-            <IconButton onClick={() => setFilterDrawerOpen(false)}>
-              <CloseIcon />
-            </IconButton>
+            <Typography variant="h6" sx={{ flexGrow: 1, fontWeight: 700 }}>Φίλτρα</Typography>
+            <IconButton onClick={() => setFilterDrawerOpen(false)}><CloseIcon /></IconButton>
           </Box>
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-            <TextField
-              label="Έτος"
-              select
-              size="small"
-              value={yearFilter}
-              onChange={e => setYearFilter(e.target.value)}
-              sx={{ minWidth: 140 }}
-              helperText="Επιλέξτε έτος για να φιλτράρετε τα αρχεία"
-            >
-              <MenuItem value="">Όλα τα έτη</MenuItem>
-              {yearOptions.map(y => (
-                <MenuItem key={y} value={y}>{y}</MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              label="Εξεταστική"
-              select
-              size="small"
-              value={periodFilter}
-              onChange={e => setPeriodFilter(e.target.value)}
-              sx={{ minWidth: 170 }}
-              helperText="Επιλέξτε εξεταστική περίοδο για φιλτράρισμα"
-            >
-              <MenuItem value="">Όλες οι εξεταστικές</MenuItem>
-              {periods.map(p => (
-                <MenuItem key={p} value={p}>{p}</MenuItem>
-              ))}
-            </TextField>
-          </Box>
+          <FilterControls direction="column" />
         </Drawer>
       ) : (
-        <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 2, alignItems: { sm: 'center' } }}>
-          <TextField
-            label="Έτος"
-            select
-            size="small"
-            value={yearFilter}
-            onChange={e => setYearFilter(e.target.value)}
-            sx={{ minWidth: 140 }}
-            helperText="Επιλέξτε έτος για να φιλτράρετε τα αρχεία"
-          >
-            <MenuItem value="">Όλα τα έτη</MenuItem>
-            {yearOptions.map(y => (
-              <MenuItem key={y} value={y}>{y}</MenuItem>
-            ))}
-          </TextField>
-          <TextField
-            label="Εξεταστική"
-            select
-            size="small"
-            value={periodFilter}
-            onChange={e => setPeriodFilter(e.target.value)}
-            sx={{ minWidth: 170 }}
-            helperText="Επιλέξτε εξεταστική περίοδο για φιλτράρισμα"
-          >
-            <MenuItem value="">Όλες οι εξεταστικές</MenuItem>
-            {periods.map(p => (
-              <MenuItem key={p} value={p}>{p}</MenuItem>
-            ))}
-          </TextField>
-        </Box>
+        <FilterControls />
       )}
-      {course && <Typography variant="h5" color="#222" gutterBottom align="center" sx={{ fontWeight: 700 }}>{course.name} (Εξάμηνο {course.semester})</Typography>}
+
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
+
       {loading ? (
-        <Stack spacing={2}>
-          {[1,2].map(i => <Skeleton key={i} variant="rounded" height={110} />)}
-        </Stack>
+        <Stack spacing={2}>{[1, 2, 3].map(i => <Skeleton key={i} variant="rounded" height={72} />)}</Stack>
       ) : sortedFiles.length === 0 ? (
-        <Box sx={{ textAlign: 'center', mt: 6 }}>
-          <SentimentDissatisfiedIcon color="disabled" sx={{ fontSize: 60, mb: 1 }} />
-          <Typography variant="h6" color="#222">Δεν υπάρχουν αρχεία για τα επιλεγμένα φίλτρα.</Typography>
+        <Box sx={{ textAlign: 'center', mt: 8 }}>
+          <SentimentDissatisfiedIcon sx={{ fontSize: 56, color: 'text.secondary', mb: 1, opacity: 0.5 }} />
+          <Typography variant="h6" sx={{ color: 'text.secondary', fontWeight: 500 }}>Δεν βρέθηκαν αρχεία.</Typography>
         </Box>
       ) : isMobileOrTablet ? (
-        <Stack spacing={2} sx={{ mt: 2 }}>
+        /* Mobile Card View */
+        <Stack spacing={1.5}>
           {sortedFiles.map(file => (
-            <Box key={file.id} sx={{ background: '#f8fafc', boxShadow: '0 2px 12px 0 rgba(31,38,135,0.08)', borderRadius: '18px', border: '1px solid #e3eafc', p: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
-              <Typography variant="body2" sx={{ fontWeight: 600 }}>Έτος: <span style={{ fontWeight: 400 }}>{file.year}</span></Typography>
-              <Typography variant="body2" sx={{ fontWeight: 600 }}>Εξεταστική: <span style={{ fontWeight: 400 }}>{toDisplayPeriod(file.period)}</span></Typography>
-              <Box sx={{ mt: 1 }}>
-                <Button color="info" size="small" href={getCleanUrl(file.file_url)} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: '#e3f2fd', borderRadius: 1, '&:hover': { background: '#bbdefb' }, mr: 1 }}><VisibilityIcon /></Button>
-                <Button color="primary" size="small" onClick={() => handleDownload(getCleanUrl(file.file_url))} sx={{ textTransform: 'none', background: '#e3eafc', borderRadius: 1, '&:hover': { background: '#c5cae9' }, mr: 1 }}><DownloadIcon /></Button>
-                {user && isAdmin && !file.approved && (
-                  <Button variant="outlined" color="success" onClick={() => handleApprove(file.id)} size="small" sx={{ borderRadius: 1, mr: 1 }}><CheckIcon /></Button>
-                )}
-                {user && isAdmin && (
-                  <Button variant="outlined" color="error" onClick={() => handleDelete(file.id, file.file_url)} size="small" sx={{ borderRadius: 1 }}><DeleteIcon /></Button>
-                )}
-              </Box>
-            </Box>
+            <Paper key={file.id} sx={{ p: 2, border: '1px solid', borderColor: 'divider' }}>
+              <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 1.5 }}>
+                <Box sx={{ width: 40, height: 40, borderRadius: 2, bgcolor: theme.palette.mode === 'light' ? '#e8f0fe' : 'rgba(138,180,248,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <DescriptionIcon sx={{ color: 'primary.main', fontSize: 20 }} />
+                </Box>
+                <Box sx={{ minWidth: 0 }}>
+                  <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>{file.year} — {toDisplayPeriod(file.period)}</Typography>
+                  <Chip
+                    label={file.approved ? 'Εγκεκριμένο' : 'Αναμονή'}
+                    size="small"
+                    sx={{
+                      mt: 0.5,
+                      bgcolor: file.approved
+                        ? (theme.palette.mode === 'light' ? '#e6f4ea' : 'rgba(46,125,50,0.2)')
+                        : (theme.palette.mode === 'light' ? '#fef7e0' : 'rgba(227,116,0,0.2)'),
+                      color: file.approved
+                        ? (theme.palette.mode === 'light' ? '#1e8e3e' : '#81c784')
+                        : (theme.palette.mode === 'light' ? '#e37400' : '#ffb74d'),
+                      fontWeight: 600,
+                      fontSize: '0.7rem',
+                    }}
+                  />
+                </Box>
+              </Stack>
+              <ActionButtons file={file} />
+            </Paper>
           ))}
         </Stack>
       ) : (
-        <TableContainer component={Paper} sx={{ background: '#f8fafc', boxShadow: '0 2px 12px 0 rgba(31,38,135,0.08)', borderRadius: '18px', border: '1px solid #e3eafc', mt: 2 }}>
+        /* Desktop Table View */
+        <TableContainer component={Paper} sx={{ border: '1px solid', borderColor: 'divider' }}>
           <Table>
             <TableHead>
-              <TableRow>
-                <TableCell sx={{ fontWeight: 700, color: '#222', fontSize: 16, width: 60 }}>#</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#222', fontSize: 16 }}>Έτος</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#222', fontSize: 16 }}>Εξεταστική</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#222', fontSize: 16 }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: '#222', fontSize: 16 }}>Ενέργειες</TableCell>
+              <TableRow sx={{ bgcolor: theme.palette.mode === 'light' ? '#f8fafb' : 'rgba(255,255,255,0.03)' }}>
+                <TableCell sx={{ fontWeight: 700, color: 'text.primary', width: 50 }}>#</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: 'text.primary' }}>Έτος</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: 'text.primary' }}>Εξεταστική</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: 'text.primary' }}>Κατάσταση</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: 'text.primary' }}>Ενέργειες</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {sortedFiles.map((file, idx) => (
-                <TableRow key={file.id}>
-                  <TableCell>{idx + 1}</TableCell>
-                  <TableCell>{file.year}</TableCell>
+                <TableRow key={file.id} sx={{ '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#f8fafb' : 'rgba(255,255,255,0.03)' } }}>
+                  <TableCell sx={{ color: 'text.secondary' }}>{idx + 1}</TableCell>
+                  <TableCell sx={{ fontWeight: 500 }}>{file.year}</TableCell>
                   <TableCell>{toDisplayPeriod(file.period)}</TableCell>
                   <TableCell>
-                    <Box sx={{
-                      bgcolor: file.approved ? 'success.main' : 'warning.main',
-                      color: '#fff',
-                      px: 1.5,
-                      py: 0.5,
-                      borderRadius: 2,
-                      fontWeight: 700,
-                      fontSize: 13,
-                      letterSpacing: 0.5,
-                      boxShadow: 1,
-                      display: 'inline-block',
-                    }}>
-                      {file.approved ? 'Εγκεκριμένο' : 'Αναμονή έγκρισης'}
-                    </Box>
+                    <Chip
+                      label={file.approved ? 'Εγκεκριμένο' : 'Αναμονή'}
+                      size="small"
+                      sx={{
+                        bgcolor: file.approved
+                          ? (theme.palette.mode === 'light' ? '#e6f4ea' : 'rgba(46,125,50,0.2)')
+                          : (theme.palette.mode === 'light' ? '#fef7e0' : 'rgba(227,116,0,0.2)'),
+                        color: file.approved
+                          ? (theme.palette.mode === 'light' ? '#1e8e3e' : '#81c784')
+                          : (theme.palette.mode === 'light' ? '#e37400' : '#ffb74d'),
+                        fontWeight: 600,
+                        fontSize: '0.75rem',
+                      }}
+                    />
                   </TableCell>
                   <TableCell>
-                    <Button color="info" size="small" href={getCleanUrl(file.file_url)} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: '#e3f2fd', borderRadius: 1, '&:hover': { background: '#bbdefb' }, mr: 1 }}><VisibilityIcon /></Button>
-                    <Button color="primary" size="small" onClick={() => handleDownload(getCleanUrl(file.file_url))} sx={{ textTransform: 'none', background: '#e3eafc', borderRadius: 1, '&:hover': { background: '#c5cae9' }, mr: 1 }}><DownloadIcon /></Button>
-                    {user && isAdmin && !file.approved && (
-                      <Button variant="outlined" color="success" onClick={() => handleApprove(file.id)} size="small" sx={{ borderRadius: 1, mr: 1 }}><CheckIcon /></Button>
-                    )}
-                    {user && isAdmin && (
-                      <Button variant="outlined" color="error" onClick={() => handleDelete(file.id, file.file_url)} size="small" sx={{ borderRadius: 1 }}><DeleteIcon /></Button>
-                    )}
+                    <ActionButtons file={file} />
                   </TableCell>
                 </TableRow>
               ))}
@@ -412,8 +367,25 @@ const CourseFiles = () => {
           </Table>
         </TableContainer>
       )}
+
+      {/* Snackbar Notifications */}
+      <Snackbar
+        open={snackbar.open}
+        autoHideDuration={2500}
+        onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
+        sx={{ mb: 8 }}
+      >
+        <Alert
+          severity={snackbar.severity}
+          onClose={() => setSnackbar(prev => ({ ...prev, open: false }))}
+          sx={{ borderRadius: 3, fontWeight: 500 }}
+        >
+          {snackbar.message}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };
 
-export default CourseFiles; 
+export default CourseFiles;

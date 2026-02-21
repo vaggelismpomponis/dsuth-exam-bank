@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Box, Button, TextField, MenuItem, Alert, CircularProgress, Stack, Skeleton, IconButton, Tooltip, Card, CardContent, InputAdornment, Link as MuiLink, Divider } from '@mui/material';
+import { Container, Typography, Box, Button, TextField, MenuItem, Alert, CircularProgress, Stack, Skeleton, IconButton, Tooltip, Paper, Autocomplete } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { useSnackbar } from 'notistack';
 import { validateTurnstileToken } from '../utils/turnstileValidation';
+import { convertToPdf } from '../utils/pdfConversion';
+import { Capacitor } from '@capacitor/core';
 
 const periods = [
   'Ιανουάριος',
@@ -14,7 +18,6 @@ const periods = [
   'Επαναληπτική',
 ];
 
-// Helper για μετατροπή ελληνικών σε λατινικούς χαρακτήρες
 function greekToLatin(str) {
   const map = {
     'Α': 'A', 'Β': 'V', 'Γ': 'G', 'Δ': 'D', 'Ε': 'E', 'Ζ': 'Z', 'Η': 'I', 'Θ': 'Th',
@@ -28,8 +31,8 @@ function greekToLatin(str) {
     'Ά': 'A', 'Έ': 'E', 'Ή': 'I', 'Ί': 'I', 'Ό': 'O', 'Ύ': 'Y', 'Ώ': 'O', 'Ϊ': 'I', 'Ϋ': 'Y',
   };
   return str.split('').map(l => map[l] || l).join('')
-    .replace(/[^a-zA-Z0-9]/g, '') // Αφαίρεση ειδικών χαρακτήρων
-    .replace(/\s+/g, ''); // Αφαίρεση κενών
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .replace(/\s+/g, '');
 }
 
 const Upload = () => {
@@ -40,22 +43,28 @@ const Upload = () => {
   const [period, setPeriod] = useState('');
   const [semester, setSemester] = useState('');
   const [file, setFile] = useState(null);
+  const [conversionMessage, setConversionMessage] = useState('');
+  const [previewUrl, setPreviewUrl] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 600);
   const [courses, setCourses] = useState([]);
   const [coursesLoading, setCoursesLoading] = useState(true);
   const [turnstileToken, setTurnstileToken] = useState('');
   const [canSubmit, setCanSubmit] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
+  const [dragActive, setDragActive] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 600);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+    if (!file) {
+      setPreviewUrl('');
+      return;
+    }
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+    return () => URL.revokeObjectURL(objectUrl);
+  }, [file]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -64,9 +73,7 @@ const Upload = () => {
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user || null);
     });
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
+    return () => { listener?.subscription.unsubscribe(); };
   }, [navigate]);
 
   useEffect(() => {
@@ -88,62 +95,46 @@ const Upload = () => {
     }
     setError('');
     setSuccess('');
-    
-    // Server-side validation of Turnstile token
+
     const validationResult = await validateTurnstileToken(turnstileToken);
     if (!validationResult.success) {
       setError('Η επαλήθευση απέτυχε. Παρακαλώ δοκιμάστε ξανά.');
-      enqueueSnackbar('Η επαλήθευση απέτυχε. Παρακαλώ δοκιμάστε ξανά.', { variant: 'error' });
+      enqueueSnackbar('Η επαλήθευση απέτυχε.', { variant: 'error' });
       return;
     }
-    
+
     if (!course || !year || !period || !file) {
       setError('Συμπλήρωσε όλα τα πεδία και επίλεξε αρχείο.');
       return;
     }
     setLoading(true);
-    // Δημιουργία νέου ονόματος αρχείου
     const fileExt = file.name.split('.').pop();
     const courseLatin = greekToLatin(course);
     const periodLatin = greekToLatin(period);
     let baseFileName = `${courseLatin}_${year}_${periodLatin}_Themata`;
     let fileName = `${baseFileName}.${fileExt}`;
     let counter = 1;
-    // Έλεγχος αν υπάρχει ήδη αρχείο με το ίδιο όνομα στο storage
     while (true) {
       const { data: existsData, error: existsError } = await supabase.storage.from('exams').list('', { search: fileName });
       if (existsError || !existsData || existsData.length === 0) break;
-      // Αν υπάρχει, αύξησε τον αριθμό
       fileName = `${baseFileName}_${counter}.${fileExt}`;
       counter++;
     }
-    // Δημιουργία νέου File αντικειμένου με το νέο όνομα
     let renamedFile;
     try {
       renamedFile = new File([file], fileName, { type: file.type });
     } catch (err) {
-      // Fallback για παλαιότερα browsers
       renamedFile = file;
     }
-    // 1. Ανεβάζουμε το αρχείο στο Supabase Storage
     const { data: storageData, error: storageError } = await supabase.storage.from('exams').upload(fileName, renamedFile);
     if (storageError) {
-      setError('Σφάλμα στο ανέβασμα αρχείου: ' + storageError.message);
+      setError('Σφάλμα στο ανέβασμα: ' + storageError.message);
       setLoading(false);
       return;
     }
-    // 2. Παίρνουμε το public URL
     const { data: publicUrlData } = supabase.storage.from('exams').getPublicUrl(fileName);
-    // 3. Καταχωρούμε στη βάση
     const { error: dbError } = await supabase.from('exams').insert([
-      {
-        course,
-        year: parseInt(year),
-        period,
-        uploader: user.id,
-        file_url: publicUrlData.publicUrl,
-        approved: false,
-      },
+      { course, year: parseInt(year), period, uploader: user.id, file_url: publicUrlData.publicUrl, approved: false },
     ]);
     if (dbError) {
       setError('Σφάλμα στη βάση: ' + dbError.message);
@@ -152,10 +143,7 @@ const Upload = () => {
     }
     setSuccess('Το αρχείο ανέβηκε με επιτυχία!');
     enqueueSnackbar('Το αρχείο ανέβηκε με επιτυχία!', { variant: 'success' });
-    setCourse('');
-    setYear('');
-    setPeriod('');
-    setFile(null);
+    setCourse(''); setYear(''); setPeriod(''); setFile(null);
     setLoading(false);
   };
 
@@ -163,182 +151,201 @@ const Upload = () => {
     ? courses.filter((c) => c.semester === Number(semester))
     : [];
 
+  const handleDrag = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') setDragActive(true);
+    else if (e.type === 'dragleave') setDragActive(false);
+  };
+
+  const handleFileSelection = async (selectedFile) => {
+    if (!selectedFile) return;
+    setConversionMessage('Αρχικοποίηση...');
+    const processedFile = await convertToPdf(selectedFile, setConversionMessage);
+    setFile(processedFile);
+    setConversionMessage(''); // Done
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setDragActive(false);
+    if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+      handleFileSelection(e.dataTransfer.files[0]);
+    }
+  };
+
   if (user === undefined || loading) return (
-    <Container maxWidth="sm" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h5" color="primary" gutterBottom align={isMobile ? 'center' : 'left'}>
-        ΑΝΕΒΑΣΜΑ ΑΡΧΕΙΟΥ ΕΞΕΤΑΣΗΣ
-      </Typography>
-      <Box sx={{ mt: 2 }}>
-        <Stack spacing={2} direction="column">
-          <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
-          <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
-          <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
-          <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
-          <Skeleton variant="rectangular" height={40} sx={{ borderRadius: 2, width: '60%' }} />
-          <Skeleton variant="rectangular" height={40} sx={{ borderRadius: 2, width: '100%' }} />
-        </Stack>
-      </Box>
+    <Container maxWidth="sm" sx={{ pt: { xs: 2, md: 5 }, pb: { xs: 12, md: 4 } }}>
+      <Stack spacing={2}>
+        <Skeleton variant="rounded" height={56} />
+        <Skeleton variant="rounded" height={56} />
+        <Skeleton variant="rounded" height={56} />
+        <Skeleton variant="rounded" height={120} />
+      </Stack>
     </Container>
   );
 
   if (!user) return (
-    <Container maxWidth="sm" sx={{ mt: 8, mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <Box sx={{ width: '100%', maxWidth: 420, mt: 6 }}>
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="h5" align="center" color="primary" fontWeight={700}>
-            Ανέβασμα Αρχείου
-          </Typography>
-        </Box>
-        <Box sx={{ width: '100%' }}>
-          <Box sx={{ mb: 2 }}>
-            <Alert severity="info" sx={{ fontSize: 17, fontWeight: 500, textAlign: 'center', mb: 2 }}>
-              Για να ανεβάσετε αρχεία, πρέπει να συνδεθείτε.
-            </Alert>
-            <Button variant="contained" color="primary" fullWidth sx={{ fontWeight: 700, fontSize: 17, textTransform: 'none' }} onClick={() => navigate('/login')}>
-              Σύνδεση
-            </Button>
-          </Box>
-        </Box>
-      </Box>
-    </Container>
+    <Box sx={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', pt: { xs: 2, md: 4 }, pb: { xs: 12, md: 4 }, px: 2 }}>
+      <Paper sx={{ width: '100%', maxWidth: 420, p: 4, textAlign: 'center', border: '1px solid', borderColor: 'divider' }}>
+        <UploadFileIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
+        <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>Ανέβασμα Αρχείου</Typography>
+        <Alert severity="info" sx={{ mb: 2.5, textAlign: 'center' }}>
+          Για να ανεβάσετε αρχεία, πρέπει να συνδεθείτε.
+        </Alert>
+        <Button variant="contained" fullWidth onClick={() => navigate('/login')} sx={{ py: 1.3 }}>
+          Σύνδεση
+        </Button>
+      </Paper>
+    </Box>
   );
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 6, mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <Card sx={{ width: '100%', maxWidth: 480, borderRadius: 4, boxShadow: 6, px: { xs: 1, sm: 3 }, py: 2, background: 'linear-gradient(135deg, #e3eafc 0%, #f4f6f8 100%)' }}>
-        <CardContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
-            <Box sx={{
-              width: 72,
-              height: 72,
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #1976d2 0%, #64b5f6 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              mb: 1.5,
-              boxShadow: 3
-            }}>
-              <UploadFileIcon sx={{ color: '#fff', fontSize: 40 }} />
-            </Box>
-            <Typography variant="h5" color="primary" fontWeight={700} gutterBottom align="center">
-              ΑΝΕΒΑΣΜΑ ΑΡΧΕΙΟΥ ΕΞΕΤΑΣΗΣ
-            </Typography>
-            <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 1 }}>
-              Συμπλήρωσε τα στοιχεία και ανέβασε το αρχείο σου (PDF, Word, PNG, JPG).
-            </Typography>
+    <Box sx={{ minHeight: '80vh', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', py: { xs: 2, md: 5 }, px: 2, pb: { xs: 12, md: 5 } }}>
+      <Paper sx={{ width: '100%', maxWidth: 500, p: { xs: 3, sm: 4 }, border: '1px solid', borderColor: 'divider' }}>
+        <Box sx={{ textAlign: 'center', mb: 3 }}>
+          <Box sx={{
+            width: 56, height: 56, borderRadius: 3, bgcolor: '#e8f0fe',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', mb: 1.5,
+          }}>
+            <UploadFileIcon sx={{ color: 'primary.main', fontSize: 28 }} />
           </Box>
-          <Box component="form" onSubmit={handleUpload} sx={{ mt: 1 }}>
-            <Stack spacing={2} direction="column">
-              <TextField
-                label="ΕΞΑΜΗΝΟ"
-                select
-                fullWidth
-                value={semester}
-                onChange={e => {
-                  setSemester(e.target.value);
-                  setCourse('');
-                }}
-              >
-                {[...Array(8)].map((_, i) => (
-                  <MenuItem key={i + 1} value={i + 1}>{i + 1}ο Εξάμηνο</MenuItem>
-                ))}
-              </TextField>
-              <TextField
-                label="ΜΑΘΗΜΑ"
-                select
-                fullWidth
-                value={course}
-                onChange={e => setCourse(e.target.value)}
-                disabled={coursesLoading || !semester}
-                helperText={
-                  coursesLoading
-                    ? 'Φόρτωση μαθημάτων...'
-                    : !semester
-                    ? 'Επίλεξε πρώτα εξάμηνο.'
-                    : filteredCourses.length === 0
-                    ? 'Δεν υπάρχουν διαθέσιμα μαθήματα για το εξάμηνο.'
-                    : ''
-                }
-              >
-                {filteredCourses.map((c) => (
-                  <MenuItem key={c.id} value={c.name}>{c.name}</MenuItem>
-                ))}
-              </TextField>
-              <TextField
-                label="ΕΤΟΣ ΑΡΧΕΙΟΥ"
-                type="number"
-                fullWidth
-                value={year}
-                onChange={e => setYear(e.target.value)}
-              />
-              <TextField
-                label="ΕΞΕΤΑΣΤΙΚΗ"
-                select
-                fullWidth
-                value={period}
-                onChange={e => setPeriod(e.target.value)}
-              >
-                {periods.map((p) => (
-                  <MenuItem key={p} value={p}>{p}</MenuItem>
-                ))}
-              </TextField>
-              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 1 }}>
-                <Tooltip title="Επιλογή αρχείου">
-                  <IconButton
-                    color="primary"
-                    component="label"
-                    sx={{ width: 56, height: 56, borderRadius: '50%', background: '#e3eafc', '&:hover': { background: '#d0e2ff' } }}
-                  >
-                    <UploadFileIcon sx={{ fontSize: 32 }} />
-                    <input
-                      type="file"
-                      hidden
-                      accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg"
-                      onChange={e => setFile(e.target.files[0])}
-                    />
-                  </IconButton>
-                </Tooltip>
-              </Box>
-              {file && <Typography variant="body2" sx={{ mt: 1, textAlign: 'center' }}>{file.name}</Typography>}
-              <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
-                <Turnstile
-                  siteKey="0x4AAAAAABiQtKNjlTVw7zFL"
-                  onSuccess={(token) => {
-                    setTurnstileToken(token);
-                    setCanSubmit(true);
-                  }}
-                  onExpire={() => {
-                    setTurnstileToken('');
-                    setCanSubmit(false);
-                  }}
-                  onError={() => {
-                    setTurnstileToken('');
-                    setCanSubmit(false);
-                  }}
-                  theme="light"
-                  size="normal"
+          <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary' }}>Ανέβασμα Αρχείου</Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+            PDF, Word, PNG, JPG
+          </Typography>
+        </Box>
+
+        <Box component="form" onSubmit={handleUpload}>
+          <Stack spacing={2.5}>
+            <TextField
+              label="Εξάμηνο"
+              select
+              fullWidth
+              value={semester}
+              onChange={e => { setSemester(e.target.value); setCourse(''); }}
+            >
+              {[...Array(8)].map((_, i) => (
+                <MenuItem key={i + 1} value={i + 1}>{i + 1}ο Εξάμηνο</MenuItem>
+              ))}
+            </TextField>
+
+            <Autocomplete
+              fullWidth
+              disabled={coursesLoading || !semester || filteredCourses.length === 0}
+              options={filteredCourses.map(c => c.name)}
+              value={course || null}
+              onChange={(e, newValue) => setCourse(newValue || '')}
+              isOptionEqualToValue={(option, value) => option === value}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Μάθημα"
+                  helperText={
+                    coursesLoading ? 'Φόρτωση μαθημάτων...'
+                      : !semester ? 'Επίλεξε πρώτα εξάμηνο.'
+                        : filteredCourses.length === 0 ? 'Δεν υπάρχουν μαθήματα.'
+                          : ''
+                  }
                 />
-              </Box>
-              <Box sx={{ mt: 2, position: 'relative' }}>
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  disabled={loading || !canSubmit}
-                  fullWidth
-                  sx={{ fontSize: isMobile ? '1.1rem' : '1rem', py: isMobile ? 2 : 1, borderRadius: 2, fontWeight: 700, boxShadow: 2 }}
-                >
-                  ΑΝΕΒΑΣΜΑ
-                </Button>
-                {loading && <CircularProgress size={24} sx={{ position: 'absolute', top: '50%', left: '50%', mt: '-12px', ml: '-12px' }} />}
-              </Box>
-            </Stack>
-          </Box>
-        </CardContent>
-      </Card>
-    </Container>
+              )}
+            />
+
+            <TextField label="Έτος αρχείου" type="number" fullWidth value={year} onChange={e => setYear(e.target.value)} />
+
+            <TextField label="Εξεταστική" select fullWidth value={period} onChange={e => setPeriod(e.target.value)}>
+              {periods.map((p) => (
+                <MenuItem key={p} value={p}>{p}</MenuItem>
+              ))}
+            </TextField>
+
+            {/* Drop Zone */}
+            <Box
+              onDragEnter={handleDrag}
+              onDragLeave={handleDrag}
+              onDragOver={handleDrag}
+              onDrop={handleDrop}
+              sx={{
+                border: '2px dashed',
+                borderColor: dragActive ? 'primary.main' : 'divider',
+                borderRadius: 3,
+                p: 3,
+                textAlign: 'center',
+                cursor: 'pointer',
+                bgcolor: dragActive ? '#e8f0fe' : 'transparent',
+                transition: 'all 0.2s',
+                '&:hover': { borderColor: 'primary.main', bgcolor: '#f3f7fe' },
+              }}
+              component="label"
+            >
+              {conversionMessage ? (
+                <Stack direction="column" alignItems="center" justifyContent="center" spacing={2} sx={{ py: 3 }}>
+                  <CircularProgress size={32} />
+                  <Typography variant="body1" sx={{ fontWeight: 600, color: 'text.secondary' }}>
+                    {conversionMessage}
+                  </Typography>
+                </Stack>
+              ) : file ? (
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5 }}>
+                  {file.type.startsWith('image/') ? (
+                    <Box component="img" src={previewUrl} sx={{ maxHeight: 200, maxWidth: '100%', objectFit: 'contain', borderRadius: 2, boxShadow: 1 }} />
+                  ) : file.type === 'application/pdf' && !Capacitor.isNativePlatform() ? (
+                    <Box component="iframe" src={`${previewUrl}#toolbar=0`} sx={{ width: '100%', height: 400, border: 'none', borderRadius: 2, boxShadow: 1 }} />
+                  ) : (
+                    <InsertDriveFileIcon sx={{ color: 'primary.main', fontSize: 60 }} />
+                  )}
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', wordBreak: 'break-all' }}>Επιτυχής μετατροπή: {file.name}</Typography>
+                  <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 600 }}>Το αρχείο είναι έτοιμο για ανέβασμα!</Typography>
+                </Box>
+              ) : (
+                <>
+                  <CloudUploadIcon sx={{ color: 'text.secondary', fontSize: 36, mb: 1 }} />
+                  <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
+                    Σύρε αρχείο εδώ ή πάτα για επιλογή
+                  </Typography>
+                </>
+              )}
+              <input
+                type="file"
+                hidden
+                disabled={!!conversionMessage}
+                accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document,image/png,image/jpeg"
+                onChange={e => handleFileSelection(e.target.files[0])}
+              />
+            </Box>
+
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 1 }}>
+              <Turnstile
+                siteKey="0x4AAAAAABiQtKNjlTVw7zFL"
+                onSuccess={(token) => { setTurnstileToken(token); setCanSubmit(true); }}
+                onExpire={() => { setTurnstileToken(''); setCanSubmit(false); }}
+                onError={() => { setTurnstileToken(''); setCanSubmit(false); }}
+                theme="light"
+                size="normal"
+              />
+            </Box>
+
+            {error && <Alert severity="error">{error}</Alert>}
+            {success && <Alert severity="success">{success}</Alert>}
+
+            <Box sx={{ position: 'relative' }}>
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={loading || !canSubmit}
+                fullWidth
+                sx={{ py: 1.3, fontSize: '0.938rem' }}
+              >
+                Ανέβασμα
+              </Button>
+              {loading && <CircularProgress size={24} sx={{ position: 'absolute', top: '50%', left: '50%', mt: '-12px', ml: '-12px' }} />}
+            </Box>
+          </Stack>
+        </Box>
+      </Paper>
+    </Box>
   );
 };
 
-export default Upload; 
+export default Upload;

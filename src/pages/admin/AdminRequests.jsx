@@ -12,8 +12,8 @@ import {
   IconButton,
   Chip,
   Alert,
-  Button,
   Stack,
+  useTheme,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -25,6 +25,7 @@ const AdminRequests = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const theme = useTheme();
 
   const fetchRows = async () => {
     setLoading(true);
@@ -73,18 +74,23 @@ const AdminRequests = () => {
       <Typography variant="h5" sx={{ fontWeight: 800, mb: 2 }}>Διαχείριση Αιτημάτων Αρχείων</Typography>
       {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
       {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
-      <TableContainer component={Paper} sx={{ background: '#f8fafc', boxShadow: '0 2px 12px 0 rgba(31,38,135,0.08)', borderRadius: '18px', border: '1px solid #e3eafc' }}>
+      <TableContainer component={Paper} sx={{
+        background: theme.palette.mode === 'light' ? '#f8fafc' : 'background.paper',
+        boxShadow: theme.palette.mode === 'light' ? '0 2px 12px 0 rgba(31,38,135,0.08)' : '0 4px 20px 0 rgba(0,0,0,0.4)',
+        borderRadius: '18px',
+        border: `1px solid ${theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(255,255,255,0.05)'}`,
+      }}>
         <Table>
           <TableHead>
-            <TableRow>
-              <TableCell sx={{ fontWeight: 700 }}>#</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Μάθημα</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Έτος</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Εξεταστική</TableCell>
-              <TableCell sx={{ fontWeight: 700, width: 520 }}>Λεπτομέρειες</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Κατάσταση</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Ημ/νία</TableCell>
-              <TableCell sx={{ fontWeight: 700 }}>Ενέργειες</TableCell>
+            <TableRow sx={{ background: theme.palette.mode === 'light' ? '#f4f6fa' : 'background.default' }}>
+              <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>#</TableCell>
+              <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Μάθημα</TableCell>
+              <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Έτος</TableCell>
+              <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Εξεταστική</TableCell>
+              <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16, width: 520 }}>Λεπτομέρειες</TableCell>
+              <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Κατάσταση</TableCell>
+              <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Ημ/νία</TableCell>
+              <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Ενέργειες</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>

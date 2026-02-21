@@ -7,14 +7,13 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import SearchIcon from '@mui/icons-material/Search';
-import MuiLink from '@mui/material/Link';
 
 const Courses = () => {
   const [courses, setCourses] = useState([]);
   const [loading, setLoading] = useState(true);
   const [examCounts, setExamCounts] = useState({});
   const [user, setUser] = useState(null);
-  const [favorites, setFavorites] = useState([]); // ids των αγαπημένων μαθημάτων
+  const [favorites, setFavorites] = useState([]);
   const [favLoading, setFavLoading] = useState(false);
   const navigate = useNavigate();
   const theme = useTheme();
@@ -44,18 +43,14 @@ const Courses = () => {
         .select('course, id', { count: 'exact', head: false })
         .eq('approved', true);
       if (!error && data) {
-        // Μετράμε πόσα exams υπάρχουν για κάθε course
         const counts = {};
-        data.forEach(e => {
-          counts[e.course] = (counts[e.course] || 0) + 1;
-        });
+        data.forEach(e => { counts[e.course] = (counts[e.course] || 0) + 1; });
         setExamCounts(counts);
       }
     };
     fetchExamCounts();
   }, []);
 
-  // Fetch favorites για τον χρήστη
   useEffect(() => {
     if (!user) return;
     setFavLoading(true);
@@ -64,35 +59,30 @@ const Courses = () => {
       .select('course_id')
       .eq('user_id', user.id)
       .then(({ data, error }) => {
-        if (!error && data) {
-          setFavorites(data.map(f => f.course_id));
-        }
+        if (!error && data) setFavorites(data.map(f => f.course_id));
         setFavLoading(false);
       });
   }, [user]);
 
-  // Προσθήκη/Αφαίρεση αγαπημένου
   const toggleFavorite = async (courseId) => {
     if (!user) return;
     setFavLoading(true);
     if (favorites.includes(courseId)) {
-      // Αφαίρεση
       await supabase.from('favorites').delete().eq('user_id', user.id).eq('course_id', courseId);
       setFavorites(favorites.filter(id => id !== courseId));
     } else {
-      // Προσθήκη
       await supabase.from('favorites').insert([{ user_id: user.id, course_id: courseId }]);
       setFavorites([...favorites, courseId]);
     }
     setFavLoading(false);
   };
 
-  // Υπολογισμός φιλτραρισμένων μαθημάτων
   const filteredCourses = courses.filter(course => {
     const matchesSearch = course.name.toLowerCase().includes(search.toLowerCase());
     const matchesSemester = filterSemester ? course.semester === Number(filterSemester) : true;
     return matchesSearch && matchesSemester;
   });
+
   const grouped = filteredCourses.reduce((acc, course) => {
     acc[course.semester] = acc[course.semester] || [];
     acc[course.semester].push(course);
@@ -100,21 +90,27 @@ const Courses = () => {
   }, {});
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
-      <Typography variant="h4" color="primary" gutterBottom align="center" sx={{ fontWeight: 700, letterSpacing: 1 }}>
-        Όλα τα Μαθήματα
+    <Container maxWidth="md" sx={{ pt: { xs: 2, md: 5 }, pb: { xs: 12, md: 5 } }}>
+      <Typography variant="h4" gutterBottom align="center" sx={{ fontWeight: 800, color: 'text.primary', mb: 1 }}>
+        Μαθήματα
       </Typography>
-      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 3, mt: 1, justifyContent: 'center', alignItems: 'center' }}>
+      <Typography align="center" sx={{ color: 'text.secondary', mb: 3, fontSize: '0.95rem' }}>
+        Βρες αρχεία ανά μάθημα και εξάμηνο
+      </Typography>
+
+      {/* Filters */}
+      <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mb: 4, justifyContent: 'center', alignItems: { sm: 'center' }, width: '100%' }}>
         <TextField
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Αναζήτηση μαθήματος..."
           size="small"
-          sx={{ minWidth: 220 }}
+          fullWidth
+          sx={{ maxWidth: { sm: 280 } }}
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon />
+                <SearchIcon sx={{ color: 'text.secondary', fontSize: 20 }} />
               </InputAdornment>
             ),
           }}
@@ -125,7 +121,8 @@ const Courses = () => {
           value={filterSemester}
           onChange={e => setFilterSemester(e.target.value)}
           size="small"
-          sx={{ minWidth: 140 }}
+          fullWidth
+          sx={{ maxWidth: { sm: 160 } }}
         >
           <MenuItem value="">Όλα</MenuItem>
           {[...Array(8)].map((_, i) => (
@@ -133,22 +130,28 @@ const Courses = () => {
           ))}
         </TextField>
       </Stack>
+
       {loading ? (
-        <Stack spacing={3}>
-          {[1,2,3].map(i => <Skeleton key={i} variant="rounded" height={120} />)}
+        <Stack spacing={2}>
+          {[1, 2, 3].map(i => <Skeleton key={i} variant="rounded" height={100} />)}
         </Stack>
       ) : (
         Object.keys(grouped).sort((a, b) => a - b).map(sem => (
           <Box key={sem} sx={{ mb: 5 }}>
-            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
-              <Typography variant="h6" sx={{ fontWeight: 700, color: '#212121', letterSpacing: 0.5 }}>{`Εξάμηνο ${sem}`}</Typography>
-              <Divider flexItem sx={{ borderColor: '#212121', ml: 2 }} />
+            <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 2 }}>
+              <Chip
+                label={`Εξάμηνο ${sem}`}
+                size="small"
+                sx={{ bgcolor: theme.palette.mode === 'light' ? '#e8f0fe' : 'rgba(255,255,255,0.08)', color: theme.palette.mode === 'light' ? 'primary.main' : '#8ab4f8', fontWeight: 600 }}
+              />
+              <Divider sx={{ flexGrow: 1 }} />
             </Stack>
+
             <Box
               sx={{
                 display: 'grid',
                 gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' },
-                gap: 3,
+                gap: 2,
               }}
             >
               {grouped[sem].map(course => (
@@ -160,62 +163,70 @@ const Courses = () => {
                   <Card
                     sx={{
                       cursor: 'pointer',
-                      borderRadius: 3,
-                      boxShadow: 3,
-                      background: `linear-gradient(120deg, #f4f6fb 0%, #dbeafe 60%, #f4f6f8 100%)`,
-                      backdropFilter: 'blur(1.5px)',
-                      border: '1.5px solid #e3eafc',
-                      transition: 'transform 0.18s, box-shadow 0.18s, background 0.18s',
-                      '&:hover': {
-                        boxShadow: 8,
-                        transform: 'translateY(-4px) scale(1.03)',
-                        background: 'linear-gradient(120deg, #e3eafc 0%, #b6d6fa 60%, #f4f6fb 100%)',
-                      },
-                      minHeight: { xs: 110, md: 200 },
+                      height: '100%',
                       display: 'flex',
                       flexDirection: 'column',
                       justifyContent: 'space-between',
+                      transition: 'all 0.2s',
+                      '&:hover': {
+                        borderColor: 'primary.main',
+                        transform: 'translateY(-2px)',
+                      },
                     }}
                   >
-                    <CardContent sx={{ width: '100%', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', gap: 1, px: 2, py: 2, pb: 1 }}>
-                      <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', gap: 2 }}>
-                        <SchoolRoundedIcon color="primary" sx={{ fontSize: 40, flexShrink: 0, mr: 1 }} />
-                        <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+                    <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 1, p: 2.5 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                        <Box sx={{
+                          width: 44,
+                          height: 44,
+                          borderRadius: 2.5,
+                          bgcolor: theme.palette.mode === 'light' ? '#e8f0fe' : 'rgba(255,255,255,0.08)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          flexShrink: 0,
+                        }}>
+                          <SchoolRoundedIcon sx={{ color: theme.palette.mode === 'light' ? 'primary.main' : '#8ab4f8', fontSize: 24 }} />
+                        </Box>
+                        <Box sx={{ minWidth: 0, flexGrow: 1 }}>
                           <Typography
-                            variant="h6"
-                            fontWeight={800}
+                            variant="subtitle1"
                             sx={{
-                              color: theme.palette.primary.dark,
-                              mb: 0.5,
-                              fontSize: { xs: '1.1rem', sm: '1.18rem', md: '1.22rem' },
+                              fontWeight: 700,
+                              color: 'text.primary',
+                              fontSize: '0.95rem',
                               wordBreak: 'break-word',
-                              whiteSpace: 'normal',
                             }}
                           >
                             {course.name}
                           </Typography>
-                          <Chip label={`Εξάμηνο ${course.semester}`} size="small" sx={{ mt: 0.5, background: '#e3eafc', color: theme.palette.primary.dark, fontWeight: 600, fontSize: '0.95em' }} />
                         </Box>
                       </Box>
                     </CardContent>
-                    <Box sx={{ width: '100%', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 1, px: 2, pb: 1, mt: 'auto' }}>
+
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2.5, pb: 2 }}>
                       <Tooltip title="Διαθέσιμα αρχεία">
-                        <Badge badgeContent={examCounts[course.name] || 0} color="info" sx={{ '& .MuiBadge-badge': { fontSize: '0.85em', minWidth: 20, height: 20 } }} showZero>
-                          <InsertDriveFileIcon color="action" sx={{ fontSize: 28 }} />
-                        </Badge>
+                        <Chip
+                          icon={<InsertDriveFileIcon sx={{ fontSize: 16 }} />}
+                          label={examCounts[course.name] || 0}
+                          size="small"
+                          variant="outlined"
+                          sx={{ borderColor: 'divider', fontWeight: 600 }}
+                        />
                       </Tooltip>
                       {user && (
-                        <Tooltip title={favorites.includes(course.id) ? 'Αφαίρεση από αγαπημένα' : 'Προσθήκη στα αγαπημένα'}>
-                          <IconButton
-                            aria-label={favorites.includes(course.id) ? 'Αφαίρεση από αγαπημένα' : 'Προσθήκη στα αγαπημένα'}
-                            onClick={e => { e.preventDefault(); e.stopPropagation(); toggleFavorite(course.id); }}
-                            color="error"
-                            sx={{ transition: 'transform 0.15s', '&:hover': { transform: 'scale(1.18)' } }}
-                            disabled={favLoading}
-                          >
-                            {favorites.includes(course.id) ? <FavoriteIcon sx={{ fontSize: 28 }} /> : <FavoriteBorderIcon sx={{ fontSize: 28 }} />}
-                          </IconButton>
-                        </Tooltip>
+                        <IconButton
+                          onClick={e => { e.preventDefault(); e.stopPropagation(); toggleFavorite(course.id); }}
+                          size="small"
+                          disabled={favLoading}
+                          sx={{
+                            color: favorites.includes(course.id) ? '#d93025' : 'text.secondary',
+                            transition: 'transform 0.15s',
+                            '&:hover': { transform: 'scale(1.15)' },
+                          }}
+                        >
+                          {favorites.includes(course.id) ? <FavoriteIcon sx={{ fontSize: 22 }} /> : <FavoriteBorderIcon sx={{ fontSize: 22 }} />}
+                        </IconButton>
                       )}
                     </Box>
                   </Card>
@@ -229,4 +240,4 @@ const Courses = () => {
   );
 };
 
-export default Courses; 
+export default Courses;

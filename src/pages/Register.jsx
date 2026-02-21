@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Container, Typography, Box, Button, TextField, Alert, Stack, IconButton, InputAdornment, Link as MuiLink, Divider, Skeleton } from '@mui/material';
+import { Container, Typography, Box, Button, TextField, Alert, Stack, IconButton, InputAdornment, Link as MuiLink, Divider, Paper, useTheme } from '@mui/material';
 import { supabase } from '../supabaseClient';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -10,15 +10,12 @@ import { validateTurnstileToken } from '../utils/turnstileValidation';
 import { validatePassword } from '../utils/passwordValidation';
 import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
 
-// Επίσημο Google G logo
-const GoogleLogo = (
-  <svg width="22" height="22" viewBox="0 0 48 48" style={{ marginRight: 8 }}>
-    <g>
-      <path d="M44.5 20H24v8.5h11.7C34.9 33.9 30.2 37 24 37c-7.2 0-13-5.8-13-13s5.8-13 13-13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.5 29.6 2 24 2 12.9 2 4 10.9 4 22s8.9 20 20 20c11 0 19.7-8 19.7-20 0-1.3-.1-2.7-.3-4z" fill="#FFC107"/>
-      <path d="M6.3 14.7l7 5.1C15.1 16.2 19.2 13 24 13c3.1 0 5.9 1.1 8.1 2.9l6.4-6.4C34.6 4.5 29.6 2 24 2 15.3 2 7.7 7.6 6.3 14.7z" fill="#FF3D00"/>
-      <path d="M24 44c5.2 0 10-1.8 13.7-4.9l-6.3-5.2C29.7 35.5 27 36.5 24 36.5c-6.1 0-11.3-4.1-13.1-9.6l-7 5.4C7.7 40.4 15.3 44 24 44z" fill="#4CAF50"/>
-      <path d="M44.5 20H24v8.5h11.7c-1.1 3.1-4.2 5.5-7.7 5.5-2.2 0-4.2-.7-5.7-2l-7 5.4C15.3 40.4 19.4 44 24 44c7.2 0 13-5.8 13-13 0-1.3-.1-2.7-.3-4z" fill="#1976D2"/>
-    </g>
+const GoogleIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18">
+    <path d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.21 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.875 2.684-6.615z" fill="#4285F4" />
+    <path d="M9 18c2.43 0 4.467-.806 5.956-2.18l-2.908-2.259c-.806.54-1.837.86-3.048.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332C2.438 15.983 5.482 18 9 18z" fill="#34A853" />
+    <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05" />
+    <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.428 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335" />
   </svg>
 );
 
@@ -29,17 +26,12 @@ const Register = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 600);
   const [turnstileToken, setTurnstileToken] = useState('');
   const [canSubmit, setCanSubmit] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
   const navigate = useNavigate();
-
-  React.useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 600);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -49,27 +41,25 @@ const Register = () => {
       return;
     }
 
-    // Frontend password validation
     const passwordValidation = validatePassword(password);
     if (!passwordValidation.isValid) {
       setError('Ο κωδικός δεν πληροί τις απαιτήσεις ασφαλείας.');
-      enqueueSnackbar('Ο κωδικός δεν πληροί τις απαιτήσεις ασφαλείας.', { variant: 'error' });
+      enqueueSnackbar('Ο κωδικός δεν πληροί τις απαιτήσεις.', { variant: 'error' });
       return;
     }
 
     setLoading(true);
     setError('');
     setMessage('');
-    
-    // Server-side validation of Turnstile token
+
     const validationResult = await validateTurnstileToken(turnstileToken);
     if (!validationResult.success) {
       setError('Η επαλήθευση απέτυχε. Παρακαλώ δοκιμάστε ξανά.');
-      enqueueSnackbar('Η επαλήθευση απέτυχε. Παρακαλώ δοκιμάστε ξανά.', { variant: 'error' });
+      enqueueSnackbar('Η επαλήθευση απέτυχε.', { variant: 'error' });
       setLoading(false);
       return;
     }
-    
+
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) {
       setError(error.message);
@@ -93,108 +83,63 @@ const Register = () => {
     setLoading(false);
   };
 
-  if (loading) return (
-    <Container maxWidth="xs" sx={{ mt: 8, mb: 4 }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography variant="h5" color="#212121" gutterBottom align={isMobile ? 'center' : 'left'}>
-          ΕΓΓΡΑΦΗ
-        </Typography>
-        <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 2, mb: 2 }} />
-        <Divider sx={{ my: 2, width: '100%' }}><Typography sx={{ color: '#888', fontWeight: 500 }}>Ή</Typography></Divider>
-        <Box sx={{ mt: 0, width: '100%' }}>
-          <Stack spacing={2} direction="column">
-            <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
-            <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
-            <Skeleton variant="rectangular" height={40} sx={{ borderRadius: 2 }} />
-          </Stack>
-        </Box>
-      </Box>
-    </Container>
-  );
-
   return (
-    <Container maxWidth="xs" sx={{ mt: 8, mb: 4 }}>
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Typography variant="h5" color="#212121" gutterBottom align={isMobile ? 'center' : 'left'}>
-          ΕΓΓΡΑΦΗ
+    <Box sx={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', pt: { xs: 2, md: 4 }, pb: { xs: 12, md: 4 }, px: 2 }}>
+      <Paper
+        sx={{
+          width: '100%',
+          maxWidth: 420,
+          p: { xs: 3, sm: 4 },
+          border: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <Typography variant="h5" sx={{ fontWeight: 800, mb: 0.5, textAlign: 'center', color: 'text.primary' }}>
+          Εγγραφή
         </Typography>
+        <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', mb: 3 }}>
+          Δημιουργήστε τον λογαριασμό σας
+        </Typography>
+
+        {/* Google Button */}
         <Button
           variant="outlined"
           fullWidth
-          startIcon={
-            <svg width="18" height="18" viewBox="0 0 18 18" style={{ marginRight: 8 }}>
-              <g>
-                <path d="M17.64 9.2045c0-.638-.0573-1.2518-.1636-1.8363H9v3.4818h4.8445c-.2082 1.1236-.8345 2.0763-1.7763 2.719v2.2582h2.8736c1.6845-1.5527 2.6582-3.8418 2.6582-6.6227z" fill="#4285F4"/>
-                <path d="M9 18c2.43 0 4.4673-.8064 5.9564-2.1864l-2.8736-2.2582c-.7973.5345-1.8136.8491-3.0827.8491-2.3718 0-4.3818-1.6018-5.0982-3.7573H.9391v2.2936C2.4227 16.9782 5.4818 18 9 18z" fill="#34A853"/>
-                <path d="M3.9018 10.6473c-.1818-.5345-.2864-1.1045-.2864-1.6473s.1045-1.1127.2864-1.6473V5.0591H.9391C.3409 6.2373 0 7.5745 0 9c0 1.4255.3409 2.7627.9391 3.9409l2.9627-2.2936z" fill="#FBBC05"/>
-                <path d="M9 3.5791c1.3218 0 2.5027.4545 3.4336 1.3455l2.5755-2.5755C13.4645.8064 11.4273 0 9 0 5.4818 0 2.4227 1.0218.9391 3.0591l2.9627 2.2936C4.6182 4.4282 6.6282 3.5791 9 3.5791z" fill="#EA4335"/>
-              </g>
-            </svg>
-          }
+          startIcon={<GoogleIcon />}
           onClick={handleGoogleLogin}
           disabled={loading}
           sx={{
-            backgroundColor: '#fff',
-            color: '#3c4043',
-            borderColor: '#dadce0',
+            mb: 2.5,
+            py: 1.2,
+            borderColor: isDark ? 'rgba(255,255,255,0.23)' : '#dadce0',
+            color: isDark ? 'text.primary' : '#3c4043',
             fontWeight: 500,
-            borderRadius: 2,
-            minHeight: 40,
-            textTransform: 'none',
-            fontFamily: 'Roboto, Arial, sans-serif',
-            fontSize: '1rem',
-            boxShadow: '0 1px 2px rgba(60,64,67,.08)',
-            mb: 2,
+            fontSize: '0.938rem',
             '&:hover': {
-              backgroundColor: '#f7f8fa',
-              borderColor: '#dadce0',
-              boxShadow: '0 1px 3px rgba(60,64,67,.15)',
-            },
-            '&:focus': {
-              outline: 'none',
-              boxShadow: 'none',
-              borderColor: '#dadce0',
-            },
-            '&:focus-visible': {
-              outline: 'none',
-              boxShadow: 'none',
-              borderColor: '#dadce0',
+              bgcolor: isDark ? 'rgba(255,255,255,0.05)' : '#f8f9fa',
+              borderColor: isDark ? 'rgba(255,255,255,0.4)' : '#dadce0',
             },
           }}
         >
-          ΕΓΓΡΑΦΗ ΜΕ GOOGLE
+          Εγγραφή με Google
         </Button>
-        <Divider sx={{ my: 2, width: '100%' }}><Typography sx={{ color: '#888', fontWeight: 500 }}>Ή</Typography></Divider>
-        <Box component="form" sx={{ mt: 0, width: '100%' }} onSubmit={handleSignUp}>
-          <Stack spacing={2} direction="column">
+
+        <Divider sx={{ my: 2 }}>
+          <Typography variant="body2" sx={{ color: 'text.secondary', px: 1 }}>ή</Typography>
+        </Divider>
+
+        {/* Form */}
+        <Box component="form" onSubmit={handleSignUp}>
+          <Stack spacing={2}>
             <TextField
               label="Email"
               type="email"
               fullWidth
               value={email}
               onChange={e => setEmail(e.target.value)}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '&:hover fieldset': {
-                    borderColor: '#212121',
-                    borderWidth: '1px',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#212121',
-                    borderWidth: '1px',
-                    boxShadow: 'none',
-                  },
-                  '&.Mui-focused': {
-                    backgroundColor: 'transparent',
-                  },
-                  '&.MuiInputBase-input': {
-                    backgroundColor: 'transparent',
-                  },
-                },
-              }}
             />
             <TextField
-              label="ΚΩΔΙΚΟΣ"
+              label="Κωδικός"
               type={showPassword ? 'text' : 'password'}
               fullWidth
               value={password}
@@ -203,102 +148,53 @@ const Register = () => {
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={() => setShowPassword((show) => !show)}
+                      onClick={() => setShowPassword(s => !s)}
                       edge="end"
-                      sx={{
-                        '&:focus': {
-                          outline: 'none',
-                          boxShadow: 'none',
-                        },
-                        '&:focus-visible': {
-                          outline: 'none',
-                          boxShadow: 'none',
-                        },
-                      }}
+                      size="small"
                     >
-                      {showPassword ? <VisibilityOff /> : <Visibility />}
+                      {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                     </IconButton>
                   </InputAdornment>
                 ),
               }}
-              sx={{
-                '& .MuiOutlinedInput-root': {
-                  '&:hover fieldset': {
-                    borderColor: '#212121',
-                    borderWidth: '1px',
-                  },
-                  '&.Mui-focused fieldset': {
-                    borderColor: '#212121',
-                    borderWidth: '1px',
-                    boxShadow: 'none',
-                  },
-                  '&.Mui-focused': {
-                    backgroundColor: 'transparent',
-                  },
-                  '&.MuiInputBase-input': {
-                    backgroundColor: 'transparent',
-                  },
-                },
-              }}
             />
             <PasswordStrengthIndicator password={password} />
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 2 }}>
+
+            <Box sx={{ display: 'flex', justifyContent: 'center', my: 1 }}>
               <Turnstile
                 siteKey="0x4AAAAAABiQtKNjlTVw7zFL"
-                onSuccess={(token) => {
-                  setTurnstileToken(token);
-                  setCanSubmit(true);
-                }}
-                onExpire={() => {
-                  setTurnstileToken('');
-                  setCanSubmit(false);
-                }}
-                onError={() => {
-                  setTurnstileToken('');
-                  setCanSubmit(false);
-                }}
-                theme="light"
+                onSuccess={(token) => { setTurnstileToken(token); setCanSubmit(true); }}
+                onExpire={() => { setTurnstileToken(''); setCanSubmit(false); }}
+                onError={() => { setTurnstileToken(''); setCanSubmit(false); }}
+                theme={isDark ? 'dark' : 'light'}
                 size="normal"
               />
             </Box>
+
             {error && <Alert severity="error">{error}</Alert>}
             {message && <Alert severity="success">{message}</Alert>}
+
             <Button
               variant="contained"
-              color="primary"
               fullWidth
-              sx={{ fontSize: isMobile ? '1.1rem' : '1rem', py: isMobile ? 2 : 1 }}
-              onClick={handleSignUp}
               type="submit"
               disabled={loading || !canSubmit || !validatePassword(password).isValid}
+              sx={{ py: 1.3, fontSize: '0.938rem' }}
             >
-              ΕΓΓΡΑΦΗ
+              Εγγραφή
             </Button>
-            <Box sx={{ mt: 2, textAlign: 'center' }}>
-              <Typography component="span" sx={{ fontWeight: 500, fontSize: '1.05rem', letterSpacing: 0.5, textTransform: 'none', color: '#888', fontFamily: 'Roboto, Arial, sans-serif' }}>
-                Έχεις ήδη λογαριασμό;
-              </Typography>{' '}
-              <MuiLink component={Link} to="/login" underline="none" sx={{
-                fontWeight: 700,
-                color: '#212121',
-                fontSize: '1.05rem',
-                letterSpacing: 0.5,
-                transition: 'color 0.2s',
-                '&:hover': {
-                  color: '#212121',
-                  textDecoration: 'none',
-                  textShadow: 'none',
-                },
-              }}>
-                ΕΙΣΟΔΟΣ
+
+            <Typography variant="body2" sx={{ textAlign: 'center', color: 'text.secondary', mt: 1 }}>
+              Έχεις ήδη λογαριασμό;{' '}
+              <MuiLink component={Link} to="/login" underline="none" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                Είσοδος
               </MuiLink>
-            </Box>
+            </Typography>
           </Stack>
         </Box>
-      </Box>
-    </Container>
+      </Paper>
+    </Box>
   );
 };
 
-export default Register; 
+export default Register;

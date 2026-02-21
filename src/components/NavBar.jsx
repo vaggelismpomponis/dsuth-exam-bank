@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { AppBar, Toolbar, Typography, Button, Box, IconButton, Drawer, List, ListItem, ListItemButton, ListItemText, Skeleton, ListItemIcon, useTheme, useMediaQuery } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, IconButton, Drawer, List, ListItemButton, ListItemText, ListItemIcon, useTheme, useMediaQuery, Divider, Avatar } from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
-import { Link, useNavigate } from 'react-router-dom';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import { ColorModeContext, AdminSidebarContext } from '../App';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Menu from '@mui/material/Menu';
@@ -13,11 +16,11 @@ import LoginIcon from '@mui/icons-material/Login';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import ContactSupportIcon from '@mui/icons-material/ContactSupport';
-import Divider from '@mui/material/Divider';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { useSnackbar } from 'notistack';
 import { isUserAdmin } from '../utils/adminUtils';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 
 const NavBar = () => {
   const [user, setUser] = useState(undefined);
@@ -26,18 +29,16 @@ const NavBar = () => {
   const navigate = useNavigate();
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-  const [settingsAnchorEl, setSettingsAnchorEl] = useState(null);
-  const openSettings = Boolean(settingsAnchorEl);
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const colorMode = React.useContext(ColorModeContext);
   const { enqueueSnackbar } = useSnackbar();
+  const location = useLocation();
+  const adminSidebar = React.useContext(AdminSidebarContext);
+  const isAdminRoute = location.pathname.startsWith('/admin');
 
   useEffect(() => {
     const checkAdminStatus = async (user) => {
-      if (!user) {
-        setIsAdmin(false);
-        return;
-      }
+      if (!user) { setIsAdmin(false); return; }
       const adminStatus = await isUserAdmin(user.id);
       setIsAdmin(adminStatus);
     };
@@ -47,16 +48,14 @@ const NavBar = () => {
       setUser(currentUser);
       checkAdminStatus(currentUser);
     });
-    
+
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
       const currentUser = session?.user || null;
       setUser(currentUser);
       checkAdminStatus(currentUser);
     });
-    
-    return () => {
-      listener?.subscription.unsubscribe();
-    };
+
+    return () => { listener?.subscription.unsubscribe(); };
   }, []);
 
   const handleLogout = async () => {
@@ -66,160 +65,201 @@ const NavBar = () => {
     navigate('/');
   };
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleProfile = () => {
-    navigate('/profile');
-    handleClose();
-  };
-  const handleLogoutMenu = async () => {
-    await handleLogout();
-    handleClose();
-  };
-  const handleSettingsMenu = (event) => {
-    setSettingsAnchorEl(event.currentTarget);
-  };
-  const handleSettingsClose = () => {
-    setSettingsAnchorEl(null);
-  };
-
-  const menuItems = [
-    { label: 'Αιτήματα Αρχείων', to: '/requests' },
-    { label: 'Ανέβασμα Αρχείων', to: '/upload' },
-    ...(user && isAdmin ? [{ label: 'Admin', to: '/admin' }] : []),
-    user
-      ? { label: 'Αποσύνδεση', action: handleLogout }
-      : { label: 'Είσοδος', to: '/login' },
+  const drawerItems = [
+    { label: 'Αρχική', to: '/', icon: <HomeIcon /> },
+    { label: 'Μαθήματα', to: '/courses', icon: <MenuBookIcon /> },
+    { label: 'Αγαπημένα', to: '/favorites', icon: <FavoriteIcon /> },
+    { label: 'Ανέβασμα', to: '/upload', icon: <UploadFileIcon /> },
+    { label: 'Αιτήματα', to: '/requests', icon: <QuestionAnswerIcon /> },
+    { label: 'Επικοινωνία', to: '/contact', icon: <ContactSupportIcon /> },
   ];
+
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   return (
     <>
-      <AppBar position="fixed" sx={{ top: 0, zIndex: theme.zIndex.appBar + 1, boxShadow: 0, background: '#282828' }}>
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: { xs: 56, md: 64 }, p: 0 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: { xs: 1, sm: 0 } }}>
+      <AppBar
+        position="fixed"
+        sx={{
+          top: 0,
+          pt: 'env(safe-area-inset-top, 0px)',
+          zIndex: theme.zIndex.appBar + 1,
+          background: theme.palette.mode === 'light' ? 'rgba(255,255,255,0.85)' : 'rgba(32,33,36,0.85)',
+          backdropFilter: 'blur(12px)',
+          borderBottom: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: { xs: 56, md: 64 }, px: { xs: 2, md: 3 } }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            {/* Admin hamburger */}
+            {isAdminRoute && adminSidebar.onToggle && (
+              <IconButton
+                edge="start"
+                onClick={adminSidebar.onToggle}
+                sx={{ color: 'text.primary' }}
+              >
+                <MenuIcon />
+              </IconButton>
+            )}
+            {/* Brand */}
             <Typography
-              variant="h5"
-              className="navbar-title"
+              variant="h6"
               sx={{
                 fontWeight: 800,
-                fontSize: { xs: 22, md: 28 },
-                color: '#fff',
-                letterSpacing: 1.5,
+                fontSize: { xs: 18, md: 20 },
+                color: 'primary.main',
+                letterSpacing: '-0.01em',
                 userSelect: 'none',
                 textDecoration: 'none',
                 cursor: 'pointer',
-                px: 2,
-                py: 0.5,
-                borderRadius: 1.5,
               }}
-              component={Link}
-              to="/"
+              onClick={() => {
+                if (location.pathname === '/') {
+                  window.scrollTo({ top: 0, behavior: 'smooth' });
+                } else {
+                  navigate('/');
+                }
+              }}
             >
               DSUth Exam Bank
             </Typography>
           </Box>
-          {/* Mobile/Tablet */}
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {/* Hamburger menu μόνο */}
-            <IconButton color="inherit" edge="end" onClick={() => setMobileOpen(true)} sx={{ mx: 1.5, '&:focus, &:focus-visible': { outline: 'none', boxShadow: 'none', border: 'none' } }}>
-              <MenuIcon />
+
+          {/* Right side */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+            {/* Theme Toggle */}
+            <IconButton sx={{ mr: 0.5, color: 'text.secondary' }} onClick={colorMode.toggleColorMode}>
+              {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
             </IconButton>
-            <Drawer anchor="right" open={mobileOpen} onClose={() => setMobileOpen(false)}
-              PaperProps={{
-                sx: {
-                  width: 260,
-                  borderTopLeftRadius: 24,
-                  borderBottomLeftRadius: 24,
-                  bgcolor: 'linear-gradient(135deg, #e3f0ff 0%, #f9fbff 100%)',
-                  boxShadow: 6,
-                  p: 0,
-                  overflow: 'hidden',
+
+            {/* User avatar / login */}
+            {user ? (
+              <IconButton
+                onClick={(e) => setAnchorEl(e.currentTarget)}
+                sx={{ ml: 0.5 }}
+              >
+                <Avatar
+                  sx={{
+                    width: 34,
+                    height: 34,
+                    bgcolor: 'primary.main',
+                    fontSize: 15,
+                    fontWeight: 700,
+                  }}
+                >
+                  {user.email?.[0]?.toUpperCase() || 'U'}
+                </Avatar>
+              </IconButton>
+            ) : (
+              <IconButton
+                component={Link}
+                to="/login"
+                sx={{ color: 'text.secondary' }}
+              >
+                <AccountCircle sx={{ fontSize: 30 }} />
+              </IconButton>
+            )}
+
+            {/* User menu */}
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={() => setAnchorEl(null)}
+              slotProps={{
+                paper: {
+                  sx: { borderRadius: 3, minWidth: 200, mt: 1, boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }
                 }
               }}
+              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-              <Box sx={{ width: '100%', position: 'relative', minHeight: '100vh', p: 0 }} role="presentation" onClick={() => setMobileOpen(false)}>
-                {/* Header with logo/title and close */}
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, py: 2, bgcolor: 'rgba(40,56,80,0.07)', borderBottom: '1px solid #e0e7ef' }}>
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: '#1a237e', letterSpacing: 0.5 }}>
-                    Τράπεζα UTH
-                  </Typography>
-                  <IconButton
-                    edge="end"
-                    aria-label="close"
-                    onClick={(e) => { e.stopPropagation(); setMobileOpen(false); }}
-                    sx={{
-                      color: 'grey.700',
-                      position: 'absolute', right: 14, top: 5, p: 1.2,
-                      '&:focus, &:focus-visible': { outline: 'none !important', boxShadow: 'none !important', border: 'none !important' }
-                    }}
-                  >
-                    <CloseIcon fontSize="large" />
-                  </IconButton>
-                </Box>
-                <List sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'stretch', p: 0, mt: 1 }}>
-                  <ListItemButton component={Link} to="/" sx={{ my: 0.5, mx: 2, borderRadius: 2, py: 1.5, px: 2, '&:hover': { bgcolor: '#e3eaff' }, justifyContent: 'flex-start' }}>
-                    <ListItemIcon sx={{ minWidth: 36, color: '#1a237e' }}><HomeIcon /></ListItemIcon>
-                    <ListItemText primary="ΑΡΧΙΚΗ" sx={{ color: '#1a237e', fontWeight: 600 }} />
-                  </ListItemButton>
-                  <ListItemButton component={Link} to="/courses" sx={{ my: 0.5, mx: 2, borderRadius: 2, py: 1.5, px: 2, '&:hover': { bgcolor: '#e3eaff' }, justifyContent: 'flex-start' }}>
-                    <ListItemIcon sx={{ minWidth: 36, color: '#1976d2' }}><MenuBookIcon /></ListItemIcon>
-                    <ListItemText primary="ΜΑΘΗΜΑΤΑ" sx={{ color: '#1976d2', fontWeight: 600 }} />
-                  </ListItemButton>
-                  <ListItemButton component={Link} to="/favorites" sx={{ my: 0.5, mx: 2, borderRadius: 2, py: 1.5, px: 2, '&:hover': { bgcolor: '#ffe3e3' }, justifyContent: 'flex-start' }}>
-                    <ListItemIcon sx={{ minWidth: 36, color: '#e53935' }}><FavoriteIcon /></ListItemIcon>
-                    <ListItemText primary="ΑΓΑΠΗΜΕΝΑ" sx={{ color: '#e53935', fontWeight: 600 }} />
-                  </ListItemButton>
-                  <ListItemButton component={Link} to="/upload" sx={{ my: 0.5, mx: 2, borderRadius: 2, py: 1.5, px: 2, '&:hover': { bgcolor: '#e3f7e3' }, justifyContent: 'flex-start' }}>
-                    <ListItemIcon sx={{ minWidth: 36, color: '#43a047' }}><UploadFileIcon /></ListItemIcon>
-                    <ListItemText primary="ΑΝΕΒΑΣΜΑ ΑΡΧΕΙΩΝ" sx={{ color: '#43a047', fontWeight: 600 }} />
-                  </ListItemButton>
-                  <ListItemButton component={Link} to="/requests" sx={{ my: 0.5, mx: 2, borderRadius: 2, py: 1.5, px: 2, '&:hover': { bgcolor: '#eef7ff' }, justifyContent: 'flex-start' }}>
-                    <ListItemIcon sx={{ minWidth: 36, color: '#1a73e8' }}><ContactSupportIcon /></ListItemIcon>
-                    <ListItemText primary="ΑΙΤΗΜΑΤΑ ΑΡΧΕΙΩΝ" sx={{ color: '#1a73e8', fontWeight: 600 }} />
-                  </ListItemButton>
-                  <ListItemButton component={Link} to="/contact" sx={{ my: 0.5, mx: 2, borderRadius: 2, py: 1.5, px: 2, '&:hover': { bgcolor: '#e0f7fa' }, justifyContent: 'flex-start' }}>
-                    <ListItemIcon sx={{ minWidth: 36, color: '#00bcd4' }}><ContactSupportIcon /></ListItemIcon>
-                    <ListItemText primary="ΕΠΙΚΟΙΝΩΝΙΑ" sx={{ color: '#00bcd4', fontWeight: 600 }} />
-                  </ListItemButton>
-                  {/* Divider */}
-                  <Divider sx={{ my: 1, mx: 2 }} />
-                  {/* Profile/Admin/Login/Logout */}
-                  {user && (
-                    <>
-                      {isAdmin && (
-                        <ListItemButton component={Link} to="/admin" sx={{ my: 0.5, mx: 2, borderRadius: 2, py: 1.5, px: 2, '&:hover': { bgcolor: '#fffbe3' }, justifyContent: 'flex-start' }}>
-                          <ListItemIcon sx={{ minWidth: 36, color: '#fbc02d' }}><SettingsIcon /></ListItemIcon>
-                          <ListItemText primary="ΡΥΘΜΙΣΕΙΣ ADMIN" sx={{ color: '#fbc02d', fontWeight: 600 }} />
-                        </ListItemButton>
-                      )}
-                      <ListItemButton component={Link} to="/profile" sx={{ my: 0.5, mx: 2, borderRadius: 2, py: 1.5, px: 2, '&:hover': { bgcolor: '#e3eaff' }, justifyContent: 'flex-start' }}>
-                        <ListItemIcon sx={{ minWidth: 36, color: '#1976d2' }}><AccountCircle /></ListItemIcon>
-                        <ListItemText primary="ΡΥΘΜΙΣΕΙΣ ΠΡΟΦΙΛ" sx={{ color: '#1976d2', fontWeight: 600 }} />
-                      </ListItemButton>
-                      <ListItemButton onClick={handleLogout} sx={{ my: 0.5, mx: 2, borderRadius: 2, py: 1.5, px: 2, '&:hover': { bgcolor: '#ffe3e3' }, justifyContent: 'flex-start' }}>
-                        <ListItemIcon sx={{ minWidth: 36, color: '#e53935' }}><LogoutIcon /></ListItemIcon>
-                        <ListItemText primary="ΑΠΟΣΥΝΔΕΣΗ" sx={{ color: '#e53935', fontWeight: 600 }} />
-                      </ListItemButton>
-                    </>
-                  )}
-                  {!user && (
-                    <ListItemButton component={Link} to="/login" sx={{ my: 0.5, mx: 2, borderRadius: 2, py: 1.5, px: 2, '&:hover': { bgcolor: '#e3eaff' }, justifyContent: 'flex-start' }}>
-                      <ListItemIcon sx={{ minWidth: 36, color: '#1976d2' }}><LoginIcon /></ListItemIcon>
-                      <ListItemText primary="ΕΙΣΟΔΟΣ" sx={{ color: '#1976d2', fontWeight: 600 }} />
-                    </ListItemButton>
-                  )}
-                </List>
-              </Box>
-            </Drawer>
+              <MenuItem onClick={() => { navigate('/profile'); setAnchorEl(null); }}>
+                <ListItemIcon><AccountCircle fontSize="small" /></ListItemIcon>
+                Προφίλ
+              </MenuItem>
+              {isAdmin && (
+                <MenuItem onClick={() => { navigate('/admin'); setAnchorEl(null); }}>
+                  <ListItemIcon><SettingsIcon fontSize="small" /></ListItemIcon>
+                  Admin
+                </MenuItem>
+              )}
+              <Divider />
+              <MenuItem onClick={() => { handleLogout(); setAnchorEl(null); }} sx={{ color: 'error.main' }}>
+                <ListItemIcon><LogoutIcon fontSize="small" sx={{ color: 'error.main' }} /></ListItemIcon>
+                Αποσύνδεση
+              </MenuItem>
+            </Menu>
+
+            {/* Hamburger — visible everywhere */}
+            <IconButton
+              edge="end"
+              onClick={() => setMobileOpen(true)}
+              sx={{ color: 'text.primary' }}
+            >
+              <MenuIcon />
+            </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
+
+      {/* Side Drawer */}
+      <Drawer
+        anchor="right"
+        open={mobileOpen}
+        onClose={() => setMobileOpen(false)}
+        PaperProps={{
+          sx: {
+            width: 280,
+            bgcolor: 'background.paper',
+            p: 0,
+          }
+        }}
+      >
+        <Box sx={{ width: '100%', minHeight: '100vh', pt: 'env(safe-area-inset-top, 0px)' }} role="presentation" onClick={() => setMobileOpen(false)}>
+          {/* Drawer Header */}
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2.5, py: 2.5, borderBottom: '1px solid', borderColor: 'divider' }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main', fontSize: 17 }}>
+              DSUth Exam Bank
+            </Typography>
+            <IconButton
+              edge="end"
+              onClick={(e) => { e.stopPropagation(); setMobileOpen(false); }}
+              sx={{ color: 'text.secondary' }}
+            >
+              <CloseIcon />
+            </IconButton>
+          </Box>
+
+          {/* Drawer Links */}
+          <List sx={{ px: 1.5, pt: 1 }}>
+            {drawerItems.map((item) => (
+              <ListItemButton
+                key={item.label}
+                component={Link}
+                to={item.to}
+                sx={{
+                  borderRadius: 3,
+                  mb: 0.5,
+                  py: 1.2,
+                  px: 2,
+                  '&:hover': { bgcolor: 'primary.light' },
+                }}
+              >
+                <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
+                  {item.icon}
+                </ListItemIcon>
+                <ListItemText
+                  primary={item.label}
+                  primaryTypographyProps={{ fontWeight: 500, fontSize: '0.95rem', color: 'text.primary' }}
+                />
+              </ListItemButton>
+            ))}
+          </List>
+        </Box>
+      </Drawer>
     </>
   );
 };
 
-export default NavBar; 
+export default NavBar;

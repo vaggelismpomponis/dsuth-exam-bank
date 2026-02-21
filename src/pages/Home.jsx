@@ -1,70 +1,41 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Box, TextField, MenuItem, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, CircularProgress, Card, CardContent, CardActions, Stack, Grid, Skeleton, Drawer, IconButton, Tooltip, useMediaQuery } from '@mui/material';
+import { Container, Typography, Box, Button, Paper, Stack, Skeleton, IconButton } from '@mui/material';
+import DescriptionIcon from '@mui/icons-material/Description';
 import { supabase } from '../supabaseClient';
-import SchoolIcon from '@mui/icons-material/School';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
-import FilterListIcon from '@mui/icons-material/FilterList';
-import CloseIcon from '@mui/icons-material/Close';
 import VisibilityIcon from '@mui/icons-material/Visibility';
-import DownloadIcon from '@mui/icons-material/Download';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-import SearchIcon from '@mui/icons-material/Search';
-import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
-import PersonIcon from '@mui/icons-material/Person';
-import SecurityIcon from '@mui/icons-material/Security';
-import InfoIcon from '@mui/icons-material/Info';
 import HelpIcon from '@mui/icons-material/Help';
+import PersonIcon from '@mui/icons-material/Person';
+import InfoIcon from '@mui/icons-material/Info';
+import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
-
-const periods = ['Ιανουάριος', 'Ιούνιος', 'Σεπτέμβριος'];
+import { useTheme } from '@mui/material/styles';
 
 const Home = () => {
   const [exams, setExams] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [allCourses, setAllCourses] = useState([]);
-  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   const [user, setUser] = useState(null);
-  const [examFavorites, setExamFavorites] = useState([]);
-  const [favLoading, setFavLoading] = useState(false);
-  const [courseFavorites, setCourseFavorites] = useState([]);
-  const [favCourseLoading, setFavCourseLoading] = useState(false);
   const { enqueueSnackbar } = useSnackbar();
-
-  const isMobileOrTablet = windowWidth < 900;
-
-  useEffect(() => {
-    const handleResize = () => setWindowWidth(window.innerWidth);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
-
-  const isMobile = windowWidth < 600;
-  const isTablet = windowWidth >= 600 && windowWidth < 900;
-  const isDesktop = windowWidth >= 900 && windowWidth < 1536;
-  const isUltraWide = windowWidth >= 1536;
+  const navigate = useNavigate();
+  const theme = useTheme();
 
   useEffect(() => {
     const fetchExams = async () => {
       setLoading(true);
-      let query = supabase.from('exams').select('*').eq('approved', true).order('created_at', { ascending: false }).limit(6);
-      const { data, error } = await query;
+      const { data, error } = await supabase
+        .from('exams')
+        .select('*')
+        .eq('approved', true)
+        .order('created_at', { ascending: false })
+        .limit(6);
       if (!error) setExams(data);
       setLoading(false);
     };
     fetchExams();
-  }, []);
-
-  useEffect(() => {
-    const fetchCourses = async () => {
-      const { data, error } = await supabase.from('courses').select('*').order('semester, name', { ascending: true });
-      if (!error && data) {
-        setAllCourses(data);
-      }
-    };
-    fetchCourses();
   }, []);
 
   useEffect(() => {
@@ -74,846 +45,321 @@ const Home = () => {
   }, []);
 
   useEffect(() => {
-    if (!user) return;
-    supabase
-      .from('favorites_exams')
-      .select('exam_id')
-      .eq('user_id', user.id)
-      .then(({ data, error }) => {
-        if (!error && data) {
-          setExamFavorites(data.map(f => f.exam_id));
-        }
-      });
-  }, [user]);
-
-  useEffect(() => {
-    if (!user) return;
-    setFavCourseLoading(true);
-    supabase
-      .from('favorites')
-      .select('course_id')
-      .eq('user_id', user.id)
-      .then(({ data, error }) => {
-        if (!error && data) {
-          setCourseFavorites(data.map(f => f.course_id));
-        }
-        setFavCourseLoading(false);
-      });
-  }, [user]);
-
-  useEffect(() => {
     if (localStorage.getItem('googleLoginSuccess')) {
       enqueueSnackbar('Επιτυχής είσοδος με Google!', { variant: 'success' });
       localStorage.removeItem('googleLoginSuccess');
     }
   }, []);
 
-  const toggleExamFavorite = async (examId) => {
-    if (!user) return;
-    setFavLoading(true);
-    if (examFavorites.includes(examId)) {
-      await supabase.from('favorites_exams').delete().eq('user_id', user.id).eq('exam_id', examId);
-      setExamFavorites(examFavorites.filter(id => id !== examId));
-    } else {
-      await supabase.from('favorites_exams').insert([{ user_id: user.id, exam_id: examId }]);
-      setExamFavorites([...examFavorites, examId]);
-    }
-    setFavLoading(false);
-  };
-
-  const toggleCourseFavorite = async (courseId) => {
-    if (!user) return;
-    setFavCourseLoading(true);
-    if (courseFavorites.includes(courseId)) {
-      await supabase.from('favorites').delete().eq('user_id', user.id).eq('course_id', courseId);
-      setCourseFavorites(courseFavorites.filter(id => id !== courseId));
-    } else {
-      await supabase.from('favorites').insert([{ user_id: user.id, course_id: courseId }]);
-      setCourseFavorites([...courseFavorites, courseId]);
-    }
-    setFavCourseLoading(false);
-  };
+  /* ── Feature cards data ── */
+  const features = [
+    { icon: <UploadFileIcon />, title: 'Ανέβασμα Αρχείων', desc: 'Προσθέστε θέματα εξετάσεων για να βοηθήσετε την κοινότητα', href: '/upload', color: '#1a73e8' },
+    { icon: <HelpIcon />, title: 'Αίτηση Αρχείων', desc: 'Ζητήστε αρχεία που δεν βρίσκονται στην πλατφόρμα', href: '/requests', color: '#ea8600' },
+    { icon: <MenuBookIcon />, title: 'Μαθήματα', desc: 'Εξερευνήστε όλα τα μαθήματα και τα αρχεία τους', href: '/courses', color: '#1e8e3e' },
+    { icon: <FavoriteIcon />, title: 'Αγαπημένα', desc: 'Αποθηκεύστε μαθήματα για γρήγορη πρόσβαση', href: '/favorites', color: '#d93025' },
+    { icon: <PersonIcon />, title: 'Προφίλ', desc: 'Διαχειριστείτε τον λογαριασμό σας', href: '/profile', color: '#e37400' },
+    { icon: <QuestionAnswerIcon />, title: 'Επικοινωνία', desc: 'Στείλτε μας τις απορίες σας', href: '/contact', color: '#1a73e8' },
+  ];
 
   return (
     <Box sx={{
       width: '100vw',
       minHeight: '100vh',
-      background: 'linear-gradient(135deg, #e3f0ff 0%, #f9fbff 100%)',
-      py: { xs: 0, sm: 0, md: 0 },
+      bgcolor: 'background.default',
       overflowX: 'hidden',
-      px: 0,
-      overflowY: 'auto',
+      pb: { xs: 10, md: 0 },
     }}>
-      {/* Hero section */}
-      <Box
-        sx={{
-          width: '100vw',
-          position: 'relative',
-          left: '50%',
-          right: '50%',
-          marginLeft: '-50vw',
-          marginRight: '-50vw',
-          maxWidth: '100vw',
-          boxShadow: '0 2px 8px 0 rgba(31,38,135,0.03)',
-          borderRadius: 0,
-          p: { xs: 2.5, sm: 5, md: 7 },
-          mb: { xs: 4, md: 6 },
-          minHeight: { xs: 320, md: 340 },
-          overflow: 'hidden',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'linear-gradient(120deg, #f4f6fb 0%, #dbeafe 60%, #f4f6f8 100%)',
-          border: '1.5px solid #e3eafc',
-        }}
-      >
-        <Box sx={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: 700, textAlign: { xs: 'center', md: 'left' }, mx: 'auto' }}>
-          <Typography
-            variant={isMobile ? 'h5' : isTablet ? 'h3' : 'h2'}
-            color="#212121"
-            gutterBottom
-            noWrap={false}
-            sx={{
-              fontWeight: 900,
-              mb: 1,
-              letterSpacing: '-1px',
-              // Keep consistent size on very large screens
-              fontSize: 'clamp(2rem, 4vw, 3rem)',
-              whiteSpace: 'normal',
-              wordBreak: 'normal',
-              display: 'block',
-              width: '100%',
-              maxWidth: '100%',
-              color: '#212121',
-            }}
-          >
-            <SchoolIcon sx={{ fontSize: { xs: 36, md: 56, xl: 72 }, mr: 1, mb: -0.5, color: '#1976d2', verticalAlign: 'middle' }} />
-            DSUth Exam Bank
-          </Typography>
-          <Typography
-            variant={isMobile ? 'body1' : 'h5'}
-            sx={{ mb: 2, color: '#212121', fontWeight: 600, fontSize: 'clamp(1rem, 2.2vw, 1.5rem)' }}
-          >
-            ΨΗΦΙΑΚΑ ΣΥΣΤΗΜΑΤΑ, ΠΑΝΕΠΙΣΤΗΜΙΟ ΘΕΣΣΑΛΙΑΣ
-          </Typography>
-          <Typography
-            variant="body1"
-            sx={{ mb: 3, color: '#212121', maxWidth: 600, fontSize: 'clamp(0.95rem, 1.6vw, 1.125rem)', fontWeight: 500, mx: { xs: 'auto', md: 0 } }}
-          >
-            Βρες, κατέβασε ή μοιράσου θέματα και αρχεία προηγούμενων εξετάσεων της σχολής. Η γνώση ανήκει σε όλους!
-          </Typography>
-          <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mb: 2, width: '100%', maxWidth: 500, mx: { xs: 'auto', md: 0 } }}>
+      {/* ── Container ── */}
+      <Box sx={{ maxWidth: 800, mx: 'auto', px: { xs: 2.5, md: 4 }, pt: { xs: 2.5, md: 5 } }}>
+
+        {/* Mobile Title */}
+        <Typography variant="h5" sx={{ fontWeight: 700, mb: 2, display: { md: 'none' }, color: 'text.primary' }}>
+          DSUth Exam Bank
+        </Typography>
+
+        {/* ── Hero Card ── */}
+        <Paper
+          sx={{
+            bgcolor: theme.palette.mode === 'light' ? '#1a73e8' : 'background.paper',
+            borderRadius: 4,
+            p: { xs: 3, md: 4 },
+            color: '#fff',
+            mb: 4,
+            position: 'relative',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Decorative circle */}
+          <Box sx={{
+            position: 'absolute',
+            top: -40,
+            right: -40,
+            width: 160,
+            height: 160,
+            borderRadius: '50%',
+            bgcolor: 'rgba(255,255,255,0.08)',
+          }} />
+          <Box sx={{
+            position: 'absolute',
+            bottom: -60,
+            left: -20,
+            width: 120,
+            height: 120,
+            borderRadius: '50%',
+            bgcolor: 'rgba(255,255,255,0.05)',
+          }} />
+
+          <Box sx={{ position: 'relative', zIndex: 1 }}>
+            <Typography variant="h5" sx={{ fontWeight: 800, mb: 0.5, fontSize: { xs: '1.4rem', md: '1.6rem' } }}>
+              Τράπεζα Θεμάτων
+            </Typography>
+            <Typography variant="body2" sx={{ opacity: 0.85, mb: 3, fontSize: '0.95rem' }}>
+              Παλιά θέματα & Σημειώσεις — Ψηφιακά Συστήματα UTH
+            </Typography>
+
+            <Stack direction="row" spacing={2}>
+              <Box sx={{
+                bgcolor: 'rgba(255,255,255,0.12)',
+                backdropFilter: 'blur(8px)',
+                borderRadius: 3,
+                p: 2,
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center'
+              }}>
+                <Typography variant="caption" sx={{ opacity: 0.75, display: 'block', fontSize: '0.75rem' }}>
+                  Θέματα
+                </Typography>
+                <Typography variant="h5" sx={{ fontWeight: 800 }}>
+                  150+
+                </Typography>
+              </Box>
+              <Box sx={{
+                bgcolor: 'rgba(255,255,255,0.12)',
+                backdropFilter: 'blur(8px)',
+                borderRadius: 3,
+                p: 2,
+                flex: 1,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center'
+              }}>
+                <Typography variant="caption" sx={{ opacity: 0.75, display: 'block', fontSize: '0.75rem' }}>
+                  Συνεισφέροντες
+                </Typography>
+                <Typography variant="h5" sx={{ fontWeight: 800 }}>
+                  25
+                </Typography>
+              </Box>
+            </Stack>
+          </Box>
+        </Paper>
+
+        {/* ── Recent Files ── */}
+        <Box sx={{ mb: 4 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: 'text.primary', fontSize: '1.1rem' }}>
+              Πρόσφατα Αρχεία
+            </Typography>
             <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              startIcon={<UploadFileIcon />}
-              href="/upload"
-              sx={{
-                fontWeight: 700,
-                fontSize: 'clamp(1rem, 1.5vw, 1.1rem)',
-                px: 3,
-                py: 1.2,
-                borderRadius: 2,
-                backgroundColor: '#1976d2',
-                color: '#fff',
-                boxShadow: 'none',
-                transition: 'background 0.2s, color 0.2s',
-                '&:hover': {
-                  backgroundColor: '#115293',
-                  color: '#fff',
-                  boxShadow: 'none',
-                },
-                width: { xs: '100%', sm: 'auto' },
-              }}
+              size="small"
+              endIcon={<ArrowForwardIcon sx={{ fontSize: 16 }} />}
+              onClick={() => navigate('/courses')}
+              sx={{ color: 'primary.main', fontWeight: 600, fontSize: '0.8rem' }}
             >
-              ΑΝΕΒΑΣΕ ΘΕΜΑ
+              Όλα
             </Button>
-            <Button
-              variant="outlined"
-              color="primary"
-              size="large"
-              startIcon={<MenuBookIcon />}
-              href="/courses"
-              sx={{
-                fontWeight: 700,
-                fontSize: 'clamp(1rem, 1.5vw, 1.1rem)',
-                px: 3,
-                py: 1.2,
-                borderRadius: 2,
-                backgroundColor: 'transparent',
-                color: '#1976d2',
-                borderWidth: 2,
-                borderColor: '#1976d2',
-                boxShadow: 'none',
-                transition: 'background 0.2s, color 0.2s',
-                '&:hover': {
-                  backgroundColor: '#e3f0ff',
-                  color: '#115293',
-                  borderColor: '#115293',
-                  boxShadow: 'none',
-                },
-                width: { xs: '100%', sm: 'auto' },
-              }}
-            >
-              ΔΕΣ ΤΑ ΜΑΘΗΜΑΤΑ 
-            </Button>
-          </Stack>
+          </Box>
+
+          {loading ? (
+            <Stack spacing={1.5}>
+              {[1, 2, 3].map(i => <Skeleton key={i} variant="rounded" height={68} />)}
+            </Stack>
+          ) : (
+            <Stack spacing={1.5}>
+              {exams.map((exam) => (
+                <Paper
+                  key={exam.id}
+                  sx={{
+                    p: 2,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    border: '1px solid',
+                    borderColor: 'divider',
+                    transition: 'box-shadow 0.15s, transform 0.15s',
+                    cursor: 'default',
+                    '&:hover': {
+                      boxShadow: '0 2px 12px rgba(0,0,0,0.06)',
+                      transform: 'translateY(-1px)',
+                    },
+                  }}
+                >
+                  <Stack direction="row" spacing={2} alignItems="center" sx={{ flex: 1, minWidth: 0 }}>
+                    <Box sx={{
+                      minWidth: 44,
+                      height: 44,
+                      borderRadius: 2.5,
+                      bgcolor: theme.palette.mode === 'light' ? '#e8f0fe' : 'rgba(255,255,255,0.08)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      color: theme.palette.mode === 'light' ? '#1a73e8' : '#8ab4f8',
+                    }}>
+                      <DescriptionIcon sx={{ fontSize: 22 }} />
+                    </Box>
+                    <Box sx={{ minWidth: 0 }}>
+                      <Typography variant="subtitle2" noWrap sx={{ fontWeight: 600, color: 'text.primary' }}>
+                        {exam.course || 'Άγνωστο Μάθημα'}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" noWrap sx={{ fontSize: '0.8rem' }}>
+                        {exam.year} {exam.period}
+                      </Typography>
+                    </Box>
+                  </Stack>
+
+                  <IconButton
+                    onClick={() => {
+                      const url = exam.file_url?.trim().replace(/\?$/, '') || '';
+                      const filename = url.split('/').pop().split('?')[0];
+                      const params = new URLSearchParams({
+                        url,
+                        name: filename,
+                        course: exam.courses?.name || '',
+                        period: exam.period || '',
+                        year: String(exam.year || ''),
+                      });
+                      navigate(`/viewer?${params.toString()}`);
+                    }}
+                    size="small"
+                    sx={{
+                      ml: 1,
+                      color: 'text.secondary',
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      borderRadius: 2.5,
+                      width: 38,
+                      height: 38,
+                      '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#e8f0fe' : 'rgba(255,255,255,0.08)', color: theme.palette.mode === 'light' ? 'primary.main' : '#8ab4f8', borderColor: theme.palette.mode === 'light' ? 'primary.light' : 'rgba(255,255,255,0.1)' },
+                    }}
+                  >
+                    <VisibilityIcon sx={{ fontSize: 18 }} />
+                  </IconButton>
+                </Paper>
+              ))}
+            </Stack>
+          )}
         </Box>
       </Box>
-      {/* Φίλτρα + Λίστα */}
-      <Container
-        disableGutters
-        maxWidth={false}
-        sx={{
-          mt: 0,
-          mb: 0,
-          pl: { xs: 3, sm: 5, md: 7 },
-          pr: { xs: 3, sm: 5, md: 7 },
-          width: '100%',
-          maxWidth: 1100,
-          mx: 'auto',
-          overflowX: 'clip',
-          pb: { xs: 4, md: 6 },
-        }}
-      >
-        <Typography variant="h6" align="center" sx={{ fontWeight: 700, mb: 3, color: '#212121', letterSpacing: 0.5 }}>
-          Δες τα τελευταία αρχεία που προστέθηκαν στην τράπεζα θεμάτων
-        </Typography>
-        {loading ? (
-          <Box sx={{ mt: 2 }}>
-            <Skeleton variant="rectangular" height={120} sx={{ borderRadius: 2 }} />
-          </Box>
-        ) : isMobileOrTablet ? (
-          <Stack spacing={2} sx={{ mt: 2 }}>
-            {exams.length === 0 ? (
-              <Typography align="center">Δεν βρέθηκαν αρχεία.</Typography>
-            ) : (
-              exams.map((exam) => {
-                const courseObj = allCourses.find(c => c.name === exam.course);
-                const courseId = courseObj ? courseObj.id : null;
-                return (
-                  <Box key={exam.id} sx={{ background: '#f8fafc', boxShadow: '0 2px 12px 0 rgba(31,38,135,0.08)', borderRadius: '18px', border: '1px solid #e3eafc', p: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                      <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                        Μάθημα: <span style={{ fontWeight: 400 }}>{exam.course}</span>
-                      </Typography>
-                      {user && courseId && (
-                        <IconButton
-                          color={courseFavorites.includes(courseId) ? 'error' : 'default'}
-                          onClick={() => toggleCourseFavorite(courseId)}
-                          disabled={favCourseLoading}
-                          sx={{ borderRadius: 1, ml: 0.5 }}
-                          size="small"
-                        >
-                          {courseFavorites.includes(courseId) ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
-                        </IconButton>
-                      )}
-                    </Box>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>Έτος: <span style={{ fontWeight: 400 }}>{exam.year}</span></Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 600 }}>Εξεταστική: <span style={{ fontWeight: 400 }}>{exam.period}</span></Typography>
-                    <Box sx={{ mt: 1 }}>
-                      <Button color="info" size="small" href={exam.file_url} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: '#e3f2fd', borderRadius: 1, '&:hover': { background: '#bbdefb' }, mr: 1 }}><VisibilityIcon /></Button>
-                      <Button color="primary" size="small" href={exam.file_url} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: '#e3eafc', borderRadius: 1, '&:hover': { background: '#c5cae9' }, mr: 1 }}><DownloadIcon /></Button>
-                    </Box>
-                  </Box>
-                );
-              })
-            )}
-          </Stack>
-        ) : (
-          <TableContainer component={Paper} sx={{ background: '#f8fafc', boxShadow: '0 2px 12px 0 rgba(31,38,135,0.08)', borderRadius: '18px', border: '1px solid #e3eafc', mt: 2 }}>
-            <Table>
-              <TableHead>
-                <TableRow>
-                  <TableCell sx={{ fontWeight: 700, color: '#212121', fontSize: 16 }}>Μάθημα</TableCell>
-                  <TableCell sx={{ fontWeight: 700, color: '#212121', fontSize: 16 }}>Έτος</TableCell>
-                  <TableCell sx={{ fontWeight: 700, color: '#212121', fontSize: 16 }}>Εξεταστική</TableCell>
-                  <TableCell sx={{ fontWeight: 700, color: '#212121', fontSize: 16 }}>Ενέργειες</TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {exams.length === 0 ? (
-                  <TableRow><TableCell colSpan={5} align="center">Δεν βρέθηκαν αρχεία.</TableCell></TableRow>
-                ) : exams.map((exam) => {
-                  const courseObj = allCourses.find(c => c.name === exam.course);
-                  const courseId = courseObj ? courseObj.id : null;
-                  return (
-                    <TableRow key={exam.id}>
-                      <TableCell>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                          {exam.course}
-                          {user && courseId && (
-                            <IconButton
-                              color={courseFavorites.includes(courseId) ? 'error' : 'default'}
-                              onClick={() => toggleCourseFavorite(courseId)}
-                              disabled={favCourseLoading}
-                              sx={{ borderRadius: 1, ml: 0.5 }}
-                              size="small"
-                            >
-                              {courseFavorites.includes(courseId) ? <FavoriteIcon fontSize="small" /> : <FavoriteBorderIcon fontSize="small" />}
-                            </IconButton>
-                          )}
-                        </Box>
-                      </TableCell>
-                      <TableCell>{exam.year}</TableCell>
-                      <TableCell>{exam.period}</TableCell>
-                      <TableCell>
-                        <Button color="info" size="small" href={exam.file_url} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: '#e3f2fd', borderRadius: 1, '&:hover': { background: '#bbdefb' }, mr: 1 }}><VisibilityIcon /></Button>
-                        <Button color="primary" size="small" href={exam.file_url} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: '#e3eafc', borderRadius: 1, '&:hover': { background: '#c5cae9' }, mr: 1 }}><DownloadIcon /></Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-              </TableBody>
-            </Table>
-          </TableContainer>
-        )}
-      </Container>
-      {/* Call to Action: Προτροπή για ανέβασμα αρχείων */}
+
+      {/* ── CTA Band ── */}
       <Box
         sx={{
-          mt: 4,
-          mb: 6,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          background: 'linear-gradient(120deg, #e3eafc 60%, #f4f6f8 100%)',
-          boxShadow: '0 4px 24px 0 rgba(25, 118, 210, 0.10)',
-          px: { xs: 2, sm: 4, md: 6 },
-          py: { xs: 4, sm: 5 },
-          width: '100%',
-          borderRadius: 0,
+          bgcolor: theme.palette.mode === 'light' ? '#e8f0fe' : 'background.paper',
+          py: { xs: 5, md: 6 },
+          px: { xs: 3, md: 4 },
+          textAlign: 'center',
         }}
       >
-        <Typography variant="h6" align="center" sx={{ fontWeight: 700, mb: 2, color: '#1976d2', letterSpacing: 0.5, textTransform: 'none' }}>
-          Έχεις παλιότερα θέματα ή αρχεία εξετάσεων;
+        <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: 'text.primary' }}>
+          Έχεις παλιά θέματα;
         </Typography>
-        <Typography align="center" sx={{ mb: 2, color: '#212121', maxWidth: 500, textTransform: 'none' }}>
-          Βοήθησε κι εσύ την κοινότητα στέλνοντας τα δικά σου αρχεία! Η γνώση ανήκει σε όλους.
+        <Typography sx={{ mb: 3, color: 'text.secondary', maxWidth: 480, mx: 'auto', fontSize: '0.95rem' }}>
+          Βοήθησε την κοινότητα στέλνοντας τα δικά σου αρχεία. Η γνώση ανήκει σε όλους.
         </Typography>
         <Button
           variant="contained"
-          color="primary"
           size="large"
           startIcon={<UploadFileIcon />}
           href="/upload"
-          sx={{
-            fontWeight: 700,
-            fontSize: { xs: '1.1rem', sm: '1.15rem' },
-            px: 4,
-            py: 1.5,
-            borderRadius: 2,
-            backgroundColor: '#1976d2',
-            color: '#fff',
-            boxShadow: 'none',
-            transition: 'background 0.2s, color 0.2s',
-            '&:hover': {
-              backgroundColor: '#115293',
-              color: '#fff',
-              boxShadow: 'none',
-            },
-            mt: 1,
-            textTransform: 'none',
-          }}
+          sx={{ px: 4, py: 1.5 }}
         >
-          Ανέβασε θέμα ή αρχείο
+          Ανέβασε αρχείο
         </Button>
       </Box>
 
-      {/* Δυνατότητες Χρηστών */}
-      <Container
-        maxWidth="lg"
-        sx={{
-          mb: 6,
-          px: { xs: 3, sm: 5, md: 7 },
-        }}
-      >
-        <Typography 
-          variant="h5" 
-          align="center" 
-          sx={{ 
-            fontWeight: 800, 
-            mb: 1, 
-            color: '#212121', 
-            letterSpacing: 0.5,
-            fontSize: { xs: '1.5rem', md: '2rem' }
-          }}
-        >
-          Δυνατότητες της Πλατφόρμας
+      {/* ── Features Grid ── */}
+      <Container maxWidth="lg" sx={{ py: { xs: 5, md: 7 }, px: { xs: 3, md: 5 } }}>
+        <Typography variant="h5" align="center" sx={{ fontWeight: 800, mb: 1, color: 'text.primary' }}>
+          Δυνατότητες
         </Typography>
-        <Typography 
-          align="center" 
-          sx={{ 
-            mb: 4, 
-            color: '#666', 
-            maxWidth: 600, 
-            mx: 'auto',
-            fontSize: { xs: '1rem', md: '1.1rem' }
-          }}
-        >
-          Ανακαλύψτε όλες τις δυνατότητες που σας προσφέρει η τράπεζα θεμάτων
+        <Typography align="center" sx={{ mb: 5, color: 'text.secondary', maxWidth: 500, mx: 'auto', fontSize: '0.95rem' }}>
+          Ανακαλύψτε τις δυνατότητες της πλατφόρμας
         </Typography>
 
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' },
-            gap: 3,
-            gridAutoRows: '1fr',
-            mb: 6,
+            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '1fr 1fr 1fr' },
+            gap: 2.5,
           }}
         >
-          {/* Αναζήτηση και Προσθήκη */}
-          <Box sx={{ display: 'flex', height: '100%' }}>
-            <Card 
-              sx={{ 
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                minHeight: 0,
-                background: 'linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%)',
-                border: '1px solid #e1f5fe',
-                borderRadius: 3,
-                transition: 'transform 0.2s, box-shadow 0.2s',
+          {features.map((f) => (
+            <Paper
+              key={f.title}
+              onClick={() => navigate(f.href)}
+              sx={{
+                p: 3,
+                cursor: 'pointer',
+                border: '1px solid',
+                borderColor: 'divider',
+                textAlign: 'center',
+                transition: 'all 0.2s',
                 '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
-                }
+                  borderColor: f.color,
+                  boxShadow: `0 4px 20px ${f.color}15`,
+                  transform: 'translateY(-3px)',
+                },
               }}
             >
-              <CardContent sx={{ p: 3, textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <Box>
-                  <UploadFileIcon 
-                    sx={{ 
-                      fontSize: 48, 
-                      color: '#1976d2', 
-                      mb: 2,
-                      background: 'rgba(25, 118, 210, 0.1)',
-                      borderRadius: '50%',
-                      p: 1
-                    }} 
-                  />
-                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
-                    Ανέβασμα Αρχείων
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
-                    Προσθέστε θέματα και αρχεία εξετάσεων για να βοηθήσετε την κοινότητα
-                  </Typography>
-                </Box>
-                <Button 
-                  variant="contained" 
-                  size="medium" 
-                  href="/upload"
-                  sx={{ 
-                    backgroundColor: '#1976d2',
-                    color: '#fff',
-                    fontWeight: 700,
-                    fontSize: '0.95rem',
-                    px: 3,
-                    py: 1.2,
-                    borderRadius: 2,
-                    border: 'none',
-                    boxShadow: '0 2px 8px rgba(25, 118, 210, 0.3)',
-                    textTransform: 'none',
-                    '&:focus': {
-                      outline: 'none'
-                    }
-                  }}
-                >
-                  Ανέβασε Αρχείο
-                </Button>
-              </CardContent>
-            </Card>
-          </Box>
-
-          {/* Αίτηση Αρχείων */}
-          <Box sx={{ display: 'flex', height: '100%' }}>
-            <Card 
-              sx={{ 
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                minHeight: 0,
-                background: 'linear-gradient(135deg, #fff8e1 0%, #fce4ec 100%)',
-                border: '1px solid #fff8e1',
+              <Box sx={{
+                width: 52,
+                height: 52,
                 borderRadius: 3,
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
-                }
-              }}
-            >
-              <CardContent sx={{ p: 3, textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <Box>
-                  <HelpIcon 
-                    sx={{ 
-                      fontSize: 48, 
-                      color: '#ff9800', 
-                      mb: 2,
-                      background: 'rgba(255, 152, 0, 0.1)',
-                      borderRadius: '50%',
-                      p: 1
-                    }} 
-                  />
-                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
-                    Αίτηση Αρχείων
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
-                    Ζητήστε αρχεία που δεν βρίσκονται στην πλατφόρμα και βοηθήστε άλλους φοιτητές
-                  </Typography>
-                </Box>
-                <Button 
-                  variant="contained" 
-                  size="medium" 
-                  href="/requests"
-                  sx={{ 
-                    backgroundColor: '#ff9800',
-                    color: '#fff',
-                    fontWeight: 700,
-                    fontSize: '0.95rem',
-                    px: 3,
-                    py: 1.2,
-                    borderRadius: 2,
-                    border: 'none',
-                    boxShadow: '0 2px 8px rgba(255, 152, 0, 0.3)',
-                    textTransform: 'none',
-                    '&:focus': {
-                      outline: 'none'
-                    }
-                  }}
-                >
-                  Ζήτησε Αρχείο
-                </Button>
-              </CardContent>
-            </Card>
-          </Box>
-
-          {/* Περιήγηση Μαθημάτων */}
-          <Box sx={{ display: 'flex', height: '100%' }}>
-            <Card 
-              sx={{ 
-                width: '100%',
-                height: '100%',
+                bgcolor: `${f.color}10`,
                 display: 'flex',
-                flexDirection: 'column',
-                minHeight: 0,
-                background: 'linear-gradient(135deg, #e8f5e8 0%, #f1f8e9 100%)',
-                border: '1px solid #e8f5e8',
-                borderRadius: 3,
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
-                }
-              }}
-            >
-              <CardContent sx={{ p: 3, textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <Box>
-                  <MenuBookIcon 
-                    sx={{ 
-                      fontSize: 48, 
-                      color: '#2e7d32', 
-                      mb: 2,
-                      background: 'rgba(46, 125, 50, 0.1)',
-                      borderRadius: '50%',
-                      p: 1
-                    }} 
-                  />
-                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
-                    Περιήγηση Μαθημάτων
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
-                    Εξερευνήστε όλα τα μαθήματα και τα διαθέσιμα αρχεία εξετάσεων
-                  </Typography>
-                </Box>
-                <Button 
-                  variant="contained" 
-                  size="medium" 
-                  href="/courses"
-                  sx={{ 
-                    backgroundColor: '#2e7d32',
-                    color: '#fff',
-                    fontWeight: 700,
-                    fontSize: '0.95rem',
-                    px: 3,
-                    py: 1.2,
-                    borderRadius: 2,
-                    border: 'none',
-                    boxShadow: '0 2px 8px rgba(46, 125, 50, 0.3)',
-                    textTransform: 'none',
-                    '&:focus': {
-                      outline: 'none'
-                    }
-                  }}
-                >
-                  Δες Μαθήματα
-                </Button>
-              </CardContent>
-            </Card>
-          </Box>
-
-          {/* Αγαπημένα */}
-          <Box sx={{ display: 'flex', height: '100%' }}>
-            <Card 
-              sx={{ 
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                minHeight: 0,
-                background: 'linear-gradient(135deg, #fce4ec 0%, #f3e5f5 100%)',
-                border: '1px solid #fce4ec',
-                borderRadius: 3,
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
-                }
-              }}
-            >
-              <CardContent sx={{ p: 3, textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <Box>
-                  <FavoriteIcon 
-                    sx={{ 
-                      fontSize: 48, 
-                      color: '#c2185b', 
-                      mb: 2,
-                      background: 'rgba(194, 24, 91, 0.1)',
-                      borderRadius: '50%',
-                      p: 1
-                    }} 
-                  />
-                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
-                    Αγαπημένα
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
-                    Αποθηκεύστε τα αγαπημένα σας μαθήματα και αρχεία για γρήγορη πρόσβαση
-                  </Typography>
-                </Box>
-                <Button 
-                  variant="contained" 
-                  size="medium" 
-                  href="/favorites"
-                  sx={{ 
-                    backgroundColor: '#c2185b',
-                    color: '#fff',
-                    fontWeight: 700,
-                    fontSize: '0.95rem',
-                    px: 3,
-                    py: 1.2,
-                    borderRadius: 2,
-                    border: 'none',
-                    boxShadow: '0 2px 8px rgba(194, 24, 91, 0.3)',
-                    textTransform: 'none',
-                    '&:focus': {
-                      outline: 'none'
-                    }
-                  }}
-                >
-                  Δες Αγαπημένα
-                </Button>
-              </CardContent>
-            </Card>
-          </Box>
-
-          {/* Προφίλ Χρήστη */}
-          <Box sx={{ display: 'flex', height: '100%' }}>
-            <Card 
-              sx={{ 
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                minHeight: 0,
-                background: 'linear-gradient(135deg, #fff3e0 0%, #fbe9e7 100%)',
-                border: '1px solid #fff3e0',
-                borderRadius: 3,
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
-                }
-              }}
-            >
-              <CardContent sx={{ p: 3, textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <Box>
-                  <PersonIcon 
-                    sx={{ 
-                      fontSize: 48, 
-                      color: '#f57c00', 
-                      mb: 2,
-                      background: 'rgba(245, 124, 0, 0.1)',
-                      borderRadius: '50%',
-                      p: 1
-                    }} 
-                  />
-                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
-                    Προφίλ Χρήστη
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
-                    Διαχειριστείτε το προφίλ σας και δείτε την δραστηριότητά σας
-                  </Typography>
-                </Box>
-                <Button 
-                  variant="contained" 
-                  size="medium" 
-                  href="/profile"
-                  sx={{ 
-                    backgroundColor: '#f57c00',
-                    color: '#fff',
-                    fontWeight: 700,
-                    fontSize: '0.95rem',
-                    px: 3,
-                    py: 1.2,
-                    borderRadius: 2,
-                    border: 'none',
-                    boxShadow: '0 2px 8px rgba(245, 124, 0, 0.3)',
-                    textTransform: 'none',
-                    '&:focus': {
-                      outline: 'none'
-                    }
-                  }}
-                >
-                  Δες Προφίλ
-                </Button>
-              </CardContent>
-            </Card>
-          </Box>
-
-          {/* Επικοινωνία */}
-          <Box sx={{ display: 'flex', height: '100%' }}>
-            <Card 
-              sx={{ 
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                minHeight: 0,
-                background: 'linear-gradient(135deg, #e0f7fa 0%, #fffde7 100%)',
-                borderRadius: 3,
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
-                }
-              }}
-            >
-              <CardContent sx={{ p: 3, textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <Box>
-                  <InfoIcon 
-                    sx={{ 
-                      fontSize: 48, 
-                      color: '#00bcd4', 
-                      mb: 2,
-                      background: 'rgba(0, 188, 212, 0.1)',
-                      borderRadius: '50%',
-                      p: 1
-                    }} 
-                  />
-                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
-                    Επικοινωνία
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
-                    Στείλτε μας το μήνυμά σας για απορίες, feedback ή τεχνική υποστήριξη
-                  </Typography>
-                </Box>
-                <Button 
-                  variant="contained" 
-                  size="medium" 
-                  href="/contact"
-                  sx={{ 
-                    backgroundColor: '#00bcd4',
-                    color: '#fff',
-                    fontWeight: 700,
-                    fontSize: '0.95rem',
-                    px: 3,
-                    py: 1.2,
-                    borderRadius: 2,
-                    border: 'none',
-                    boxShadow: '0 2px 8px rgba(0, 188, 212, 0.3)',
-                    textTransform: 'none',
-                    '&:focus': {
-                      outline: 'none'
-                    }
-                  }}
-                >
-                  Επικοινωνήστε μαζί μας
-                </Button>
-              </CardContent>
-            </Card>
-          </Box>
-
-          {/* Συχνές Ερωτήσεις */}
-          <Box sx={{ display: 'flex', height: '100%' }}>
-            <Card 
-              sx={{ 
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                flexDirection: 'column',
-                minHeight: 0,
-                background: 'linear-gradient(135deg, #e3f2fd 0%, #fffde7 100%)',
-                borderRadius: 3,
-                transition: 'transform 0.2s, box-shadow 0.2s',
-                '&:hover': {
-                  transform: 'translateY(-4px)',
-                  boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
-                }
-              }}
-            >
-              <CardContent sx={{ p: 3, textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-                <Box>
-                  <InfoIcon 
-                    sx={{ 
-                      fontSize: 48, 
-                      color: '#fbc02d', 
-                      mb: 2,
-                      background: 'rgba(251, 192, 45, 0.1)',
-                      borderRadius: '50%',
-                      p: 1
-                    }} 
-                  />
-                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1, color: '#212121' }}>
-                    Συχνές Ερωτήσεις
-                  </Typography>
-                  <Typography variant="body2" sx={{ color: '#666', mb: 2 }}>
-                    Βρείτε απαντήσεις σε συχνές ερωτήσεις για τη χρήση της πλατφόρμας
-                  </Typography>
-                </Box>
-                <Button 
-                  variant="contained" 
-                  size="medium" 
-                  href="/faq"
-                  sx={{ 
-                    backgroundColor: '#fbc02d',
-                    color: '#fff',
-                    fontWeight: 700,
-                    fontSize: '0.95rem',
-                    px: 3,
-                    py: 1.2,
-                    borderRadius: 2,
-                    border: 'none',
-                    boxShadow: '0 2px 8px rgba(251, 192, 45, 0.3)',
-                    textTransform: 'none',
-                    '&:focus': {
-                      outline: 'none'
-                    }
-                  }}
-                >
-                  Δες FAQ
-                </Button>
-              </CardContent>
-            </Card>
-          </Box>
+                alignItems: 'center',
+                justifyContent: 'center',
+                mx: 'auto',
+                mb: 2,
+                color: f.color,
+                '& svg': { fontSize: 26 },
+              }}>
+                {f.icon}
+              </Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, mb: 0.5, color: 'text.primary' }}>
+                {f.title}
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.85rem', lineHeight: 1.5 }}>
+                {f.desc}
+              </Typography>
+            </Paper>
+          ))}
         </Box>
+      </Container>
+
+      {/* ── Credits / Sources ── */}
+      <Container maxWidth="md" sx={{ pb: { xs: 5, md: 7 }, px: { xs: 3, md: 3 } }}>
+        <Paper sx={{ p: 2.5, borderRadius: 3, bgcolor: theme.palette.mode === 'light' ? 'rgba(26,115,232,0.04)' : 'rgba(255,255,255,0.02)', border: '1px solid', borderColor: 'divider', textAlign: 'center' }}>
+          <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.6 }}>
+            Τα θέματα έχουν παρθεί από το{' '}
+            <a href="https://dsuth-exambank.gitlab.io/" target="_blank" rel="noopener noreferrer" style={{ color: theme.palette.mode === 'light' ? '#1a73e8' : '#8ab4f8', fontWeight: 600, textDecoration: 'none' }}>
+              dsuth exam bank
+            </a>{' '}
+            και το{' '}
+            <a href="https://drive.google.com/drive/folders/0B5ICraEWxrM1NjBuWG9kZlJuWGc?resourcekey=0-zoL2-dVJmJioaH3UZkqMYg" target="_blank" rel="noopener noreferrer" style={{ color: theme.palette.mode === 'light' ? '#1a73e8' : '#8ab4f8', fontWeight: 600, textDecoration: 'none' }}>
+              drive
+            </a>.
+          </Typography>
+        </Paper>
       </Container>
     </Box>
   );
 };
 
-export default Home; 
+export default Home;

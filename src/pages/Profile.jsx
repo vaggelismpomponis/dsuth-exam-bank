@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Card, CardContent, CardActions, Button, Box, CircularProgress, Alert, TextField, Stack, Snackbar, InputAdornment, IconButton, Skeleton } from '@mui/material';
+import { Container, Typography, Box, Button, TextField, Stack, Alert, InputAdornment, IconButton, Skeleton, Paper, Divider, Avatar, MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import MenuItem from '@mui/material/MenuItem';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import PersonIcon from '@mui/icons-material/Person';
@@ -23,8 +22,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
-
+import CloseIcon from '@mui/icons-material/Close';
 import { isUserAdminSync } from '../utils/adminUtils';
+import { downloadFile } from '../utils/nativeDownload';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -42,25 +42,14 @@ const Profile = () => {
   const [deleting, setDeleting] = useState(false);
   const navigate = useNavigate();
 
-  // Fetch user and profile
   useEffect(() => {
     let ignore = false;
     supabase.auth.getSession().then(async ({ data, error }) => {
-      if (error) {
-        setError('Σφάλμα κατά τον έλεγχο σύνδεσης.');
-        setLoading(false);
-        return;
-      }
-      if (!data.session) {
-        navigate('/login');
-      } else {
+      if (error) { setError('Σφάλμα κατά τον έλεγχο σύνδεσης.'); setLoading(false); return; }
+      if (!data.session) { navigate('/login'); }
+      else {
         setUser(data.session.user);
-        // Fetch profile
-        const { data: prof, error: profErr } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', data.session.user.id)
-          .single();
+        const { data: prof, error: profErr } = await supabase.from('profiles').select('*').eq('id', data.session.user.id).single();
         if (!ignore) {
           if (profErr) setError('Σφάλμα ανάκτησης προφίλ.');
           else setProfile(prof);
@@ -69,219 +58,91 @@ const Profile = () => {
       }
     });
     const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!session) {
-        navigate('/login');
-      } else {
-        setUser(session.user);
-      }
+      if (!session) navigate('/login'); else setUser(session.user);
     });
-    return () => {
-      ignore = true;
-      listener?.subscription.unsubscribe();
-    };
+    return () => { ignore = true; listener?.subscription.unsubscribe(); };
   }, [navigate]);
 
-  // Handle profile field change
-  const handleChange = (e) => {
-    setProfile({ ...profile, [e.target.name]: e.target.value });
-  };
+  const handleChange = (e) => setProfile({ ...profile, [e.target.name]: e.target.value });
 
-  // Save profile changes
   const handleSave = async () => {
-    setSaving(true);
-    setError('');
-    setSuccess('');
-    const updateObj = {
-      first_name: profile.first_name,
-      last_name: profile.last_name,
-      updated_at: new Date().toISOString(),
-    };
-    if (isUserAdminSync(user, profile)) {
-      updateObj.role = profile.role;
-    }
-    const { error: updateErr } = await supabase
-      .from('profiles')
-      .update(updateObj)
-      .eq('id', user.id);
+    setSaving(true); setError(''); setSuccess('');
+    const updateObj = { first_name: profile.first_name, last_name: profile.last_name, updated_at: new Date().toISOString() };
+    if (isUserAdminSync(user, profile)) updateObj.role = profile.role;
+    const { error: updateErr } = await supabase.from('profiles').update(updateObj).eq('id', user.id);
     if (updateErr) setError('Σφάλμα αποθήκευσης: ' + updateErr.message);
     else setSuccess('Τα στοιχεία αποθηκεύτηκαν!');
     setSaving(false);
   };
 
-  // Change password
   const handlePasswordChange = async () => {
-    setPasswordError('');
-    setPasswordSuccess('');
-    
-    // Password validation
+    setPasswordError(''); setPasswordSuccess('');
     const passwordValidation = validatePassword(newPassword);
-    if (!passwordValidation.isValid) {
-      setPasswordError('Ο κωδικός δεν πληροί τις απαιτήσεις ασφαλείας.');
-      return;
-    }
-    
+    if (!passwordValidation.isValid) { setPasswordError('Ο κωδικός δεν πληροί τις απαιτήσεις.'); return; }
     const { error: passErr } = await supabase.auth.updateUser({ password: newPassword });
     if (passErr) setPasswordError(passErr.message);
     else setPasswordSuccess('Ο κωδικός άλλαξε!');
-    setShowPasswordFields(false);
-    setNewPassword('');
+    setShowPasswordFields(false); setNewPassword('');
   };
 
   if (loading) return (
-    <Container maxWidth="sm" sx={{ mt: 6, mb: 4 }}>
-      <Card variant="outlined" sx={{ p: { xs: 2, sm: 3 } }}>
-        <CardContent>
-          <Typography variant="h5" color="#222" gutterBottom>
-            ΠΡΟΦΙΛ ΧΡΗΣΤΗ
-          </Typography>
-          <Stack spacing={2}>
-            <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
-            <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
-            <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
-            <Skeleton variant="rectangular" height={56} sx={{ borderRadius: 2 }} />
-            <Skeleton variant="rectangular" height={40} sx={{ borderRadius: 2, width: '60%' }} />
-          </Stack>
-        </CardContent>
-        <CardActions sx={{ mt: 2 }}>
-          <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 2 }} />
-          <Skeleton variant="rectangular" height={40} width="100%" sx={{ borderRadius: 2 }} />
-        </CardActions>
-      </Card>
+    <Container maxWidth="sm" sx={{ pt: { xs: 2, md: 5 }, pb: 4 }}>
+      <Paper sx={{ p: 4, border: '1px solid', borderColor: 'divider' }}>
+        <Stack spacing={2}>
+          <Skeleton variant="rounded" height={56} />
+          <Skeleton variant="rounded" height={56} />
+          <Skeleton variant="rounded" height={56} />
+          <Skeleton variant="rounded" height={44} />
+        </Stack>
+      </Paper>
     </Container>
   );
-  if (error) return <Alert severity="error">{error}</Alert>;
   if (!user || !profile) return null;
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 6, mb: 4 }}>
-      <Card
-        variant="outlined"
-        sx={{
-          p: { xs: 2, sm: 3 },
-          borderRadius: 5,
-          boxShadow: 6,
-          background: '#f4f6f8',
-          alignItems: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
-        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
-          <Box sx={{ mb: 1 }}>
-            <Box sx={{
-              width: 80,
-              height: 80,
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #1976d2 60%, #42a5f5 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              boxShadow: 3,
-            }}>
-              <PersonIcon sx={{ color: '#fff', fontSize: 48 }} />
-            </Box>
-          </Box>
-          <Typography variant="h5" color="#212121" gutterBottom sx={{ fontWeight: 800, letterSpacing: '-1px', textAlign: 'center' }}>
-            ΠΡΟΦΙΛ ΧΡΗΣΤΗ
-          </Typography>
-          <Typography variant="subtitle1" color="#212121" sx={{ mb: 1, textAlign: 'center' }}>
-            {user.email}
-          </Typography>
+    <Box sx={{ minHeight: '80vh', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', py: { xs: 2, md: 5 }, px: 2, pb: { xs: 12, md: 5 } }}>
+      <Paper sx={{ width: '100%', maxWidth: 480, p: { xs: 3, sm: 4 }, border: '1px solid', borderColor: 'divider' }}>
+        {/* Avatar + header */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
+          <Avatar sx={{ width: 64, height: 64, bgcolor: 'primary.main', fontSize: 28, fontWeight: 700, mb: 1.5 }}>
+            {(profile.first_name?.[0] || user.email?.[0] || 'U').toUpperCase()}
+          </Avatar>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary' }}>Προφίλ</Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>{user.email}</Typography>
         </Box>
-        <Stack spacing={2} sx={{ width: '100%' }}>
-          <TextField
-            label="ΟΝΟΜΑ"
-            name="first_name"
-            value={profile.first_name || ''}
-            onChange={handleChange}
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <BadgeIcon color="#222" />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <TextField
-            label="ΕΠΩΝΥΜΟ"
-            name="last_name"
-            value={profile.last_name || ''}
-            onChange={handleChange}
-            fullWidth
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <BadgeIcon color="#222" />
-                </InputAdornment>
-              ),
-            }}
-          />
-          <TextField
-            label="Email"
-            value={user.email}
-            fullWidth
-            InputProps={{
-              readOnly: true,
-              startAdornment: (
-                <InputAdornment position="start">
-                  <EmailIcon color="#222" />
-                </InputAdornment>
-              ),
-            }}
-          />
+
+        <Stack spacing={2.5}>
+          <TextField label="Όνομα" name="first_name" value={profile.first_name || ''} onChange={handleChange} fullWidth />
+          <TextField label="Επώνυμο" name="last_name" value={profile.last_name || ''} onChange={handleChange} fullWidth />
+          <TextField label="Email" value={user.email} fullWidth InputProps={{ readOnly: true }} />
+
           {isUserAdminSync(user, profile) ? (
-            <TextField
-              select
-              label="ΡΟΛΟΣ"
-              name="role"
-              value={profile.role || 'student'}
-              onChange={handleChange}
-              fullWidth
-              helperText="Μόνο ο admin μπορεί να αλλάξει το ρόλο."
-            >
-              <MenuItem value="student">ΦΟΙΤΗΤΗΣ</MenuItem>
-              <MenuItem value="admin">ADMIN</MenuItem>
+            <TextField select label="Ρόλος" name="role" value={profile.role || 'student'} onChange={handleChange} fullWidth helperText="Μόνο ο admin μπορεί να αλλάξει τον ρόλο.">
+              <MenuItem value="student">Φοιτητής</MenuItem>
+              <MenuItem value="admin">Admin</MenuItem>
             </TextField>
           ) : (
-            <TextField
-              label="ΡΟΛΟΣ"
-              value={profile.role || 'student'}
-              fullWidth
-              InputProps={{ readOnly: true }}
-              helperText={isUserAdminSync(user, profile) ? 'Μόνο ο admin μπορεί να αλλάξει το ρόλο.' : ''}
-            />
+            <TextField label="Ρόλος" value={profile.role || 'student'} fullWidth InputProps={{ readOnly: true }} />
           )}
-          <Button
-            variant="outlined"
-            color="#222"
-            onClick={() => setShowPasswordFields((v) => !v)}
-            fullWidth
-            sx={{
-              fontWeight: 700,
-              borderRadius: 2,
-              minHeight: 48,
-              fontSize: '1.05rem',
-              letterSpacing: 0.5,
-              py: 1.2,
-              px: 2.5,
-              color: '#1976d2',
-              borderColor: '#1976d2',
-              transition: 'background 0.2s, color 0.2s, border 0.2s',
-              '&:hover': {
-                borderColor: '#1976d2',
-                color: '#1976d2',
-              },
-              '&:focus': { outline: 'none' },
-            }}
-          >
-            ΑΛΛΑΓΗ ΚΩΔΙΚΟΥ
+
+          <Button variant="outlined" fullWidth onClick={() => { setShowPasswordFields(true); setPasswordError(''); setPasswordSuccess(''); setNewPassword(''); }}>
+            Αλλαγή κωδικού
           </Button>
-          {showPasswordFields && (
-            <Card variant="outlined" sx={{ p: 2, borderRadius: 3, background: '#f4f6f8', boxShadow: 2 }}>
-              <Stack spacing={1}>
+
+          <Dialog open={showPasswordFields} onClose={() => setShowPasswordFields(false)} fullWidth maxWidth="xs">
+            <DialogTitle sx={{ fontWeight: 800, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              Αλλαγή Κωδικού
+              <IconButton onClick={() => setShowPasswordFields(false)} size="small" edge="end">
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </DialogTitle>
+            <DialogContent>
+              <DialogContentText sx={{ mb: 3 }}>
+                Εισάγετε τον νέο σας κωδικό πρόσβασης παρακάτω.
+              </DialogContentText>
+              <Stack spacing={2}>
                 <TextField
-                  label="ΝΕΟΣ ΚΩΔΙΚΟΣ"
+                  label="Νέος κωδικός"
                   type={showPassword ? 'text' : 'password'}
                   value={newPassword}
                   onChange={e => setNewPassword(e.target.value)}
@@ -289,235 +150,92 @@ const Profile = () => {
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
-                        <IconButton
-                          aria-label="toggle password visibility"
-                          onClick={() => setShowPassword((show) => !show)}
-                          edge="end"
-                          sx={{
-                            '&:focus': {
-                              outline: 'none',
-                              boxShadow: 'none',
-                            },
-                            '&:focus-visible': {
-                              outline: 'none',
-                              boxShadow: 'none',
-                            },
-                          }}
-                        >
-                          {showPassword ? <VisibilityOff /> : <Visibility />}
+                        <IconButton onClick={() => setShowPassword(s => !s)} edge="end" size="small">
+                          {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
                         </IconButton>
                       </InputAdornment>
                     ),
                   }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '&:hover fieldset': {
-                        borderColor: '#212121',
-                        borderWidth: '1px',
-                      },
-                      '&.Mui-focused fieldset': {
-                        borderColor: '#212121',
-                        borderWidth: '1px',
-                        boxShadow: 'none',
-                      },
-                      '&.Mui-focused': {
-                        backgroundColor: 'transparent',
-                      },
-                      '&.MuiInputBase-input': {
-                        backgroundColor: 'transparent',
-                      },
-                    },
-                  }}
                 />
                 <PasswordStrengthIndicator password={newPassword} />
-                <Button
-                  variant="contained"
-                  color="#222"
-                  onClick={handlePasswordChange}
-                  fullWidth
-                  disabled={!validatePassword(newPassword).isValid}
-                  sx={{ fontWeight: 700, py: { xs: 0.5, sm: 1.2 }, borderRadius: 2, '&:focus': { outline: 'none' } }}
-                >
-                  ΑΠΟΘΗΚΕΥΣΗ ΚΩΔΙΚΟΥ
-                </Button>
-                {passwordError && <Alert severity="error" sx={{ fontWeight: 600 }}>{passwordError}</Alert>}
-                {passwordSuccess && <Alert severity="success" sx={{ fontWeight: 600 }}>{passwordSuccess}</Alert>}
+                {passwordError && <Alert severity="error">{passwordError}</Alert>}
+                {passwordSuccess && <Alert severity="success">{passwordSuccess}</Alert>}
               </Stack>
-            </Card>
-          )}
-          {error && <Alert severity="error" sx={{ fontWeight: 600 }}>{error}</Alert>}
-          {success && <Alert severity="success" sx={{ fontWeight: 600 }}>{success}</Alert>}
+            </DialogContent>
+            <DialogActions sx={{ px: 3, pb: 3, pt: 0 }}>
+              <Button onClick={() => setShowPasswordFields(false)} color="inherit">Ακύρωση</Button>
+              <Button variant="contained" onClick={handlePasswordChange} disabled={!validatePassword(newPassword).isValid}>
+                Αποθήκευση
+              </Button>
+            </DialogActions>
+          </Dialog>
+
+          {error && <Alert severity="error">{error}</Alert>}
+          {success && <Alert severity="success">{success}</Alert>}
         </Stack>
-        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2} sx={{ mt: 4, width: '100%' }}>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<SaveIcon />}
-            onClick={handleSave}
-            fullWidth
-            disabled={saving}
-            sx={{
-              fontWeight: 700,
-              borderRadius: 2,
-              minHeight: 48,
-              fontSize: '1.05rem',
-              letterSpacing: 0.5,
-              py: 1.2,
-              px: 2.5,
-              boxShadow: '0 2px 8px rgba(33,33,33,0.08)',
-              transition: 'background 0.2s, box-shadow 0.2s',
-              background: 'linear-gradient(90deg, #1976d2 60%, #42a5f5 100%)',
-              color: '#fff',
-              '&:hover': {
-                background: 'linear-gradient(90deg, #1565c0 60%, #1976d2 100%)',
-                boxShadow: '0 4px 16px rgba(33,33,33,0.12)',
-              },
-              '&:focus': { outline: 'none' },
-            }}
-          >
+
+        <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5} sx={{ mt: 3 }}>
+          <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSave} fullWidth disabled={saving} sx={{ py: 1.3 }}>
             Αποθήκευση
           </Button>
-          <Button
-            variant="outlined"
-            color="error"
-            startIcon={<LogoutIcon />}
-            onClick={async () => { await supabase.auth.signOut(); navigate('/'); }}
-            fullWidth
-            sx={{
-              fontWeight: 700,
-              borderRadius: 2,
-              minHeight: 48,
-              fontSize: '1.05rem',
-              letterSpacing: 0.5,
-              py: 1.2,
-              px: 2.5,
-              color: '#d32f2f',
-              borderColor: '#d32f2f',
-              background: '#fff',
-              transition: 'background 0.2s, color 0.2s, border 0.2s',
-              '&:hover': {
-                background: '#ffebee',
-                borderColor: '#b71c1c',
-                color: '#b71c1c',
-              },
-              '&:focus': { outline: 'none' },
-            }}
-          >
+          <Button variant="outlined" color="error" startIcon={<LogoutIcon />} onClick={async () => { await supabase.auth.signOut(); navigate('/'); }} fullWidth>
             Αποσύνδεση
           </Button>
         </Stack>
-        <Snackbar
-          open={!!success}
-          autoHideDuration={3000}
-          onClose={() => setSuccess('')}
-          message={success}
-        />
-        <Accordion sx={{
-          mt: 6,
-          width: '100%',
-          background: '#f8fafc',
-          borderRadius: 4,
-          boxShadow: 2,
-          border: '1px solid #e3eafc',
-          outline: 'none',
-          '&.Mui-expanded': { border: '1px solid #e3eafc', outline: 'none' },
-          '&.Mui-focused': { border: '1px solid #e3eafc', outline: 'none' },
-          '&:focus': { border: '1px solid #e3eafc', outline: 'none' },
-          '&.Mui-active': { border: '1px solid #e3eafc', outline: 'none' },
-          '&:active': { border: '1px solid #e3eafc', outline: 'none' },
-          '& button:hover': { border: '1px solid #e3eafc', outline: 'none' },
-          '&:hover': { outline: 'none' },
-          '& .MuiAccordionSummary-root': { outline: 'none' },
-          '& .MuiAccordionSummary-root:focus': { outline: 'none' },
-          '& .MuiAccordionSummary-root.Mui-focused': { outline: 'none' },
-          '& .MuiAccordionSummary-root:active': { outline: 'none' },
-        }}>
+
+        {/* GDPR Section */}
+        <Accordion sx={{ mt: 4, width: '100%' }}>
           <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-            <Typography variant="h6" sx={{ fontWeight: 800, color: '#1976d2' }}>
+            <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'primary.main' }}>
               Δικαιώματα Χρήστη (GDPR)
             </Typography>
           </AccordionSummary>
           <AccordionDetails>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Μπορείτε να εξάγετε ή να διαγράψετε τα προσωπικά σας δεδομένα ανά πάσα στιγμή. Η διαγραφή λογαριασμού είναι οριστική και όλα τα δεδομένα σας θα αφαιρεθούν από το σύστημα.
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+              Μπορείτε να εξάγετε ή να διαγράψετε τα προσωπικά σας δεδομένα ανά πάσα στιγμή.
             </Typography>
-            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
+            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
               <Button
                 variant="outlined"
-                color="primary"
                 startIcon={<DownloadIcon />}
                 fullWidth
                 onClick={async () => {
-                  const exportData = {
-                    user: user,
-                    profile: profile,
-                  };
-                  const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement('a');
-                  a.href = url;
-                  a.download = 'my-profile-data.json';
-                  a.click();
-                  URL.revokeObjectURL(url);
+                  const blob = new Blob([JSON.stringify({ user, profile }, null, 2)], { type: 'application/json' });
+                  await downloadFile(blob, 'my-profile-data.json');
                 }}
-                sx={{ fontWeight: 700, borderRadius: 2, '&:focus': { outline: 'none' } }}
               >
                 Εξαγωγή δεδομένων
               </Button>
-              <Button
-                variant="outlined"
-                color="error"
-                startIcon={<DeleteIcon />}
-                fullWidth
-                onClick={() => setDeleteDialogOpen(true)}
-                sx={{ fontWeight: 700, borderRadius: 2, '&:focus': { outline: 'none' } }}
-              >
+              <Button variant="outlined" color="error" startIcon={<DeleteIcon />} fullWidth onClick={() => setDeleteDialogOpen(true)}>
                 Διαγραφή λογαριασμού
               </Button>
             </Stack>
-            <Typography variant="caption" color="text.secondary" sx={{ mt: 3, display: 'block' }}>
-              Για οποιοδήποτε αίτημα σχετικά με τα προσωπικά σας δεδομένα, επικοινωνήστε με τους διαχειριστές μέσω της φόρμας επικοινωνίας.
-            </Typography>
           </AccordionDetails>
         </Accordion>
-        <Dialog
-          open={deleteDialogOpen}
-          onClose={() => setDeleteDialogOpen(false)}
-          aria-labelledby="delete-account-dialog-title"
-        >
-          <DialogTitle id="delete-account-dialog-title" sx={{ color: '#d32f2f', fontWeight: 800 }}>
-            Οριστική Διαγραφή Λογαριασμού
-          </DialogTitle>
+
+        <Dialog open={deleteDialogOpen} onClose={() => setDeleteDialogOpen(false)}>
+          <DialogTitle sx={{ color: 'error.main', fontWeight: 800 }}>Οριστική Διαγραφή Λογαριασμού</DialogTitle>
           <DialogContent>
-            <DialogContentText sx={{ color: '#222', fontWeight: 500 }}>
-              Είστε σίγουροι ότι θέλετε να διαγράψετε οριστικά το λογαριασμό σας και όλα τα δεδομένα; Αυτή η ενέργεια δεν αναιρείται!
-            </DialogContentText>
+            <DialogContentText>Αυτή η ενέργεια δεν αναιρείται. Όλα τα δεδομένα σας θα διαγραφούν.</DialogContentText>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setDeleteDialogOpen(false)} color="primary" variant="outlined" sx={{ '&:focus': { outline: 'none' } }}>
-              Ακύρωση
-            </Button>
+            <Button onClick={() => setDeleteDialogOpen(false)}>Ακύρωση</Button>
             <Button
               onClick={async () => {
                 setDeleting(true);
                 await supabase.from('profiles').delete().eq('id', user.id);
                 await supabase.auth.signOut();
-                setDeleting(false);
-                setDeleteDialogOpen(false);
-                navigate('/');
+                setDeleting(false); setDeleteDialogOpen(false); navigate('/');
               }}
-              color="error"
-              variant="contained"
-              disabled={deleting}
-              sx={{ fontWeight: 700, '&:focus': { outline: 'none' } }}
+              color="error" variant="contained" disabled={deleting}
             >
               Διαγραφή
             </Button>
           </DialogActions>
         </Dialog>
-      </Card>
-    </Container>
+      </Paper>
+    </Box>
   );
 };
 
-export default Profile; 
+export default Profile;
