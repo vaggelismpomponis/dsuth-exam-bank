@@ -8,6 +8,7 @@ import AdminPanel from './pages/AdminPanel';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Contact from './pages/Contact';
+import AdminApplication from './pages/AdminApplication';
 import NavBar from './components/NavBar';
 import React, { lazy, Suspense, useEffect, useState, useRef } from 'react';
 import { Capacitor } from '@capacitor/core';
@@ -239,6 +240,7 @@ const getDesignTokens = (mode) => ({
 const AdminFiles = lazy(() => import('./pages/admin/AdminFiles'));
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 const AdminRequests = lazy(() => import('./pages/admin/AdminRequests'));
+const AdminApplications = lazy(() => import('./pages/admin/AdminApplications'));
 
 function ScrollToTop() {
   const location = useLocation();
@@ -365,9 +367,11 @@ function App() {
                 <Route path="courses" element={<AdminCourses />} />
                 <Route path="upload" element={<AdminUpload />} />
                 <Route path="requests" element={<Suspense fallback={<div>Loading...</div>}><AdminRequests /></Suspense>} />
+                <Route path="applications" element={<Suspense fallback={<div>Loading...</div>}><AdminApplications /></Suspense>} />
               </Route>
               <Route path="/register" element={<Register />} />
               <Route path="/profile" element={<Profile />} />
+              <Route path="/admin-application" element={<AdminApplication />} />
               <Route path="/courses" element={<Courses />} />
               <Route path="/courses/:id" element={<CourseFiles />} />
               <Route path="/faq" element={<FAQ />} />

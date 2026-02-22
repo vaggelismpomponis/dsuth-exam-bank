@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Box, Button, TextField, Stack, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Alert, Skeleton, useTheme, useMediaQuery } from '@mui/material';
+import { Typography, Box, Button, TextField, Stack, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Alert, Skeleton, useTheme, useMediaQuery } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
@@ -16,6 +16,14 @@ const AdminCourses = () => {
   };
 
   const [saving, setSaving] = useState(false);
+  const [courses, setCourses] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editCourse, setEditCourse] = useState(null);
+  const [courseName, setCourseName] = useState('');
+  const [courseSemester, setCourseSemester] = useState(1);
   const isMobileOrTablet = useMediaQuery('(max-width:899px)');
 
   const fetchCourses = async () => {
@@ -85,7 +93,7 @@ const AdminCourses = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 4, mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <Box sx={{ mt: 4, mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
       <Box sx={{ width: '100%', maxWidth: 600, ...cardBg, p: { xs: 2, sm: 4 }, mb: 2 }}>
         <Typography variant="h4" color={theme.palette.mode === 'light' ? '#212121' : 'text.primary'} fontWeight={700} gutterBottom align="left" sx={{ letterSpacing: 1, textTransform: 'none' }}>
           Διαχείριση Μαθημάτων
@@ -113,27 +121,71 @@ const AdminCourses = () => {
             ))}
           </Stack>
         ) : (
-          <TableContainer component={Paper} sx={{ ...cardBg, boxShadow: 'none', mt: 2 }}>
-            <Table>
+          <TableContainer component={Paper} sx={{ ...cardBg, mt: 2, overflow: 'hidden' }}>
+            <Table sx={{ minWidth: 650 }} aria-label="admin courses table">
               <TableHead>
                 <TableRow sx={{ background: theme.palette.mode === 'light' ? '#f4f6fa' : 'background.default' }}>
-                  <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16, textTransform: 'none' }}>Όνομα Μαθήματος</TableCell>
-                  <TableCell align="center" sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16, textTransform: 'none' }}>Εξάμηνο</TableCell>
-                  <TableCell align="right" sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16, textTransform: 'none' }}>Ενέργειες</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2, textTransform: 'none' }}>Όνομα Μαθήματος</TableCell>
+                  <TableCell align="center" sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2, textTransform: 'none' }}>Εξάμηνο</TableCell>
+                  <TableCell align="right" sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2, pr: 3, textTransform: 'none' }}>Ενέργειες</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {courses.length === 0 ? (
-                  <TableRow><TableCell colSpan={3} align="center">Δεν υπάρχουν μαθήματα.</TableCell></TableRow>
+                  <TableRow><TableCell colSpan={3} align="center" sx={{ py: 3 }}>Δεν υπάρχουν μαθήματα.</TableCell></TableRow>
                 ) : courses.map((course) => (
-                  <TableRow key={course.id}>
-                    <TableCell>{course.name}</TableCell>
-                    <TableCell align="center">{course.semester}</TableCell>
-                    <TableCell align="right">
-                      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
-                        <IconButton onClick={() => handleOpenDialog(course)} color="primary"><EditIcon /></IconButton>
-                        <IconButton color="error" onClick={() => handleDelete(course.id)}><DeleteIcon /></IconButton>
-                      </Box>
+                  <TableRow key={course.id} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { bgcolor: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.02)' : 'rgba(255, 255, 255, 0.02)' } }}>
+                    <TableCell sx={{ py: 2, fontWeight: 500 }}>{course.name}</TableCell>
+                    <TableCell align="center" sx={{ py: 2 }}>{course.semester}</TableCell>
+                    <TableCell align="right" sx={{ py: 2, pr: 3 }}>
+                      <Stack direction="row" spacing={1} justifyContent="flex-end">
+                        <Button
+                          variant="contained"
+                          color="primary"
+                          size="small"
+                          startIcon={<EditIcon />}
+                          onClick={() => handleOpenDialog(course)}
+                          sx={{
+                            borderRadius: 1.5,
+                            fontWeight: 600,
+                            px: 2,
+                            py: 0.75,
+                            boxShadow: theme.palette.mode === 'light' ? 1 : 0,
+                            background: theme.palette.mode === 'light' ? '#e3f2fd' : 'rgba(33, 150, 243, 0.1)',
+                            color: theme.palette.mode === 'light' ? '#1976d2' : '#64b5f6',
+                            textTransform: 'none',
+                            '&:hover': {
+                              background: theme.palette.mode === 'light' ? '#bbdefb' : 'rgba(33, 150, 243, 0.2)',
+                              boxShadow: theme.palette.mode === 'light' ? 2 : 0
+                            }
+                          }}
+                        >
+                          Επεξεργασία
+                        </Button>
+                        <Button
+                          variant="contained"
+                          color="error"
+                          size="small"
+                          startIcon={<DeleteIcon />}
+                          onClick={() => handleDelete(course.id)}
+                          sx={{
+                            borderRadius: 1.5,
+                            fontWeight: 600,
+                            px: 2,
+                            py: 0.75,
+                            boxShadow: theme.palette.mode === 'light' ? 1 : 0,
+                            background: theme.palette.mode === 'light' ? '#ffebee' : 'rgba(244, 67, 54, 0.1)',
+                            color: theme.palette.mode === 'light' ? '#d32f2f' : '#e57373',
+                            textTransform: 'none',
+                            '&:hover': {
+                              background: theme.palette.mode === 'light' ? '#ffcdd2' : 'rgba(244, 67, 54, 0.2)',
+                              boxShadow: theme.palette.mode === 'light' ? 2 : 0
+                            }
+                          }}
+                        >
+                          Διαγραφή
+                        </Button>
+                      </Stack>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -168,7 +220,7 @@ const AdminCourses = () => {
           <Button onClick={handleSave} variant="contained" disabled={saving} sx={{ borderRadius: 2, fontWeight: 600, textTransform: 'none' }}>{editCourse ? 'Αποθήκευση' : 'Προσθήκη'}</Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </Box>
   );
 };
 

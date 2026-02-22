@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, TablePagination, TextField, InputAdornment, Card, CardContent, CardActions, Stack, Skeleton, Tabs, Tab, Chip, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, useMediaQuery, useTheme, CircularProgress } from '@mui/material';
+import { Typography, Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, TablePagination, TextField, InputAdornment, Card, CardContent, CardActions, Stack, Skeleton, Tabs, Tab, Chip, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, useMediaQuery, useTheme, CircularProgress } from '@mui/material';
 import { supabase } from '../../supabaseClient';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -127,7 +127,7 @@ const AdminFiles = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+    <Box sx={{ mt: 4, mb: 4, width: '100%' }}>
       <Typography variant="h4" color={theme.palette.mode === 'light' ? '#111' : 'text.primary'} fontWeight={700} gutterBottom align="left">
         ΔΙΑΧΕΙΡΙΣΗ ΑΡΧΕΙΩΝ
       </Typography>
@@ -238,31 +238,31 @@ const AdminFiles = () => {
           )}
         </Stack>
       ) : (
-        <TableContainer component={Paper} sx={{ ...cardBg, boxShadow: 'none', mt: 2 }}>
-          <Table>
+        <TableContainer component={Paper} sx={{ ...cardBg, mt: 2, overflow: 'hidden' }}>
+          <Table sx={{ minWidth: 650 }} aria-label="admin files table">
             <TableHead>
               <TableRow sx={{ background: theme.palette.mode === 'light' ? '#f4f6fa' : 'background.default' }}>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Μάθημα</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Έτος</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Εξεταστική</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Uploader</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Status</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Ενέργειες</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2 }}>Μάθημα</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2 }}>Έτος</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2 }}>Εξεταστική</TableCell>
+                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2 }}>Uploader</TableCell>
+                <TableCell align="center" sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2 }}>Status</TableCell>
+                <TableCell align="right" sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2, pr: 3 }}>Ενέργειες</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {paginatedExams.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={8} align="center">Δεν βρέθηκαν αρχεία.</TableCell>
+                  <TableCell colSpan={6} align="center" sx={{ py: 3 }}>Δεν βρέθηκαν αρχεία.</TableCell>
                 </TableRow>
               ) : (
                 paginatedExams.map((exam) => (
-                  <TableRow key={exam.id}>
-                    <TableCell>{exam.course}</TableCell>
-                    <TableCell>{exam.year}</TableCell>
-                    <TableCell>{exam.period}</TableCell>
-                    <TableCell>{users[exam.uploader] || exam.uploader}</TableCell>
-                    <TableCell>
+                  <TableRow key={exam.id} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { bgcolor: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.02)' : 'rgba(255, 255, 255, 0.02)' } }}>
+                    <TableCell sx={{ py: 2, fontWeight: 500 }}>{exam.course}</TableCell>
+                    <TableCell align="center" sx={{ py: 2 }}>{exam.year}</TableCell>
+                    <TableCell align="center" sx={{ py: 2 }}>{exam.period}</TableCell>
+                    <TableCell sx={{ py: 2 }}>{users[exam.uploader] || exam.uploader}</TableCell>
+                    <TableCell align="center" sx={{ py: 2 }}>
                       <Chip
                         label={exam.approved ? 'Εγκεκριμένο' : 'Εκκρεμεί'}
                         color={exam.approved ? 'success' : 'warning'}
@@ -270,21 +270,21 @@ const AdminFiles = () => {
                         sx={{ fontWeight: 600, fontSize: 13, borderRadius: 1 }}
                       />
                     </TableCell>
-                    <TableCell>
-                      <Stack direction="row" spacing={1}>
+                    <TableCell align="right" sx={{ py: 2, pr: 3 }}>
+                      <Stack direction="row" spacing={1} justifyContent="flex-end">
                         {!exam.approved && (
                           <Tooltip title="Έγκριση">
-                            <Button color="success" size="small" onClick={() => handleApprove(exam.id)} sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#e8f5e9' : 'rgba(76, 175, 80, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#c8e6c9' : 'rgba(76, 175, 80, 0.2)' } }}><DoneIcon /></Button>
+                            <IconButton color="success" size="small" onClick={() => handleApprove(exam.id)} sx={{ bgcolor: theme.palette.mode === 'light' ? '#e8f5e9' : 'rgba(76, 175, 80, 0.1)', '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#c8e6c9' : 'rgba(76, 175, 80, 0.2)' } }}><DoneIcon fontSize="small" /></IconButton>
                           </Tooltip>
                         )}
                         <Tooltip title="Προβολή">
-                          <Button color="info" size="small" onClick={() => handleOpenPreview(exam)} sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#e3f2fd' : 'rgba(33, 150, 243, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#bbdefb' : 'rgba(33, 150, 243, 0.2)' } }}><VisibilityIcon /></Button>
+                          <IconButton color="info" size="small" onClick={() => handleOpenPreview(exam)} sx={{ bgcolor: theme.palette.mode === 'light' ? '#e3f2fd' : 'rgba(33, 150, 243, 0.1)', '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#bbdefb' : 'rgba(33, 150, 243, 0.2)' } }}><VisibilityIcon fontSize="small" /></IconButton>
                         </Tooltip>
                         <Tooltip title="Διαγραφή">
-                          <Button color="error" size="small" onClick={() => handleOpenDelete(exam.id, exam.file_url)} sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#ffebee' : 'rgba(244, 67, 54, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#ffcdd2' : 'rgba(244, 67, 54, 0.2)' } }}><DeleteIcon /></Button>
+                          <IconButton color="error" size="small" onClick={() => handleOpenDelete(exam.id, exam.file_url)} sx={{ bgcolor: theme.palette.mode === 'light' ? '#ffebee' : 'rgba(244, 67, 54, 0.1)', '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#ffcdd2' : 'rgba(244, 67, 54, 0.2)' } }}><DeleteIcon fontSize="small" /></IconButton>
                         </Tooltip>
                         <Tooltip title="Λήψη">
-                          <Button color="primary" size="small" href={exam.file_url} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(25, 118, 210, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#c5cae9' : 'rgba(25, 118, 210, 0.2)' } }}><DownloadIcon /></Button>
+                          <IconButton color="primary" size="small" href={exam.file_url} target="_blank" rel="noopener noreferrer" sx={{ bgcolor: theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(25, 118, 210, 0.1)', '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#c5cae9' : 'rgba(25, 118, 210, 0.2)' } }}><DownloadIcon fontSize="small" /></IconButton>
                         </Tooltip>
                       </Stack>
                     </TableCell>
@@ -345,7 +345,7 @@ const AdminFiles = () => {
           <Button onClick={handleClosePreview} sx={{ textTransform: 'none', fontWeight: 600 }}>Κλείσιμο</Button>
         </DialogActions>
       </Dialog>
-    </Container>
+    </Box>
   );
 };
 

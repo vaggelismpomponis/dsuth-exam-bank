@@ -83,7 +83,7 @@ const NavBar = () => {
         sx={{
           top: 0,
           pt: 'env(safe-area-inset-top, 0px)',
-          zIndex: theme.zIndex.appBar + 1,
+          zIndex: theme.zIndex.drawer + 1,
           background: theme.palette.mode === 'light' ? 'rgba(255,255,255,0.85)' : 'rgba(32,33,36,0.85)',
           backdropFilter: 'blur(12px)',
           borderBottom: '1px solid',

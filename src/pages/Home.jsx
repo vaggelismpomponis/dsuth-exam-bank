@@ -11,6 +11,7 @@ import PersonIcon from '@mui/icons-material/Person';
 import InfoIcon from '@mui/icons-material/Info';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import { useNavigate } from 'react-router-dom';
 import { useSnackbar } from 'notistack';
 import { useTheme } from '@mui/material/styles';
@@ -158,6 +159,50 @@ const Home = () => {
               </Box>
             </Stack>
           </Box>
+        </Paper>
+
+        {/* ── Admin Application Banner ── */}
+        <Paper
+          sx={{
+            p: 2.5,
+            mb: 4,
+            borderRadius: 3,
+            bgcolor: theme.palette.mode === 'light' ? 'rgba(26,115,232,0.06)' : 'rgba(138,180,248,0.08)',
+            border: '1px solid',
+            borderColor: theme.palette.mode === 'light' ? 'rgba(26,115,232,0.15)' : 'rgba(138,180,248,0.15)',
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: 2
+          }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <Box sx={{
+              width: 48, height: 48, borderRadius: '50%', flexShrink: 0,
+              bgcolor: theme.palette.mode === 'light' ? '#e8f0fe' : 'rgba(138,180,248,0.12)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: theme.palette.mode === 'light' ? 'primary.main' : '#8ab4f8'
+            }}>
+              <AdminPanelSettingsIcon />
+            </Box>
+            <Box>
+              <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'text.primary', mb: 0.5, lineHeight: 1.2 }}>
+                Γίνε Διαχειριστής
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.85rem' }}>
+                Θέλεις να βοηθήσεις στη διαχείριση της εφαρμογής; Συμπλήρωσε τη φόρμα για να λάβεις δικαιώματα Admin.
+              </Typography>
+            </Box>
+          </Box>
+          <Button
+            variant="contained"
+            color="primary"
+            sx={{ flexShrink: 0, borderRadius: 2, textTransform: 'none', fontWeight: 600, width: { xs: '100%', sm: 'auto' } }}
+            onClick={() => navigate('/admin-application')}
+          >
+            Αίτηση Admin
+          </Button>
         </Paper>
 
         {/* ── Recent Files ── */}
