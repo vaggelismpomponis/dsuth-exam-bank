@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, TablePagination, TextField, InputAdornment, Card, CardContent, CardActions, Stack, Skeleton, Tabs, Tab, Chip, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, useMediaQuery, useTheme } from '@mui/material';
+import { Container, Typography, Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, TablePagination, TextField, InputAdornment, Card, CardContent, CardActions, Stack, Skeleton, Tabs, Tab, Chip, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, useMediaQuery, useTheme, CircularProgress } from '@mui/material';
 import { supabase } from '../../supabaseClient';
 import SearchIcon from '@mui/icons-material/Search';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -11,6 +11,11 @@ import DoneIcon from '@mui/icons-material/Done';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import CloseIcon from '@mui/icons-material/Close';
 import { Capacitor } from '@capacitor/core';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 const AdminFiles = () => {
   const [exams, setExams] = useState([]);
@@ -24,8 +29,10 @@ const AdminFiles = () => {
   const [isMobile, setIsMobile] = useState(window.innerWidth < 600);
   const [tab, setTab] = useState(0);
   const [confirmDelete, setConfirmDelete] = useState({ open: false, id: null, file_url: null });
+  const [numPages, setNumPages] = useState(null);
 
   const theme = useTheme();
+  const isMobileScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const cardBg = {
     background: theme.palette.mode === 'light' ? '#f8fafc' : 'background.paper',
@@ -320,8 +327,29 @@ const AdminFiles = () => {
             <Box sx={{ flex: 1, width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', bgcolor: 'background.default', borderRadius: 2 }}>
               {previewFile.file_url.match(/\.(jpg|jpeg|png|gif)$/i) ? (
                 <Box component="img" src={previewFile.file_url} sx={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-              ) : previewFile.file_url.match(/\.pdf$/i) && !Capacitor.isNativePlatform() ? (
-                <Box component="iframe" src={`${previewFile.file_url}#toolbar=0`} sx={{ width: '100%', height: '100%', border: 'none' }} />
+              ) : previewFile.file_url.match(/\.pdf$/i) ? (
+                (isMobileScreen || Capacitor.isNativePlatform()) ? (
+                  <Box sx={{ width: '100%', height: '100%', overflow: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: theme.palette.mode === 'light' ? '#e0e0e0' : '#121212', py: 2 }}>
+                    <Document
+                      file={previewFile.file_url}
+                      onLoadSuccess={({ numPages }) => setNumPages(numPages)}
+                      loading={<CircularProgress sx={{ mt: 4 }} />}
+                    >
+                      {Array.from(new Array(numPages || 0), (el, index) => (
+                        <Box key={`page_${index + 1}`} sx={{ mb: 2, boxShadow: 3 }}>
+                          <Page
+                            pageNumber={index + 1}
+                            width={isMobile ? window.innerWidth - 48 : 550}
+                            renderTextLayer={false}
+                            renderAnnotationLayer={false}
+                          />
+                        </Box>
+                      ))}
+                    </Document>
+                  </Box>
+                ) : (
+                  <Box component="iframe" src={`${previewFile.file_url}#toolbar=0`} sx={{ width: '100%', height: '100%', border: 'none' }} />
+                )
               ) : (
                 <Stack spacing={2} alignItems="center">
                   <InsertDriveFileIcon sx={{ fontSize: 60, color: 'primary.main' }} />

@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Box, Button, TextField, MenuItem, Alert, CircularProgress, Stack, Skeleton, Card, CardContent, Autocomplete } from '@mui/material';
+import { Container, Typography, Box, Button, TextField, MenuItem, Alert, CircularProgress, Stack, Skeleton, Card, CardContent, Autocomplete, useTheme, useMediaQuery } from '@mui/material';
 import { supabase } from '../../supabaseClient';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { convertToPdf } from '../../utils/pdfConversion';
 import { Capacitor } from '@capacitor/core';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 const periods = [
   'Ιανουάριος',
@@ -32,6 +37,8 @@ function greekToLatin(str) {
 }
 
 const AdminUpload = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [user, setUser] = useState(undefined);
   const [course, setCourse] = useState('');
   const [year, setYear] = useState('');
@@ -215,7 +222,7 @@ const AdminUpload = () => {
 
   return (
     <Container maxWidth="sm" sx={{ mt: 6, mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-      <Card sx={{ width: '100%', maxWidth: 480, borderRadius: 4, boxShadow: 6, px: { xs: 1, sm: 3 }, py: 2, background: 'linear-gradient(135deg, #e3eafc 0%, #f4f6f8 100%)' }}>
+      <Card sx={{ width: '100%', maxWidth: 480, borderRadius: 4, boxShadow: 6, px: { xs: 1, sm: 3 }, py: 2, background: theme.palette.mode === 'light' ? 'linear-gradient(135deg, #e3eafc 0%, #f4f6f8 100%)' : theme.palette.background.paper }}>
         <CardContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
             <Box sx={{
@@ -299,7 +306,7 @@ const AdminUpload = () => {
               </TextField>
               {/* Drag & Drop area */}
               {conversionMessage ? (
-                <Stack direction="column" alignItems="center" justifyContent="center" spacing={2} sx={{ py: 4, mb: 1.5, border: '2px solid #1976d2', borderRadius: 2, bgcolor: 'rgba(25, 118, 210, 0.04)' }}>
+                <Stack direction="column" alignItems="center" justifyContent="center" spacing={2} sx={{ py: 4, mb: 1.5, border: '2px solid', borderColor: 'primary.main', borderRadius: 2, bgcolor: theme.palette.mode === 'light' ? 'rgba(25, 118, 210, 0.04)' : 'rgba(138,180,248,0.08)' }}>
                   <CircularProgress size={32} />
                   <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main', textAlign: 'center' }}>
                     {conversionMessage}
@@ -312,18 +319,20 @@ const AdminUpload = () => {
                   onDragLeave={handleDrag}
                   onDrop={handleDrop}
                   sx={{
-                    border: dragActive ? '2px solid #1976d2' : '2px dashed #90caf9',
+                    border: dragActive ? '2px solid' : '2px dashed',
+                    borderColor: dragActive ? 'primary.main' : (theme.palette.mode === 'light' ? '#90caf9' : 'rgba(138,180,248,0.4)'),
                     borderRadius: 2,
                     p: 3,
                     textAlign: 'center',
-                    background: dragActive ? 'rgba(25, 118, 210, 0.08)' : 'transparent',
-                    color: '#1976d2',
+                    background: dragActive ? (theme.palette.mode === 'light' ? 'rgba(25, 118, 210, 0.08)' : 'rgba(138,180,248,0.12)') : 'transparent',
+                    color: 'primary.main',
                     fontWeight: 600,
                     mb: 1.5,
                     cursor: 'pointer',
                     transition: 'border 0.2s, background 0.2s',
                     outline: 'none',
                     userSelect: 'none',
+                    WebkitTapHighlightColor: 'transparent',
                   }}
                   tabIndex={0}
                   onClick={() => document.getElementById('admin-upload-input').click()}
@@ -359,20 +368,28 @@ const AdminUpload = () => {
               </Button>
               {files.length > 0 && (
                 <Box sx={{ mt: 1 }}>
-                  <Typography variant="subtitle2" sx={{ mb: 1, color: '#1976d2', fontWeight: 600 }}>
+                  <Typography variant="subtitle2" sx={{ mb: 1, color: 'primary.main', fontWeight: 600 }}>
                     {files.length} αρχεία επιλεγμένα:
                   </Typography>
                   <Stack spacing={1.5}>
                     {files.map(f => (
-                      <Box key={f.name} sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+                      <Box key={f.name} sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 2, bgcolor: theme.palette.mode === 'light' ? '#fff' : 'background.default' }}>
                         {f.type.startsWith('image/') ? (
                           <Box component="img" src={filePreviews[f.name]} sx={{ maxHeight: 150, maxWidth: '100%', objectFit: 'contain', borderRadius: 1 }} />
-                        ) : f.type === 'application/pdf' && !Capacitor.isNativePlatform() ? (
-                          <Box component="iframe" src={`${filePreviews[f.name]}#toolbar=0`} sx={{ width: '100%', height: 250, border: 'none', borderRadius: 1 }} />
+                        ) : f.type === 'application/pdf' ? (
+                          (isMobile || Capacitor.isNativePlatform()) ? (
+                            <Box sx={{ width: '100%', height: 250, overflow: 'auto', display: 'flex', justifyContent: 'center', bgcolor: theme.palette.mode === 'light' ? '#f5f5f5' : '#1a1a1a', borderRadius: 1 }}>
+                              <Document file={filePreviews[f.name]} loading={<CircularProgress sx={{ mt: 4 }} />}>
+                                <Page pageNumber={1} width={280} renderTextLayer={false} renderAnnotationLayer={false} />
+                              </Document>
+                            </Box>
+                          ) : (
+                            <Box component="iframe" src={`${filePreviews[f.name]}#toolbar=0`} sx={{ width: '100%', height: 250, border: 'none', borderRadius: 1 }} />
+                          )
                         ) : (
                           <InsertDriveFileIcon sx={{ color: 'primary.main', fontSize: 40, alignSelf: 'center', my: 2 }} />
                         )}
-                        <Typography variant="body2" sx={{ fontWeight: 500, wordBreak: 'break-all' }}>{f.name}</Typography>
+                        <Typography variant="body2" sx={{ fontWeight: 500, wordBreak: 'break-all', color: 'text.primary' }}>{f.name}</Typography>
                       </Box>
                     ))}
                   </Stack>

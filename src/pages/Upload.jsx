@@ -213,7 +213,7 @@ const Upload = () => {
       <Paper sx={{ width: '100%', maxWidth: 500, p: { xs: 3, sm: 4 }, border: '1px solid', borderColor: 'divider' }}>
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <Box sx={{
-            width: 56, height: 56, borderRadius: 3, bgcolor: '#e8f0fe',
+            width: 56, height: 56, borderRadius: 3, bgcolor: theme.palette.mode === 'light' ? '#e8f0fe' : 'rgba(138,180,248,0.15)',
             display: 'inline-flex', alignItems: 'center', justifyContent: 'center', mb: 1.5,
           }}>
             <UploadFileIcon sx={{ color: 'primary.main', fontSize: 28 }} />
@@ -280,9 +280,16 @@ const Upload = () => {
                 p: 3,
                 textAlign: 'center',
                 cursor: 'pointer',
-                bgcolor: dragActive ? '#e8f0fe' : 'transparent',
+                bgcolor: (t) => dragActive ? (t.palette.mode === 'light' ? '#e8f0fe' : 'rgba(138,180,248,0.12)') : 'transparent',
                 transition: 'all 0.2s',
-                '&:hover': { borderColor: 'primary.main', bgcolor: '#f3f7fe' },
+                WebkitTapHighlightColor: 'transparent',
+                '&:hover': {
+                  borderColor: 'primary.main',
+                  bgcolor: (t) => t.palette.mode === 'light' ? '#f3f7fe' : 'rgba(138,180,248,0.08)'
+                },
+                '&:active': {
+                  bgcolor: (t) => t.palette.mode === 'light' ? '#e8f0fe' : 'rgba(138,180,248,0.12)'
+                }
               }}
               component="label"
             >
@@ -299,7 +306,7 @@ const Upload = () => {
                     <Box component="img" src={previewUrl} sx={{ maxHeight: 200, maxWidth: '100%', objectFit: 'contain', borderRadius: 2, boxShadow: 1 }} />
                   ) : file.type === 'application/pdf' ? (
                     isMobile || Capacitor.isNativePlatform() ? (
-                      <Box sx={{ width: '100%', height: 400, overflow: 'auto', display: 'flex', justifyContent: 'center', bgcolor: '#f5f5f5', borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
+                      <Box sx={{ width: '100%', height: 400, overflow: 'auto', display: 'flex', justifyContent: 'center', bgcolor: (t) => t.palette.mode === 'light' ? '#f5f5f5' : '#1a1a1a', borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
                         <Document file={previewUrl} loading={<CircularProgress sx={{ mt: 4 }} />}>
                           <Page pageNumber={1} width={300} renderTextLayer={false} renderAnnotationLayer={false} />
                         </Document>
