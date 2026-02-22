@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Container, Typography, Box, Button, TextField, Stack, Alert, InputAdornment, IconButton, Skeleton, Paper, Divider, Avatar, MenuItem } from '@mui/material';
+import React, { useEffect, useState, useRef } from 'react';
+import { Container, Typography, Box, Button, TextField, Stack, Alert, InputAdornment, IconButton, Skeleton, Paper, Divider, Avatar, MenuItem, Badge, CircularProgress, Menu as MuiMenu } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import Visibility from '@mui/icons-material/Visibility';
@@ -13,6 +13,7 @@ import SaveIcon from '@mui/icons-material/Save';
 import LogoutIcon from '@mui/icons-material/Logout';
 import DownloadIcon from '@mui/icons-material/Download';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -40,6 +41,9 @@ const Profile = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [deleting, setDeleting] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [avatarMenuAnchor, setAvatarMenuAnchor] = useState(null);
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -85,6 +89,68 @@ const Profile = () => {
     setShowPasswordFields(false); setNewPassword('');
   };
 
+  const handleAvatarUpload = async (event) => {
+    setAvatarMenuAnchor(null);
+    try {
+      setUploadingAvatar(true);
+      setError('');
+      setSuccess('');
+
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}-${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      let { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      const { data, error: updateError } = await supabase.auth.updateUser({
+        data: { avatar_url: publicUrl }
+      });
+
+      if (updateError) throw updateError;
+
+      setUser(data.user);
+      setSuccess('Η εικόνα προφίλ ενημερώθηκε!');
+    } catch (error) {
+      setError('Σφάλμα μεταφόρτωσης: ' + error.message);
+    } finally {
+      setUploadingAvatar(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
+  const handleAvatarRemove = async () => {
+    setAvatarMenuAnchor(null);
+    try {
+      setUploadingAvatar(true);
+      setError('');
+      setSuccess('');
+
+      const { data, error: updateError } = await supabase.auth.updateUser({
+        data: { avatar_url: null }
+      });
+
+      if (updateError) throw updateError;
+
+      setUser(data.user);
+      setSuccess('Η εικόνα προφίλ αφαιρέθηκε.');
+    } catch (error) {
+      setError('Σφάλμα διαγραφής: ' + error.message);
+    } finally {
+      setUploadingAvatar(false);
+    }
+  };
+
   if (loading) return (
     <Container maxWidth="sm" sx={{ pt: { xs: 2, md: 5 }, pb: 4 }}>
       <Paper sx={{ p: 4, border: '1px solid', borderColor: 'divider' }}>
@@ -99,15 +165,65 @@ const Profile = () => {
   );
   if (!user || !profile) return null;
 
+  const currentAvatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+
   return (
     <Box sx={{ minHeight: '80vh', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', py: { xs: 2, md: 5 }, px: 2, pb: { xs: 12, md: 5 } }}>
       <Paper sx={{ width: '100%', maxWidth: 480, p: { xs: 3, sm: 4 }, border: '1px solid', borderColor: 'divider' }}>
         {/* Avatar + header */}
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 3 }}>
-          <Avatar sx={{ width: 64, height: 64, bgcolor: 'primary.main', fontSize: 28, fontWeight: 700, mb: 1.5 }}>
-            {(profile.first_name?.[0] || user.email?.[0] || 'U').toUpperCase()}
-          </Avatar>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary' }}>Προφίλ</Typography>
+          <Badge
+            overlap="circular"
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            badgeContent={
+              <IconButton
+                onClick={(e) => setAvatarMenuAnchor(e.currentTarget)}
+                disabled={uploadingAvatar}
+                sx={{
+                  bgcolor: 'background.paper',
+                  boxShadow: 2,
+                  '&:hover': { bgcolor: 'action.hover' },
+                  width: 32,
+                  height: 32,
+                }}
+              >
+                {uploadingAvatar ? <CircularProgress size={16} /> : <CameraAltIcon sx={{ fontSize: 18, color: 'text.secondary' }} />}
+              </IconButton>
+            }
+          >
+            <Avatar
+              src={currentAvatarUrl}
+              sx={{ width: 80, height: 80, bgcolor: 'primary.main', fontSize: 32, fontWeight: 700, mb: 0.5 }}
+            >
+              {!currentAvatarUrl && (profile.first_name?.[0] || user.email?.[0] || 'U').toUpperCase()}
+            </Avatar>
+          </Badge>
+
+          <MuiMenu
+            anchorEl={avatarMenuAnchor}
+            open={Boolean(avatarMenuAnchor)}
+            onClose={() => setAvatarMenuAnchor(null)}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+            transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+          >
+            <MenuItem onClick={() => fileInputRef.current?.click()}>
+              Μεταφόρτωση νέας εικόνας
+            </MenuItem>
+            {currentAvatarUrl && (
+              <MenuItem onClick={handleAvatarRemove} sx={{ color: 'error.main' }}>
+                Αφαίρεση εικόνας
+              </MenuItem>
+            )}
+          </MuiMenu>
+          <input
+            type="file"
+            accept="image/*"
+            hidden
+            ref={fileInputRef}
+            onChange={handleAvatarUpload}
+          />
+
+          <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary', mt: 1 }}>Προφίλ</Typography>
           <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>{user.email}</Typography>
         </Box>
 

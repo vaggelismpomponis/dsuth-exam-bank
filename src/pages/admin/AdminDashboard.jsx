@@ -599,18 +599,20 @@ const AdminDashboard = () => {
                   </Typography>
                 </Box>
                 {/* Metrics */}
-                <Grid
-                  container
-                  spacing={3}
-                  justifyContent="center"
-                  sx={{ mb: 4 }}
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: { xs: "1fr 1fr", md: "repeat(4, 1fr)" },
+                    gap: { xs: 1.5, sm: 3 },
+                    mb: 4,
+                  }}
                 >
-                  <Grid item xs={12} sm={6} md={3}>
+                  <Box>
                     <Card
                       sx={{
                         borderRadius: 4,
                         boxShadow: 4,
-                        p: 3,
+                        p: { xs: 2, sm: 3 },
                         textAlign: "center",
                         background:
                           theme.palette.mode === "light"
@@ -621,26 +623,26 @@ const AdminDashboard = () => {
                       }}
                     >
                       <PeopleIcon
-                        sx={{ fontSize: 38, color: "#1976d2", mb: 1 }}
+                        sx={{ fontSize: { xs: 30, sm: 38 }, color: "#1976d2", mb: 1 }}
                       />
                       <Typography
                         variant="subtitle2"
                         color="text.secondary"
-                        sx={{ textTransform: "none", fontWeight: 600 }}
+                        sx={{ textTransform: "none", fontWeight: 600, fontSize: { xs: '0.75rem', sm: '0.875rem' }, lineHeight: 1.2, minHeight: { xs: 36, sm: 'auto' }, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                       >
                         Συνολικοί Χρήστες
                       </Typography>
-                      <Typography variant="h4" color="primary" fontWeight={800}>
+                      <Typography variant="h4" color="primary" fontWeight={800} sx={{ fontSize: { xs: '1.75rem', sm: '2.125rem' } }}>
                         {metricsLoading ? "..." : userCount}
                       </Typography>
                     </Card>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
+                  </Box>
+                  <Box>
                     <Card
                       sx={{
                         borderRadius: 4,
                         boxShadow: 4,
-                        p: 3,
+                        p: { xs: 2, sm: 3 },
                         textAlign: "center",
                         background:
                           theme.palette.mode === "light"
@@ -656,7 +658,7 @@ const AdminDashboard = () => {
                     >
                       <HourglassEmptyIcon
                         sx={{
-                          fontSize: 38,
+                          fontSize: { xs: 30, sm: 38 },
                           color:
                             theme.palette.mode === "light"
                               ? "#f57c00"
@@ -667,7 +669,7 @@ const AdminDashboard = () => {
                       <Typography
                         variant="subtitle2"
                         color="text.secondary"
-                        sx={{ textTransform: "none", fontWeight: 600 }}
+                        sx={{ textTransform: "none", fontWeight: 600, fontSize: { xs: '0.75rem', sm: '0.875rem' }, lineHeight: 1.2, minHeight: { xs: 36, sm: 'auto' }, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                       >
                         Εκκρεμή Αρχεία
                       </Typography>
@@ -679,18 +681,19 @@ const AdminDashboard = () => {
                               ? "#f57c00"
                               : "#ffb74d",
                           fontWeight: 800,
+                          fontSize: { xs: '1.75rem', sm: '2.125rem' }
                         }}
                       >
                         {metricsLoading ? "..." : pendingFilesCount}
                       </Typography>
                     </Card>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
+                  </Box>
+                  <Box>
                     <Card
                       sx={{
                         borderRadius: 4,
                         boxShadow: 4,
-                        p: 3,
+                        p: { xs: 2, sm: 3 },
                         textAlign: "center",
                         background:
                           theme.palette.mode === "light"
@@ -706,7 +709,7 @@ const AdminDashboard = () => {
                     >
                       <AssignmentLateIcon
                         sx={{
-                          fontSize: 38,
+                          fontSize: { xs: 30, sm: 38 },
                           color:
                             theme.palette.mode === "light"
                               ? "#d32f2f"
@@ -717,7 +720,7 @@ const AdminDashboard = () => {
                       <Typography
                         variant="subtitle2"
                         color="text.secondary"
-                        sx={{ textTransform: "none", fontWeight: 600 }}
+                        sx={{ textTransform: "none", fontWeight: 600, fontSize: { xs: '0.75rem', sm: '0.875rem' }, lineHeight: 1.2, minHeight: { xs: 36, sm: 'auto' }, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                       >
                         Ανοιχτά Αιτήματα
                       </Typography>
@@ -729,18 +732,19 @@ const AdminDashboard = () => {
                               ? "#d32f2f"
                               : "#e57373",
                           fontWeight: 800,
+                          fontSize: { xs: '1.75rem', sm: '2.125rem' }
                         }}
                       >
                         {metricsLoading ? "..." : openRequestsCount}
                       </Typography>
                     </Card>
-                  </Grid>
-                  <Grid item xs={12} sm={6} md={3}>
+                  </Box>
+                  <Box>
                     <Card
                       sx={{
                         borderRadius: 4,
                         boxShadow: 4,
-                        p: 3,
+                        p: { xs: 2, sm: 3 },
                         textAlign: "center",
                         background:
                           theme.palette.mode === "light"
@@ -756,7 +760,7 @@ const AdminDashboard = () => {
                     >
                       <AssignmentIndIcon
                         sx={{
-                          fontSize: 38,
+                          fontSize: { xs: 30, sm: 38 },
                           color:
                             theme.palette.mode === "light"
                               ? "#8e24aa"
@@ -767,7 +771,7 @@ const AdminDashboard = () => {
                       <Typography
                         variant="subtitle2"
                         color="text.secondary"
-                        sx={{ textTransform: "none", fontWeight: 600 }}
+                        sx={{ textTransform: "none", fontWeight: 600, fontSize: { xs: '0.75rem', sm: '0.875rem' }, lineHeight: 1.2, minHeight: { xs: 36, sm: 'auto' }, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
                       >
                         Αιτήσεις Admin
                       </Typography>
@@ -779,13 +783,14 @@ const AdminDashboard = () => {
                               ? "#8e24aa"
                               : "#ba68c8",
                           fontWeight: 800,
+                          fontSize: { xs: '1.75rem', sm: '2.125rem' }
                         }}
                       >
                         {metricsLoading ? "..." : pendingAdminAppsCount}
                       </Typography>
                     </Card>
-                  </Grid>
-                </Grid>
+                  </Box>
+                </Box>
                 {/* Επιλογές Admin */}
                 <Box
                   sx={{
@@ -920,7 +925,7 @@ const AdminDashboard = () => {
           )}
         </Box>
       </Box>
-    </AdminSidebarContext.Provider>
+    </AdminSidebarContext.Provider >
   );
 };
 
