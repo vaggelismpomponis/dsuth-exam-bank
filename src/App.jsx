@@ -27,6 +27,7 @@ import FAQ from './pages/FAQ';
 import Privacy from './pages/Privacy';
 import Requests from './pages/Requests';
 import BottomNav from './components/BottomNav';
+import StudentsDirectory from './pages/StudentsDirectory';
 import { useMediaQuery } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 
@@ -377,6 +378,7 @@ function App() {
               <Route path="/faq" element={<FAQ />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/requests" element={<Requests />} />
+              <Route path="/students" element={<StudentsDirectory />} />
               <Route path="/viewer" element={<FileViewer />} />
             </Routes>
           </Box>

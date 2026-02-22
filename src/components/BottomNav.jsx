@@ -5,6 +5,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import PostAddIcon from '@mui/icons-material/PostAdd';
 import AddIcon from '@mui/icons-material/Add';
+import GroupIcon from '@mui/icons-material/Group';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const navItems = [
@@ -12,7 +13,7 @@ const navItems = [
     { label: 'Μαθήματα', icon: <SearchIcon />, path: '/courses' },
     { label: null, icon: null, path: null }, // FAB spacer
     { label: 'Αγαπημένα', icon: <FavoriteIcon />, path: '/favorites' },
-    { label: 'Αιτήματα', icon: <PostAddIcon />, path: '/requests' },
+    { label: 'Φοιτητές', icon: <GroupIcon />, path: '/students' },
 ];
 
 const BottomNav = () => {
