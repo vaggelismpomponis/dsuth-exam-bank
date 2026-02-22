@@ -140,6 +140,7 @@ const NavBar = () => {
                 sx={{ ml: 0.5 }}
               >
                 <Avatar
+                  src={user?.user_metadata?.avatar_url || user?.user_metadata?.picture}
                   sx={{
                     width: 34,
                     height: 34,
@@ -148,7 +149,7 @@ const NavBar = () => {
                     fontWeight: 700,
                   }}
                 >
-                  {user.email?.[0]?.toUpperCase() || 'U'}
+                  {!(user?.user_metadata?.avatar_url || user?.user_metadata?.picture) && (user.email?.[0]?.toUpperCase() || 'U')}
                 </Avatar>
               </IconButton>
             ) : (
@@ -209,10 +210,10 @@ const NavBar = () => {
             {/* Hamburger — visible everywhere */}
             <IconButton
               edge="end"
-              onClick={() => setMobileOpen(true)}
+              onClick={() => setMobileOpen(!mobileOpen)}
               sx={{ color: 'text.primary' }}
             >
-              <MenuIcon />
+              {mobileOpen ? <CloseIcon /> : <MenuIcon />}
             </IconButton>
           </Box>
         </Toolbar>
