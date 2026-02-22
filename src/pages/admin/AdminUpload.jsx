@@ -3,13 +3,10 @@ import { Container, Typography, Box, Button, TextField, MenuItem, Alert, Circula
 import { supabase } from '../../supabaseClient';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { convertToPdf } from '../../utils/pdfConversion';
 import { Capacitor } from '@capacitor/core';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+import PdfPreview from '../../components/PdfPreview';
 
 const periods = [
   'Ιανουάριος',
@@ -373,15 +370,38 @@ const AdminUpload = () => {
                   </Typography>
                   <Stack spacing={1.5}>
                     {files.map(f => (
-                      <Box key={f.name} sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 2, bgcolor: theme.palette.mode === 'light' ? '#fff' : 'background.default' }}>
+                      <Box key={f.name} sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 2, bgcolor: theme.palette.mode === 'light' ? '#fff' : 'background.default', position: 'relative' }}>
+                        <IconButton
+                          size="small"
+                          color="error"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            setFiles(prev => prev.filter(file => file.name !== f.name));
+                            setFilePreviews(prev => {
+                              const newPreviews = { ...prev };
+                              delete newPreviews[f.name];
+                              return newPreviews;
+                            });
+                          }}
+                          sx={{
+                            position: 'absolute',
+                            top: 8,
+                            right: 8,
+                            bgcolor: 'background.paper',
+                            boxShadow: 1,
+                            color: '#d32f2f !important',
+                            '&:hover': { bgcolor: 'rgba(211, 47, 47, 0.08) !important' }
+                          }}
+                        >
+                          <DeleteIcon fontSize="small" />
+                        </IconButton>
                         {f.type.startsWith('image/') ? (
                           <Box component="img" src={filePreviews[f.name]} sx={{ maxHeight: 150, maxWidth: '100%', objectFit: 'contain', borderRadius: 1 }} />
                         ) : f.type === 'application/pdf' ? (
                           (isMobile || Capacitor.isNativePlatform()) ? (
                             <Box sx={{ width: '100%', height: 250, overflow: 'auto', display: 'flex', justifyContent: 'center', bgcolor: theme.palette.mode === 'light' ? '#f5f5f5' : '#1a1a1a', borderRadius: 1 }}>
-                              <Document file={filePreviews[f.name]} loading={<CircularProgress sx={{ mt: 4 }} />}>
-                                <Page pageNumber={1} width={280} renderTextLayer={false} renderAnnotationLayer={false} />
-                              </Document>
+                              <PdfPreview fileUrl={filePreviews[f.name]} showAllPages={false} />
                             </Box>
                           ) : (
                             <Box component="iframe" src={`${filePreviews[f.name]}#toolbar=0`} sx={{ width: '100%', height: 250, border: 'none', borderRadius: 1 }} />

@@ -10,11 +10,7 @@ import ShareIcon from '@mui/icons-material/Share';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Capacitor } from '@capacitor/core';
 import { downloadFile, shareFile } from '../utils/nativeDownload';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+import PdfPreview from '../components/PdfPreview';
 
 const FileViewer = () => {
     const [searchParams] = useSearchParams();
@@ -174,23 +170,8 @@ const FileViewer = () => {
                         />
                     </Box>
                 ) : isPdf && (isMobile || Capacitor.isNativePlatform()) ? (
-                    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: theme.palette.mode === 'light' ? '#e0e0e0' : '#121212', py: 2 }}>
-                        <Document
-                            file={fileUrl}
-                            onLoadSuccess={onDocumentLoadSuccess}
-                            loading={null}
-                        >
-                            {Array.from(new Array(numPages || 0), (el, index) => (
-                                <Box key={`page_${index + 1}`} sx={{ mb: 2, boxShadow: 3 }}>
-                                    <Page
-                                        pageNumber={index + 1}
-                                        width={isMobile ? window.innerWidth - 16 : 600}
-                                        renderTextLayer={false}
-                                        renderAnnotationLayer={false}
-                                    />
-                                </Box>
-                            ))}
-                        </Document>
+                    <Box sx={{ width: '100%', height: 'calc(100vh - 56px)' }}>
+                        <PdfPreview fileUrl={fileUrl} showAllPages={true} />
                     </Box>
                 ) : (
                     <Box
