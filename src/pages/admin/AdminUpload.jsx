@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Box, Button, TextField, MenuItem, Alert, CircularProgress, Stack, Skeleton, Card, CardContent, Autocomplete, useTheme, useMediaQuery } from '@mui/material';
+import { Typography, Box, Button, TextField, MenuItem, Alert, CircularProgress, Stack, Skeleton, Card, CardContent, Autocomplete, useTheme, useMediaQuery } from '@mui/material';
 import { supabase } from '../../supabaseClient';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
@@ -218,7 +218,7 @@ const AdminUpload = () => {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 6, mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <Box sx={{ mt: 6, mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
       <Card sx={{ width: '100%', maxWidth: 480, borderRadius: 4, boxShadow: 6, px: { xs: 1, sm: 3 }, py: 2, background: theme.palette.mode === 'light' ? 'linear-gradient(135deg, #e3eafc 0%, #f4f6f8 100%)' : theme.palette.background.paper }}>
         <CardContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
@@ -443,7 +443,7 @@ const AdminUpload = () => {
           )}
         </CardContent>
       </Card>
-    </Container>
+    </Box>
   );
 };
 
