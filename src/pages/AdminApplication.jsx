@@ -6,7 +6,7 @@ import { supabase } from '../supabaseClient';
 import { useNavigate } from 'react-router-dom';
 
 const AdminApplication = () => {
-    const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+    const [formData, setFormData] = useState({ name: '', message: '' });
     const [loading, setLoading] = useState(false);
     const [errors, setErrors] = useState({});
     const [user, setUser] = useState(null);
@@ -18,9 +18,7 @@ const AdminApplication = () => {
         supabase.auth.getSession().then(({ data }) => {
             const sessionUser = data?.session?.user || null;
             setUser(sessionUser);
-            if (sessionUser) {
-                setFormData(prev => ({ ...prev, email: sessionUser.email || '' }));
-            } else {
+            if (!sessionUser) {
                 enqueueSnackbar('Πρέπει να συνδεθείτε για να κάνετε αίτηση Admin.', { variant: 'warning' });
                 navigate('/login', { state: { returnUrl: '/admin-application' } });
             }
@@ -36,8 +34,6 @@ const AdminApplication = () => {
     const validateForm = () => {
         const newErrors = {};
         if (!formData.name.trim()) newErrors.name = 'Το όνομα είναι υποχρεωτικό';
-        if (!formData.email.trim()) newErrors.email = 'Το email είναι υποχρεωτικό';
-        else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Μη έγκυρο email';
         if (!formData.message.trim()) newErrors.message = 'Πρέπει να γράψετε γιατί θέλετε να γίνετε Admin';
         else if (formData.message.trim().length < 10) newErrors.message = 'Τουλάχιστον 10 χαρακτήρες';
 
@@ -68,7 +64,7 @@ const AdminApplication = () => {
             const { error } = await supabase.from('admin_applications').insert([
                 {
                     user_id: user.id,
-                    email: formData.email,
+                    email: user.email,
                     name: formData.name,
                     message: formData.message,
                     status: 'pending'
@@ -78,7 +74,7 @@ const AdminApplication = () => {
             if (error) throw new Error(error.message);
 
             enqueueSnackbar('Η αίτησή σας υποβλήθηκε επιτυχώς!', { variant: 'success' });
-            setFormData({ name: '', email: user.email || '', message: '' });
+            setFormData({ name: '', message: '' });
             setTimeout(() => navigate('/'), 2500);
 
         } catch (error) {
@@ -112,19 +108,6 @@ const AdminApplication = () => {
                             onChange={handleChange}
                             error={!!errors.name}
                             helperText={errors.name}
-                        />
-                        <TextField
-                            fullWidth
-                            required
-                            label="Email"
-                            name="email"
-                            type="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            error={!!errors.email}
-                            helperText={errors.email}
-                            InputProps={{ readOnly: true }} // Should match the auth user
-                            sx={{ opacity: 0.8 }}
                         />
                         <TextField
                             fullWidth

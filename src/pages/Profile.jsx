@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Container, Typography, Box, Button, TextField, Stack, Alert, InputAdornment, IconButton, Skeleton, Paper, Divider, Avatar, MenuItem, Badge, CircularProgress, Menu as MuiMenu } from '@mui/material';
+import { Container, Typography, Box, Button, TextField, Stack, Alert, InputAdornment, IconButton, Skeleton, Paper, Divider, Avatar, MenuItem, Badge, CircularProgress, Menu as MuiMenu, Switch, FormControlLabel } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import Visibility from '@mui/icons-material/Visibility';
@@ -71,7 +71,12 @@ const Profile = () => {
 
   const handleSave = async () => {
     setSaving(true); setError(''); setSuccess('');
-    const updateObj = { first_name: profile.first_name, last_name: profile.last_name, updated_at: new Date().toISOString() };
+    const updateObj = {
+      first_name: profile.first_name,
+      last_name: profile.last_name,
+      show_in_directory: profile.show_in_directory ?? true,
+      updated_at: new Date().toISOString()
+    };
     if (isUserAdminSync(user, profile)) updateObj.role = profile.role;
     const { error: updateErr } = await supabase.from('profiles').update(updateObj).eq('id', user.id);
     if (updateErr) setError('Σφάλμα αποθήκευσης: ' + updateErr.message);
@@ -310,6 +315,23 @@ const Profile = () => {
             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
               Μπορείτε να εξάγετε ή να διαγράψετε τα προσωπικά σας δεδομένα ανά πάσα στιγμή.
             </Typography>
+
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={profile.show_in_directory ?? true}
+                  onChange={(e) => setProfile({ ...profile, show_in_directory: e.target.checked })}
+                  color="primary"
+                />
+              }
+              label={
+                <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                  Εμφάνιση του προφίλ μου στον Κατάλογο Φοιτητών
+                </Typography>
+              }
+              sx={{ mb: 3 }}
+            />
+
             <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
               <Button
                 variant="outlined"

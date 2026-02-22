@@ -21,6 +21,7 @@ import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { useSnackbar } from 'notistack';
 import { isUserAdmin } from '../utils/adminUtils';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
+import GroupIcon from '@mui/icons-material/Group';
 
 const NavBar = () => {
   const [user, setUser] = useState(undefined);
@@ -70,6 +71,7 @@ const NavBar = () => {
     { label: 'Μαθήματα', to: '/courses', icon: <MenuBookIcon /> },
     { label: 'Αγαπημένα', to: '/favorites', icon: <FavoriteIcon /> },
     { label: 'Ανέβασμα', to: '/upload', icon: <UploadFileIcon /> },
+    { label: 'Φοιτητές', to: '/students', icon: <GroupIcon /> },
     { label: 'Αιτήματα', to: '/requests', icon: <QuestionAnswerIcon /> },
     { label: 'Επικοινωνία', to: '/contact', icon: <ContactSupportIcon /> },
   ];
