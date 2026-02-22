@@ -38,6 +38,7 @@
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-is": "^19.2.4",
+    "react-pdf": "^10.4.0",
     "react-router-dom": "^7.6.2",
     "react-turnstile": "^1.1.4",
     "uuid": "^11.1.0",

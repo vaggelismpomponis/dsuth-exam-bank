@@ -10,6 +10,11 @@ import ShareIcon from '@mui/icons-material/Share';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Capacitor } from '@capacitor/core';
 import { downloadFile, shareFile } from '../utils/nativeDownload';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 const FileViewer = () => {
     const [searchParams] = useSearchParams();
@@ -25,6 +30,12 @@ const FileViewer = () => {
 
     const [loading, setLoading] = useState(true);
     const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+    const [numPages, setNumPages] = useState(null);
+
+    const onDocumentLoadSuccess = ({ numPages }) => {
+        setNumPages(numPages);
+        setLoading(false);
+    };
 
     const showNotification = (message, severity = 'success') => {
         setSnackbar({ open: true, message, severity });
@@ -58,6 +69,7 @@ const FileViewer = () => {
 
     const ext = getFilenameFromUrl(fileUrl).split('.').pop().toLowerCase();
     const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(ext);
+    const isPdf = ext === 'pdf';
 
     const subtitle = [courseName, period, year].filter(Boolean).join(' · ');
 
@@ -160,6 +172,25 @@ const FileViewer = () => {
                                 display: loading ? 'none' : 'block',
                             }}
                         />
+                    </Box>
+                ) : isPdf && (isMobile || Capacitor.isNativePlatform()) ? (
+                    <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: theme.palette.mode === 'light' ? '#e0e0e0' : '#121212', py: 2 }}>
+                        <Document
+                            file={fileUrl}
+                            onLoadSuccess={onDocumentLoadSuccess}
+                            loading={null}
+                        >
+                            {Array.from(new Array(numPages || 0), (el, index) => (
+                                <Box key={`page_${index + 1}`} sx={{ mb: 2, boxShadow: 3 }}>
+                                    <Page
+                                        pageNumber={index + 1}
+                                        width={isMobile ? window.innerWidth - 16 : 600}
+                                        renderTextLayer={false}
+                                        renderAnnotationLayer={false}
+                                    />
+                                </Box>
+                            ))}
+                        </Document>
                     </Box>
                 ) : (
                     <Box
