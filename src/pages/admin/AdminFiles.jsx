@@ -11,11 +11,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import CloseIcon from '@mui/icons-material/Close';
 import { Capacitor } from '@capacitor/core';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+import PdfPreview from '../../components/PdfPreview';
 
 const AdminFiles = () => {
   const [exams, setExams] = useState([]);
@@ -329,23 +325,8 @@ const AdminFiles = () => {
                 <Box component="img" src={previewFile.file_url} sx={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
               ) : previewFile.file_url.match(/\.pdf$/i) ? (
                 (isMobileScreen || Capacitor.isNativePlatform()) ? (
-                  <Box sx={{ width: '100%', height: '100%', overflow: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', bgcolor: theme.palette.mode === 'light' ? '#e0e0e0' : '#121212', py: 2 }}>
-                    <Document
-                      file={previewFile.file_url}
-                      onLoadSuccess={({ numPages }) => setNumPages(numPages)}
-                      loading={<CircularProgress sx={{ mt: 4 }} />}
-                    >
-                      {Array.from(new Array(numPages || 0), (el, index) => (
-                        <Box key={`page_${index + 1}`} sx={{ mb: 2, boxShadow: 3 }}>
-                          <Page
-                            pageNumber={index + 1}
-                            width={isMobile ? window.innerWidth - 48 : 550}
-                            renderTextLayer={false}
-                            renderAnnotationLayer={false}
-                          />
-                        </Box>
-                      ))}
-                    </Document>
+                  <Box sx={{ width: '100%', height: '100%' }}>
+                    <PdfPreview fileUrl={previewFile.file_url} showAllPages={true} />
                   </Box>
                 ) : (
                   <Box component="iframe" src={`${previewFile.file_url}#toolbar=0`} sx={{ width: '100%', height: '100%', border: 'none' }} />

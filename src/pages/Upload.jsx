@@ -5,16 +5,13 @@ import { supabase } from '../supabaseClient';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { useSnackbar } from 'notistack';
 import { validateTurnstileToken } from '../utils/turnstileValidation';
 import { convertToPdf } from '../utils/pdfConversion';
 import { Capacitor } from '@capacitor/core';
-import { Document, Page, pdfjs } from 'react-pdf';
-import 'react-pdf/dist/Page/AnnotationLayer.css';
-import 'react-pdf/dist/Page/TextLayer.css';
-
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+import PdfPreview from '../components/PdfPreview';
 
 const periods = [
   'Ιανουάριος',
@@ -306,10 +303,8 @@ const Upload = () => {
                     <Box component="img" src={previewUrl} sx={{ maxHeight: 200, maxWidth: '100%', objectFit: 'contain', borderRadius: 2, boxShadow: 1 }} />
                   ) : file.type === 'application/pdf' ? (
                     isMobile || Capacitor.isNativePlatform() ? (
-                      <Box sx={{ width: '100%', height: 400, overflow: 'auto', display: 'flex', justifyContent: 'center', bgcolor: (t) => t.palette.mode === 'light' ? '#f5f5f5' : '#1a1a1a', borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
-                        <Document file={previewUrl} loading={<CircularProgress sx={{ mt: 4 }} />}>
-                          <Page pageNumber={1} width={300} renderTextLayer={false} renderAnnotationLayer={false} />
-                        </Document>
+                      <Box sx={{ width: '100%', height: 400 }}>
+                        <PdfPreview fileUrl={previewUrl} showAllPages={false} />
                       </Box>
                     ) : (
                       <Box component="iframe" src={`${previewUrl}#toolbar=0`} sx={{ width: '100%', height: 400, border: 'none', borderRadius: 2, boxShadow: 1 }} />
@@ -319,6 +314,30 @@ const Upload = () => {
                   )}
                   <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', wordBreak: 'break-all' }}>Επιτυχής μετατροπή: {file.name}</Typography>
                   <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 600 }}>Το αρχείο είναι έτοιμο για ανέβασμα!</Typography>
+                  <Button
+                    variant="outlined"
+                    color="error"
+                    size="small"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      setFile(null);
+                      setPreviewUrl('');
+                    }}
+                    sx={{
+                      mt: 1,
+                      borderRadius: 2,
+                      color: '#d32f2f !important',
+                      borderColor: '#d32f2f !important',
+                      '&:hover': {
+                        bgcolor: 'rgba(211, 47, 47, 0.08) !important',
+                        borderColor: '#d32f2f !important'
+                      }
+                    }}
+                    startIcon={<DeleteIcon />}
+                  >
+                    Διαγραφή Αρχείου
+                  </Button>
                 </Box>
               ) : (
                 <>

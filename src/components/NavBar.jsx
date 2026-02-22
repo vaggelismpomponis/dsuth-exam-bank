@@ -176,7 +176,7 @@ const NavBar = () => {
             >
               <MenuItem
                 onClick={() => { navigate('/profile'); setAnchorEl(null); }}
-                sx={{ borderRadius: 2, mb: 0.5, py: 1.2, px: 2, '&:hover': { bgcolor: 'primary.light' } }}
+                sx={{ borderRadius: 2, mb: 0.5, py: 1.2, px: 2, '&:hover': { bgcolor: (theme) => theme.palette.mode === 'light' ? 'primary.light' : 'rgba(255, 255, 255, 0.08)' } }}
               >
                 <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
                   <AccountCircle fontSize="small" />
@@ -186,7 +186,7 @@ const NavBar = () => {
               {isAdmin && (
                 <MenuItem
                   onClick={() => { navigate('/admin'); setAnchorEl(null); }}
-                  sx={{ borderRadius: 2, mb: 0.5, py: 1.2, px: 2, '&:hover': { bgcolor: 'primary.light' } }}
+                  sx={{ borderRadius: 2, mb: 0.5, py: 1.2, px: 2, '&:hover': { bgcolor: (theme) => theme.palette.mode === 'light' ? 'primary.light' : 'rgba(255, 255, 255, 0.08)' } }}
                 >
                   <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
                     <SettingsIcon fontSize="small" />
@@ -258,7 +258,7 @@ const NavBar = () => {
                   mb: 0.5,
                   py: 1.2,
                   px: 2,
-                  '&:hover': { bgcolor: 'primary.light' },
+                  '&:hover': { bgcolor: (theme) => theme.palette.mode === 'light' ? 'primary.light' : 'rgba(255, 255, 255, 0.08)' },
                 }}
               >
                 <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
