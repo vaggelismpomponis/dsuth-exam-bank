@@ -168,26 +168,41 @@ const NavBar = () => {
               onClose={() => setAnchorEl(null)}
               slotProps={{
                 paper: {
-                  sx: { borderRadius: 3, minWidth: 200, mt: 1, boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }
+                  sx: { borderRadius: 3, minWidth: 200, mt: 1, p: 1, boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }
                 }
               }}
               transformOrigin={{ horizontal: 'right', vertical: 'top' }}
               anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
             >
-              <MenuItem onClick={() => { navigate('/profile'); setAnchorEl(null); }}>
-                <ListItemIcon><AccountCircle fontSize="small" /></ListItemIcon>
-                Προφίλ
+              <MenuItem
+                onClick={() => { navigate('/profile'); setAnchorEl(null); }}
+                sx={{ borderRadius: 2, mb: 0.5, py: 1.2, px: 2, '&:hover': { bgcolor: 'primary.light' } }}
+              >
+                <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
+                  <AccountCircle fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Προφίλ" primaryTypographyProps={{ fontWeight: 500, fontSize: '0.95rem', color: 'text.primary' }} />
               </MenuItem>
               {isAdmin && (
-                <MenuItem onClick={() => { navigate('/admin'); setAnchorEl(null); }}>
-                  <ListItemIcon><SettingsIcon fontSize="small" /></ListItemIcon>
-                  Admin
+                <MenuItem
+                  onClick={() => { navigate('/admin'); setAnchorEl(null); }}
+                  sx={{ borderRadius: 2, mb: 0.5, py: 1.2, px: 2, '&:hover': { bgcolor: 'primary.light' } }}
+                >
+                  <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
+                    <SettingsIcon fontSize="small" />
+                  </ListItemIcon>
+                  <ListItemText primary="Admin" primaryTypographyProps={{ fontWeight: 500, fontSize: '0.95rem', color: 'text.primary' }} />
                 </MenuItem>
               )}
-              <Divider />
-              <MenuItem onClick={() => { handleLogout(); setAnchorEl(null); }} sx={{ color: 'error.main' }}>
-                <ListItemIcon><LogoutIcon fontSize="small" sx={{ color: 'error.main' }} /></ListItemIcon>
-                Αποσύνδεση
+              <Divider sx={{ my: 0.5 }} />
+              <MenuItem
+                onClick={() => { handleLogout(); setAnchorEl(null); }}
+                sx={{ borderRadius: 2, py: 1.2, px: 2, '&:hover': { bgcolor: 'error.light', color: 'error.dark' }, color: 'error.main' }}
+              >
+                <ListItemIcon sx={{ minWidth: 36, color: 'inherit' }}>
+                  <LogoutIcon fontSize="small" />
+                </ListItemIcon>
+                <ListItemText primary="Αποσύνδεση" primaryTypographyProps={{ fontWeight: 500, fontSize: '0.95rem', color: 'inherit' }} />
               </MenuItem>
             </Menu>
 
