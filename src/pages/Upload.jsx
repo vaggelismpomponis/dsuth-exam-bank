@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Container, Typography, Box, Button, TextField, MenuItem, Alert, CircularProgress, Stack, Skeleton, IconButton, Tooltip, Paper, Autocomplete } from '@mui/material';
+import { Container, Typography, Box, Button, TextField, MenuItem, Alert, CircularProgress, Stack, Skeleton, IconButton, Tooltip, Paper, Autocomplete, useMediaQuery, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
@@ -10,6 +10,11 @@ import { useSnackbar } from 'notistack';
 import { validateTurnstileToken } from '../utils/turnstileValidation';
 import { convertToPdf } from '../utils/pdfConversion';
 import { Capacitor } from '@capacitor/core';
+import { Document, Page, pdfjs } from 'react-pdf';
+import 'react-pdf/dist/Page/AnnotationLayer.css';
+import 'react-pdf/dist/Page/TextLayer.css';
+
+pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
 
 const periods = [
   'Ιανουάριος',
@@ -36,6 +41,8 @@ function greekToLatin(str) {
 }
 
 const Upload = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [user, setUser] = useState(undefined);
   const [title, setTitle] = useState('');
   const [course, setCourse] = useState('');
@@ -290,8 +297,16 @@ const Upload = () => {
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5 }}>
                   {file.type.startsWith('image/') ? (
                     <Box component="img" src={previewUrl} sx={{ maxHeight: 200, maxWidth: '100%', objectFit: 'contain', borderRadius: 2, boxShadow: 1 }} />
-                  ) : file.type === 'application/pdf' && !Capacitor.isNativePlatform() ? (
-                    <Box component="iframe" src={`${previewUrl}#toolbar=0`} sx={{ width: '100%', height: 400, border: 'none', borderRadius: 2, boxShadow: 1 }} />
+                  ) : file.type === 'application/pdf' ? (
+                    isMobile || Capacitor.isNativePlatform() ? (
+                      <Box sx={{ width: '100%', height: 400, overflow: 'auto', display: 'flex', justifyContent: 'center', bgcolor: '#f5f5f5', borderRadius: 2, border: '1px solid', borderColor: 'divider' }}>
+                        <Document file={previewUrl} loading={<CircularProgress sx={{ mt: 4 }} />}>
+                          <Page pageNumber={1} width={300} renderTextLayer={false} renderAnnotationLayer={false} />
+                        </Document>
+                      </Box>
+                    ) : (
+                      <Box component="iframe" src={`${previewUrl}#toolbar=0`} sx={{ width: '100%', height: 400, border: 'none', borderRadius: 2, boxShadow: 1 }} />
+                    )
                   ) : (
                     <InsertDriveFileIcon sx={{ color: 'primary.main', fontSize: 60 }} />
                   )}

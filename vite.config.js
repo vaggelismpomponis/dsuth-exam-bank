@@ -23,6 +23,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon-180x180.png', 'maskable-icon-512x512.png'],
+      workbox: {
+        maximumFileSizeToCacheInBytes: 5000000,
+      },
       manifest: {
         name: 'DSUth Exam Bank',
         short_name: 'DSUth Exam Bank',
