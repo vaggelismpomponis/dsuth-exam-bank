@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { AppBar, Toolbar, Typography, Box, IconButton, Drawer, List, ListItemButton, ListItemText, ListItemIcon, useTheme, useMediaQuery, Divider, Avatar } from '@mui/material';
+import {
+  AppBar, Toolbar, Typography, Box, IconButton, Drawer,
+  List, ListItemButton, ListItemText, ListItemIcon,
+  useTheme, useMediaQuery, Avatar, Divider, Button,
+} from '@mui/material';
 import MenuIcon from '@mui/icons-material/Menu';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
@@ -22,6 +26,7 @@ import { useSnackbar } from 'notistack';
 import { isUserAdmin } from '../utils/adminUtils';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import GroupIcon from '@mui/icons-material/Group';
+import PersonIcon from '@mui/icons-material/Person';
 
 const NavBar = () => {
   const [user, setUser] = useState(undefined);
@@ -36,6 +41,8 @@ const NavBar = () => {
   const location = useLocation();
   const adminSidebar = React.useContext(AdminSidebarContext);
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isDark = theme.palette.mode === 'dark';
 
   useEffect(() => {
     const checkAdminStatus = async (user) => {
@@ -66,6 +73,14 @@ const NavBar = () => {
     navigate('/');
   };
 
+  const navLinks = [
+    { label: 'Αρχική', to: '/', icon: <HomeIcon sx={{ fontSize: 18 }} /> },
+    { label: 'Μαθήματα', to: '/courses', icon: <MenuBookIcon sx={{ fontSize: 18 }} /> },
+    { label: 'Ανέβασμα', to: '/upload', icon: <UploadFileIcon sx={{ fontSize: 18 }} /> },
+    { label: 'Φοιτητές', to: '/students', icon: <GroupIcon sx={{ fontSize: 18 }} /> },
+    { label: 'Επικοινωνία', to: '/contact', icon: <ContactSupportIcon sx={{ fontSize: 18 }} /> },
+  ];
+
   const drawerItems = [
     { label: 'Αρχική', to: '/', icon: <HomeIcon /> },
     { label: 'Μαθήματα', to: '/courses', icon: <MenuBookIcon /> },
@@ -76,7 +91,13 @@ const NavBar = () => {
     { label: 'Επικοινωνία', to: '/contact', icon: <ContactSupportIcon /> },
   ];
 
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const isActive = (to) => {
+    if (to === '/') return location.pathname === '/';
+    return location.pathname.startsWith(to);
+  };
+
+  const avatarUrl = user?.user_metadata?.avatar_url || user?.user_metadata?.picture;
+  const avatarLetter = user?.email?.[0]?.toUpperCase() || 'U';
 
   return (
     <>
@@ -86,36 +107,42 @@ const NavBar = () => {
           top: 0,
           pt: 'env(safe-area-inset-top, 0px)',
           zIndex: theme.zIndex.drawer + 1,
-          background: theme.palette.mode === 'light' ? 'rgba(255,255,255,0.85)' : 'rgba(32,33,36,0.85)',
-          backdropFilter: 'blur(12px)',
+          background: isDark
+            ? 'rgba(18, 18, 20, 0.82)'
+            : 'rgba(255, 255, 255, 0.88)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
           borderBottom: '1px solid',
-          borderColor: 'divider',
+          borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+          boxShadow: 'none',
+          borderRadius: 0,
         }}
       >
-        <Toolbar sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', minHeight: { xs: 56, md: 64 }, px: { xs: 2, md: 3 } }}>
+        <Toolbar
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            minHeight: { xs: 56, md: 64 },
+            px: { xs: 2, md: 4 },
+            maxWidth: 1280,
+            width: '100%',
+            mx: 'auto',
+          }}
+        >
+          {/* Left: Admin toggle + Brand */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            {/* Admin hamburger */}
             {isAdminRoute && adminSidebar.onToggle && (
               <IconButton
                 edge="start"
                 onClick={adminSidebar.onToggle}
-                sx={{ color: 'text.primary' }}
+                sx={{ color: 'text.primary', mr: 0.5 }}
               >
                 <MenuIcon />
               </IconButton>
             )}
-            {/* Brand */}
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: 800,
-                fontSize: { xs: 18, md: 20 },
-                color: 'primary.main',
-                letterSpacing: '-0.01em',
-                userSelect: 'none',
-                textDecoration: 'none',
-                cursor: 'pointer',
-              }}
+            {/* Brand logo */}
+            <Box
               onClick={() => {
                 if (location.pathname === '/') {
                   window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -123,99 +150,232 @@ const NavBar = () => {
                   navigate('/');
                 }
               }}
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+                cursor: 'pointer',
+                userSelect: 'none',
+              }}
             >
-              DSUth Exam Bank
-            </Typography>
+              <Box
+                sx={{
+                  width: 34,
+                  height: 34,
+                  borderRadius: 0,
+                  background: 'linear-gradient(135deg, #1a73e8, #0052cc)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  flexShrink: 0,
+                  boxShadow: '0 2px 8px rgba(26,115,232,0.35)',
+                }}
+              >
+                <Typography sx={{ color: '#fff', fontWeight: 900, fontSize: '0.85rem', letterSpacing: '-0.02em' }}>
+                  DS
+                </Typography>
+              </Box>
+              <Typography
+                sx={{
+                  fontWeight: 800,
+                  fontSize: { xs: '1rem', md: '1.05rem' },
+                  color: 'text.primary',
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1,
+                }}
+              >
+                DSUth<Box component="span" sx={{ color: 'primary.main' }}> Exam</Box>
+              </Typography>
+            </Box>
           </Box>
 
-          {/* Right side */}
+          {/* Center: Desktop nav links */}
+          {!isMobile && !isAdminRoute && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              {navLinks.map((link) => {
+                const active = isActive(link.to);
+                return (
+                  <Box
+                    key={link.to}
+                    component={Link}
+                    to={link.to}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 0.6,
+                      px: 1.5,
+                      py: 0.75,
+                      borderRadius: 0,
+                      fontSize: '0.875rem',
+                      fontWeight: active ? 700 : 500,
+                      color: active ? 'primary.main' : 'text.secondary',
+                      bgcolor: active
+                        ? isDark ? 'rgba(26,115,232,0.12)' : 'rgba(26,115,232,0.08)'
+                        : 'transparent',
+                      textDecoration: 'none',
+                      transition: 'all 0.15s ease',
+                      '&:hover': {
+                        color: 'primary.main',
+                        bgcolor: isDark ? 'rgba(26,115,232,0.10)' : 'rgba(26,115,232,0.06)',
+                        textDecoration: 'none',
+                      },
+                    }}
+                  >
+                    {link.icon}
+                    {link.label}
+                  </Box>
+                );
+              })}
+            </Box>
+          )}
+
+          {/* Right: Actions */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            {/* Theme Toggle */}
-            <IconButton sx={{ mr: 0.5, color: 'text.secondary' }} onClick={colorMode.toggleColorMode}>
-              {theme.palette.mode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+            {/* Theme toggle */}
+            <IconButton
+              onClick={colorMode.toggleColorMode}
+              size="small"
+              sx={{
+                color: 'text.secondary',
+                width: 36,
+                height: 36,
+                borderRadius: 0,
+                '&:hover': { bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' },
+              }}
+            >
+              {isDark ? <Brightness7Icon sx={{ fontSize: 19 }} /> : <Brightness4Icon sx={{ fontSize: 19 }} />}
             </IconButton>
 
             {/* User avatar / login */}
             {user ? (
-              <IconButton
-                onClick={(e) => setAnchorEl(e.currentTarget)}
-                sx={{ ml: 0.5 }}
-              >
-                <Avatar
-                  src={user?.user_metadata?.avatar_url || user?.user_metadata?.picture}
-                  sx={{
-                    width: 34,
-                    height: 34,
-                    bgcolor: 'primary.main',
-                    fontSize: 15,
-                    fontWeight: 700,
-                  }}
+              <>
+                <IconButton
+                  onClick={(e) => setAnchorEl(e.currentTarget)}
+                  size="small"
+                  sx={{ p: 0.5, ml: 0.5 }}
                 >
-                  {!(user?.user_metadata?.avatar_url || user?.user_metadata?.picture) && (user.email?.[0]?.toUpperCase() || 'U')}
-                </Avatar>
-              </IconButton>
+                  <Avatar
+                    src={avatarUrl}
+                    sx={{
+                      width: 32,
+                      height: 32,
+                      bgcolor: 'primary.main',
+                      fontSize: 13,
+                      fontWeight: 700,
+                      border: '2px solid',
+                      borderColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(26,115,232,0.2)',
+                    }}
+                  >
+                    {!avatarUrl && avatarLetter}
+                  </Avatar>
+                </IconButton>
+
+                <Menu
+                  anchorEl={anchorEl}
+                  open={open}
+                  onClose={() => setAnchorEl(null)}
+                  slotProps={{
+                    paper: {
+                      sx: {
+                        borderRadius: '14px',
+                        minWidth: 200,
+                        mt: 1.5,
+                        p: 0.75,
+                        border: '1px solid',
+                        borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
+                        boxShadow: isDark
+                          ? '0 8px 32px rgba(0,0,0,0.5)'
+                          : '0 8px 32px rgba(0,0,0,0.12)',
+                        bgcolor: isDark ? '#1c1d1f' : '#fff',
+                      },
+                    },
+                  }}
+                  transformOrigin={{ horizontal: 'right', vertical: 'top' }}
+                  anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                >
+                  {/* User info */}
+                  <Box sx={{ px: 2, py: 1.5, mb: 0.5 }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', fontSize: '0.875rem' }} noWrap>
+                      {user.user_metadata?.full_name || user.email?.split('@')[0] || 'Χρήστης'}
+                    </Typography>
+                    <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.75rem' }} noWrap>
+                      {user.email}
+                    </Typography>
+                  </Box>
+                  <Divider sx={{ mb: 0.75 }} />
+                  <MenuItem
+                    onClick={() => { navigate('/profile'); setAnchorEl(null); }}
+                    sx={{ borderRadius: 0, mb: 0.25, py: 1, px: 1.5, gap: 1.5 }}
+                  >
+                    <PersonIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.875rem', color: 'text.primary' }}>Προφίλ</Typography>
+                  </MenuItem>
+                  {isAdmin && (
+                    <MenuItem
+                      onClick={() => { navigate('/admin'); setAnchorEl(null); }}
+                      sx={{ borderRadius: 0, mb: 0.25, py: 1, px: 1.5, gap: 1.5 }}
+                    >
+                      <SettingsIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                      <Typography sx={{ fontWeight: 500, fontSize: '0.875rem', color: 'text.primary' }}>Admin</Typography>
+                    </MenuItem>
+                  )}
+                  <Divider sx={{ my: 0.75 }} />
+                  <MenuItem
+                    onClick={() => { handleLogout(); setAnchorEl(null); }}
+                    sx={{ borderRadius: 0, py: 1, px: 1.5, gap: 1.5, color: 'error.main', '&:hover': { bgcolor: 'error.light', color: '#fff' } }}
+                  >
+                    <LogoutIcon sx={{ fontSize: 18, color: 'inherit' }} />
+                    <Typography sx={{ fontWeight: 500, fontSize: '0.875rem', color: 'inherit' }}>Αποσύνδεση</Typography>
+                  </MenuItem>
+                </Menu>
+              </>
             ) : (
-              <IconButton
-                component={Link}
-                to="/login"
-                sx={{ color: 'text.secondary' }}
-              >
-                <AccountCircle sx={{ fontSize: 30 }} />
-              </IconButton>
+              <>
+                {!isMobile && (
+                  <Button
+                    component={Link}
+                    to="/login"
+                    variant="contained"
+                    size="small"
+                    sx={{
+                      ml: 0.5,
+                      px: 2,
+                      py: 0.7,
+                      fontSize: '0.85rem',
+                      fontWeight: 600,
+                      borderRadius: 0,
+                    }}
+                  >
+                    Είσοδος
+                  </Button>
+                )}
+                {isMobile && (
+                  <IconButton
+                    component={Link}
+                    to="/login"
+                    size="small"
+                    sx={{ color: 'text.secondary', width: 36, height: 36, borderRadius: 0 }}
+                  >
+                    <LoginIcon sx={{ fontSize: 20 }} />
+                  </IconButton>
+                )}
+              </>
             )}
 
-            {/* User menu */}
-            <Menu
-              anchorEl={anchorEl}
-              open={open}
-              onClose={() => setAnchorEl(null)}
-              slotProps={{
-                paper: {
-                  sx: { borderRadius: 3, minWidth: 200, mt: 1, p: 1, boxShadow: '0 4px 24px rgba(0,0,0,0.12)' }
-                }
-              }}
-              transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-              anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-            >
-              <MenuItem
-                onClick={() => { navigate('/profile'); setAnchorEl(null); }}
-                sx={{ borderRadius: 2, mb: 0.5, py: 1.2, px: 2, '&:hover': { bgcolor: (theme) => theme.palette.mode === 'light' ? 'primary.light' : 'rgba(255, 255, 255, 0.08)' } }}
-              >
-                <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
-                  <AccountCircle fontSize="small" />
-                </ListItemIcon>
-                <ListItemText primary="Προφίλ" primaryTypographyProps={{ fontWeight: 500, fontSize: '0.95rem', color: 'text.primary' }} />
-              </MenuItem>
-              {isAdmin && (
-                <MenuItem
-                  onClick={() => { navigate('/admin'); setAnchorEl(null); }}
-                  sx={{ borderRadius: 2, mb: 0.5, py: 1.2, px: 2, '&:hover': { bgcolor: (theme) => theme.palette.mode === 'light' ? 'primary.light' : 'rgba(255, 255, 255, 0.08)' } }}
-                >
-                  <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
-                    <SettingsIcon fontSize="small" />
-                  </ListItemIcon>
-                  <ListItemText primary="Admin" primaryTypographyProps={{ fontWeight: 500, fontSize: '0.95rem', color: 'text.primary' }} />
-                </MenuItem>
-              )}
-              <Divider sx={{ my: 0.5 }} />
-              <MenuItem
-                onClick={() => { handleLogout(); setAnchorEl(null); }}
-                sx={{ borderRadius: 2, py: 1.2, px: 2, '&:hover': { bgcolor: 'error.light', color: 'error.dark' }, color: 'error.main' }}
-              >
-                <ListItemIcon sx={{ minWidth: 36, color: 'inherit' }}>
-                  <LogoutIcon fontSize="small" />
-                </ListItemIcon>
-                <ListItemText primary="Αποσύνδεση" primaryTypographyProps={{ fontWeight: 500, fontSize: '0.95rem', color: 'inherit' }} />
-              </MenuItem>
-            </Menu>
-
-            {/* Hamburger — visible everywhere */}
+            {/* Hamburger (always visible) */}
             <IconButton
-              edge="end"
               onClick={() => setMobileOpen(!mobileOpen)}
-              sx={{ color: 'text.primary' }}
+              size="small"
+              sx={{
+                ml: 0.5,
+                color: 'text.primary',
+                width: 36,
+                height: 36,
+                borderRadius: 0,
+                '&:hover': { bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.04)' },
+              }}
             >
-              {mobileOpen ? <CloseIcon /> : <MenuIcon />}
+              {mobileOpen ? <CloseIcon sx={{ fontSize: 20 }} /> : <MenuIcon sx={{ fontSize: 20 }} />}
             </IconButton>
           </Box>
         </Toolbar>
@@ -228,52 +388,160 @@ const NavBar = () => {
         onClose={() => setMobileOpen(false)}
         PaperProps={{
           sx: {
-            width: 280,
-            bgcolor: 'background.paper',
-            p: 0,
-          }
+            width: 300,
+            bgcolor: isDark ? '#16171a' : '#fff',
+            borderRadius: 0,
+            border: 'none',
+            boxShadow: isDark ? '-8px 0 40px rgba(0,0,0,0.5)' : '-8px 0 40px rgba(0,0,0,0.1)',
+          },
         }}
       >
-        <Box sx={{ width: '100%', minHeight: '100vh', pt: 'env(safe-area-inset-top, 0px)' }} role="presentation" onClick={() => setMobileOpen(false)}>
+        <Box sx={{ width: 300, minHeight: '100vh', pt: 'env(safe-area-inset-top, 0px)' }} role="presentation">
           {/* Drawer Header */}
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2.5, py: 2.5, borderBottom: '1px solid', borderColor: 'divider' }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main', fontSize: 17 }}>
-              DSUth Exam Bank
-            </Typography>
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              px: 2.5,
+              py: 2,
+              borderBottom: '1px solid',
+              borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+            }}
+          >
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box
+                sx={{
+                  width: 32,
+                  height: 32,
+                  borderRadius: 0,
+                  background: 'linear-gradient(135deg, #1a73e8, #0052cc)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+              >
+                <Typography sx={{ color: '#fff', fontWeight: 900, fontSize: '0.75rem' }}>DS</Typography>
+              </Box>
+              <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', letterSpacing: '-0.01em' }}>
+                DSUth Exam Bank
+              </Typography>
+            </Box>
             <IconButton
-              edge="end"
               onClick={(e) => { e.stopPropagation(); setMobileOpen(false); }}
-              sx={{ color: 'text.secondary' }}
+              size="small"
+              sx={{ color: 'text.secondary', width: 32, height: 32, borderRadius: 0 }}
             >
-              <CloseIcon />
+              <CloseIcon sx={{ fontSize: 18 }} />
             </IconButton>
           </Box>
 
+          {/* User info in drawer */}
+          {user && (
+            <Box
+              sx={{
+                mx: 2,
+                mt: 2,
+                p: 2,
+                borderRadius: 0,
+                bgcolor: isDark ? 'rgba(26,115,232,0.08)' : 'rgba(26,115,232,0.05)',
+                border: '1px solid',
+                borderColor: isDark ? 'rgba(26,115,232,0.2)' : 'rgba(26,115,232,0.12)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 1.5,
+              }}
+            >
+              <Avatar
+                src={avatarUrl}
+                sx={{ width: 36, height: 36, bgcolor: 'primary.main', fontSize: 14, fontWeight: 700, flexShrink: 0 }}
+              >
+                {!avatarUrl && avatarLetter}
+              </Avatar>
+              <Box sx={{ minWidth: 0 }}>
+                <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', lineHeight: 1.3 }} noWrap>
+                  {user.user_metadata?.full_name || user.email?.split('@')[0] || 'Χρήστης'}
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.72rem' }} noWrap>
+                  {user.email}
+                </Typography>
+              </Box>
+            </Box>
+          )}
+
           {/* Drawer Links */}
-          <List sx={{ px: 1.5, pt: 1 }}>
-            {drawerItems.map((item) => (
-              <ListItemButton
-                key={item.label}
-                component={Link}
-                to={item.to}
+          <List sx={{ px: 1.5, pt: 1.5 }}>
+            {drawerItems.map((item) => {
+              const active = isActive(item.to);
+              return (
+                <ListItemButton
+                  key={item.label}
+                  component={Link}
+                  to={item.to}
+                  onClick={() => setMobileOpen(false)}
+                  sx={{
+                    borderRadius: 0,
+                    mb: 0.5,
+                    py: 1.2,
+                    px: 2,
+                    bgcolor: active
+                      ? isDark ? 'rgba(26,115,232,0.12)' : 'rgba(26,115,232,0.08)'
+                      : 'transparent',
+                    '&:hover': {
+                      bgcolor: active
+                        ? isDark ? 'rgba(26,115,232,0.16)' : 'rgba(26,115,232,0.12)'
+                        : isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
+                    },
+                  }}
+                >
+                  <ListItemIcon sx={{ minWidth: 36, color: active ? 'primary.main' : 'text.secondary' }}>
+                    {item.icon}
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      fontWeight: active ? 700 : 500,
+                      fontSize: '0.9rem',
+                      color: active ? 'primary.main' : 'text.primary',
+                    }}
+                  />
+                </ListItemButton>
+              );
+            })}
+          </List>
+
+          {/* Bottom actions */}
+          <Box sx={{ px: 2.5, mt: 'auto', pb: 3, pt: 2, borderTop: '1px solid', borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}>
+            {user ? (
+              <Box
+                onClick={() => { handleLogout(); setMobileOpen(false); }}
                 sx={{
-                  borderRadius: 3,
-                  mb: 0.5,
-                  py: 1.2,
-                  px: 2,
-                  '&:hover': { bgcolor: (theme) => theme.palette.mode === 'light' ? 'primary.light' : 'rgba(255, 255, 255, 0.08)' },
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 1.5,
+                  p: 1.5,
+                  borderRadius: 0,
+                  cursor: 'pointer',
+                  color: 'error.main',
+                  '&:hover': { bgcolor: 'error.light', color: '#fff' },
                 }}
               >
-                <ListItemIcon sx={{ minWidth: 36, color: 'text.secondary' }}>
-                  {item.icon}
-                </ListItemIcon>
-                <ListItemText
-                  primary={item.label}
-                  primaryTypographyProps={{ fontWeight: 500, fontSize: '0.95rem', color: 'text.primary' }}
-                />
-              </ListItemButton>
-            ))}
-          </List>
+                <LogoutIcon sx={{ fontSize: 20, color: 'inherit' }} />
+                <Typography sx={{ fontWeight: 600, fontSize: '0.875rem', color: 'inherit' }}>Αποσύνδεση</Typography>
+              </Box>
+            ) : (
+              <Button
+                component={Link}
+                to="/login"
+                variant="contained"
+                fullWidth
+                onClick={() => setMobileOpen(false)}
+                sx={{ borderRadius: 0, py: 1.2, fontWeight: 700 }}
+              >
+                Είσοδος
+              </Button>
+            )}
+          </Box>
         </Box>
       </Drawer>
     </>

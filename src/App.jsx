@@ -287,6 +287,7 @@ function App() {
   const location = useLocation();
   const navigate = useNavigate();
   const isAdminRoute = location.pathname.startsWith('/admin');
+  const isAuthRoute = location.pathname === '/login' || location.pathname === '/register';
   const backPressedRef = useRef(false);
 
   // Android back button/gesture handler
@@ -382,8 +383,8 @@ function App() {
               <Route path="/viewer" element={<FileViewer />} />
             </Routes>
           </Box>
-          {isMobile && !isAdminRoute && <BottomNav />}
-          {!isMobile && !isAdminRoute && <Footer />}
+          {isMobile && !isAdminRoute && !isAuthRoute && <BottomNav />}
+          {!isAdminRoute && !isAuthRoute && <Footer />}
         </SnackbarProvider>
       </ThemeProvider>
     </ColorModeContext.Provider>
