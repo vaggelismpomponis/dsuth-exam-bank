@@ -93,6 +93,27 @@ const AdminUsers = () => {
     });
   }, []);
 
+  // Derived state: Sorted and ID'd users
+  const preparedUsers = React.useMemo(() => {
+    // 1. Sort: Admins first, then Alphabetical
+    const sorted = [...allUsers].sort((a, b) => {
+      // Admin priority
+      if (a.role === 'admin' && b.role !== 'admin') return -1;
+      if (a.role !== 'admin' && b.role === 'admin') return 1;
+
+      // Alphabetical (Last Name -> First Name -> Email)
+      const nameA = [a.last_name, a.first_name, a.email].filter(Boolean).join(' ').toLowerCase();
+      const nameB = [b.last_name, b.first_name, b.email].filter(Boolean).join(' ').toLowerCase();
+      return nameA.localeCompare(nameB, 'el');
+    });
+
+    // 2. Assign display IDs (1, 2, 3...) based on sorted position
+    return sorted.map((u, index) => ({
+      ...u,
+      displayId: index + 1
+    }));
+  }, [allUsers]);
+
   const handleOpenEdit = (user) => {
     setEditUser(user);
     setEditRole(user.role || 'student');
@@ -112,7 +133,7 @@ const AdminUsers = () => {
     setEditUser(null);
   };
 
-  const filtered = allUsers.filter(u => {
+  const filtered = preparedUsers.filter(u => {
     if (!search) return true;
     const s = search.toLowerCase();
     return (
@@ -121,6 +142,7 @@ const AdminUsers = () => {
       (u.last_name && u.last_name.toLowerCase().includes(s))
     );
   });
+
 
   const cardStyle = {
     p: { xs: 2, sm: 2.5 },
@@ -198,6 +220,16 @@ const AdminUsers = () => {
               return (
                 <Box key={u.id} sx={cardStyle}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 2 }, flexWrap: 'wrap' }}>
+                    {/* ID */}
+                    <Typography sx={{
+                      fontWeight: 800,
+                      color: isDark ? alpha('#fff', 0.4) : 'text.secondary',
+                      minWidth: 28,
+                      fontSize: '0.75rem',
+                      fontFamily: 'monospace'
+                    }}>
+                      {u.displayId}.
+                    </Typography>
                     {/* Avatar */}
                     <Avatar
                       sx={{
