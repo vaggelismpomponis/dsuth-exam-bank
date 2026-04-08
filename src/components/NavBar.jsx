@@ -293,6 +293,7 @@ const NavBar = () => {
                   }}
                   transformOrigin={{ horizontal: 'right', vertical: 'top' }}
                   anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
+                  disableScrollLock={true}
                 >
                   {/* User info */}
                   <Box sx={{ px: 2, py: 1.5, mb: 0.5 }}>
@@ -387,6 +388,7 @@ const NavBar = () => {
         anchor="right"
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
+        disableScrollLock={true}
         PaperProps={{
           sx: {
             width: 300,
