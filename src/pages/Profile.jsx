@@ -299,7 +299,14 @@ const Profile = () => {
           <Button variant="contained" startIcon={<SaveIcon />} onClick={handleSave} fullWidth disabled={saving} sx={{ py: 1.3 }}>
             Αποθήκευση
           </Button>
-          <Button variant="outlined" color="error" startIcon={<LogoutIcon />} onClick={async () => { await supabase.auth.signOut(); navigate('/'); }} fullWidth>
+          <Button variant="outlined" color="error" startIcon={<LogoutIcon />} onClick={async () => { 
+            try { await supabase.auth.signOut(); } catch (err) { console.warn(err); }
+            Object.keys(localStorage).forEach((key) => {
+              if (key.startsWith('sb-') && key.endsWith('-auth-token')) localStorage.removeItem(key);
+            });
+            navigate('/');
+            window.location.reload(); 
+          }} fullWidth>
             Αποσύνδεση
           </Button>
         </Stack>
@@ -361,9 +368,14 @@ const Profile = () => {
             <Button
               onClick={async () => {
                 setDeleting(true);
-                await supabase.from('profiles').delete().eq('id', user.id);
-                await supabase.auth.signOut();
-                setDeleting(false); setDeleteDialogOpen(false); navigate('/');
+                try { await supabase.from('profiles').delete().eq('id', user.id); } catch(err) { console.warn(err); }
+                try { await supabase.auth.signOut(); } catch (err) { console.warn(err); }
+                Object.keys(localStorage).forEach((key) => {
+                  if (key.startsWith('sb-') && key.endsWith('-auth-token')) localStorage.removeItem(key);
+                });
+                setDeleting(false); setDeleteDialogOpen(false); 
+                navigate('/');
+                window.location.reload();
               }}
               color="error" variant="contained" disabled={deleting}
             >
