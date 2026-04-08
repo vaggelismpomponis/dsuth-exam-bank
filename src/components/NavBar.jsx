@@ -68,10 +68,20 @@ const NavBar = () => {
   }, []);
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.warn("Logout error:", err);
+    }
+    Object.keys(localStorage).forEach((key) => {
+      if (key.startsWith('sb-') && key.endsWith('-auth-token')) {
+        localStorage.removeItem(key);
+      }
+    });
     setUser(null);
     enqueueSnackbar('Αποσυνδεθήκατε με επιτυχία!', { variant: 'success' });
     navigate('/');
+    window.location.reload();
   };
 
   const navLinks = [
