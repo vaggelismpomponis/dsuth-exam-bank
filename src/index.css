@@ -21,17 +21,21 @@
   box-sizing: border-box;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   margin: 0;
   min-width: 320px;
   min-height: 100dvh;
-  width: 100vw;
+  width: 100%;
 }
 
 html,
 body {
-  overflow-x: hidden !important;
-  width: 100vw;
+  overflow-x: hidden;
+  width: 100%;
 }
 
 #root {

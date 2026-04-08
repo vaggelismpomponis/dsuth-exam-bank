@@ -307,7 +307,7 @@ const AdminCourses = () => {
             <CloseIcon fontSize="small" />
           </IconButton>
         </DialogTitle>
-        <DialogContent sx={{ px: 3, pb: 1 }}>
+        <DialogContent sx={{ px: 3, pb: 1, pt: 1 }}>
           {error && <Alert severity="error" sx={{ mb: 2, borderRadius: '10px' }} onClose={() => setError('')}>{error}</Alert>}
           <TextField
             label="Όνομα Μαθήματος"
@@ -315,7 +315,14 @@ const AdminCourses = () => {
             onChange={e => setCourseName(e.target.value)}
             fullWidth
             autoFocus
-            sx={{ mb: 2 }}
+            sx={{ mt: 1, mb: 2 }}
+            InputLabelProps={{
+              sx: {
+                background: isDark ? '#1e1f23' : '#fff',
+                padding: '0 8px',
+                zIndex: 2,
+              }
+            }}
           />
           <TextField
             label="Εξάμηνο (1-8)"
@@ -324,6 +331,13 @@ const AdminCourses = () => {
             onChange={e => setCourseSemester(Number(e.target.value))}
             fullWidth
             inputProps={{ min: 1, max: 8 }}
+            InputLabelProps={{
+              sx: {
+                background: isDark ? '#1e1f23' : '#fff',
+                padding: '0 8px',
+                zIndex: 2,
+              }
+            }}
           />
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 3, pt: 2, gap: 1 }}>

@@ -52,8 +52,8 @@ const getDesignTokens = (mode) => ({
       dark: '#3c4043',
     },
     background: {
-      default: mode === 'light' ? '#f8fafb' : '#202124',
-      paper: mode === 'light' ? '#ffffff' : '#2d2e30',
+      default: mode === 'light' ? '#f8fafb' : '#16171a',
+      paper: mode === 'light' ? '#ffffff' : '#1e1f23',
     },
     text: {
       primary: mode === 'light' ? '#1f1f1f' : '#e8eaed',
@@ -141,6 +141,20 @@ const getDesignTokens = (mode) => ({
         },
       },
     },
+    MuiInputLabel: {
+      styleOverrides: {
+        root: {
+          '&.MuiInputLabel-outlined.MuiInputLabel-shrink': {
+            backgroundColor: (mode === 'light' ? '#fff' : '#1e1f23') + ' !important',
+            padding: '0 8px !important',
+            marginLeft: '-4px !important',
+            borderRadius: '4px !important',
+            zIndex: '2 !important',
+            opacity: '1 !important',
+          },
+        },
+      },
+    },
     MuiTextField: {
       defaultProps: {
         variant: 'outlined',
@@ -160,6 +174,9 @@ const getDesignTokens = (mode) => ({
             '&.Mui-focused fieldset': {
               borderColor: '#1a73e8',
               borderWidth: '2px',
+            },
+            '&.Mui-focused .MuiOutlinedInput-notchedOutline legend': {
+              textAlign: 'left',
             },
           },
         },
@@ -202,6 +219,9 @@ const getDesignTokens = (mode) => ({
       },
     },
     MuiDrawer: {
+      defaultProps: {
+        disableScrollLock: true,
+      },
       styleOverrides: {
         paper: {
           borderRadius: '24px 0 0 24px',
@@ -216,10 +236,35 @@ const getDesignTokens = (mode) => ({
       },
     },
     MuiDialog: {
+      defaultProps: {
+        disableScrollLock: true,
+      },
       styleOverrides: {
         paper: {
           borderRadius: 20,
         },
+      },
+    },
+    MuiMenu: {
+      defaultProps: {
+        disableScrollLock: true,
+      },
+    },
+    MuiPopover: {
+      defaultProps: {
+        disableScrollLock: true,
+      },
+    },
+    MuiSelect: {
+      defaultProps: {
+        MenuProps: {
+          disableScrollLock: true,
+        },
+      },
+    },
+    MuiModal: {
+      defaultProps: {
+        disableScrollLock: true,
       },
     },
     MuiLinearProgress: {
