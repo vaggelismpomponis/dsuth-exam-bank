@@ -1,5 +1,8 @@
 import React, { useState } from 'react';
-import { Container, Typography, Box, Button, TextField, Alert, Stack, IconButton, InputAdornment, Link as MuiLink, Divider, Paper, useTheme } from '@mui/material';
+import {
+  Typography, Box, Button, TextField, Alert, Stack,
+  IconButton, InputAdornment, Link as MuiLink, Divider, useTheme
+} from '@mui/material';
 import { supabase } from '../supabaseClient';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -9,6 +12,8 @@ import { Turnstile } from '@marsidev/react-turnstile';
 import { validateTurnstileToken } from '../utils/turnstileValidation';
 import { validatePassword } from '../utils/passwordValidation';
 import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
+import SchoolIcon from '@mui/icons-material/School';
+import PersonAddOutlinedIcon from '@mui/icons-material/PersonAddOutlined';
 
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 18 18">
@@ -17,6 +22,19 @@ const GoogleIcon = () => (
     <path d="M3.964 10.71c-.18-.54-.282-1.117-.282-1.71s.102-1.17.282-1.71V4.958H.957C.347 6.173 0 7.548 0 9s.348 2.827.957 4.042l3.007-2.332z" fill="#FBBC05" />
     <path d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.464.891 11.428 0 9 0 5.482 0 2.438 2.017.957 4.958L3.964 7.29C4.672 5.163 6.656 3.58 9 3.58z" fill="#EA4335" />
   </svg>
+);
+
+const FeatureBullet = ({ text }) => (
+  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+    <Box sx={{
+      width: 6, height: 6, borderRadius: '50%',
+      background: 'linear-gradient(135deg, #fff, rgba(255,255,255,0.6))',
+      flexShrink: 0,
+    }} />
+    <Typography sx={{ color: 'rgba(255,255,255,0.82)', fontSize: '0.875rem', lineHeight: 1.5 }}>
+      {text}
+    </Typography>
+  </Box>
 );
 
 const Register = () => {
@@ -84,115 +102,202 @@ const Register = () => {
   };
 
   return (
-    <Box sx={{ minHeight: '80vh', display: 'flex', alignItems: 'center', justifyContent: 'center', pt: { xs: 2, md: 4 }, pb: { xs: 12, md: 4 }, px: 2 }}>
-      <Paper
+    <Box
+      sx={{
+        minHeight: '100dvh',
+        display: 'flex',
+        flexDirection: { xs: 'column', md: 'row' },
+        bgcolor: 'background.default',
+      }}
+    >
+      {/* Left Panel – Branding */}
+      <Box
         sx={{
-          width: '100%',
-          maxWidth: 420,
-          p: { xs: 3, sm: 4 },
-          border: '1px solid',
-          borderColor: 'divider',
+          display: { xs: 'none', md: 'flex' },
+          flex: '0 0 420px',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          px: 6,
+          py: 8,
+          background: 'linear-gradient(145deg, #1e8e3e 0%, #0d7234 55%, #0a5e2a 100%)',
+          position: 'relative',
+          overflow: 'hidden',
         }}
       >
-        <Typography variant="h5" sx={{ fontWeight: 800, mb: 0.5, textAlign: 'center', color: 'text.primary' }}>
-          Εγγραφή
-        </Typography>
-        <Typography variant="body2" sx={{ color: 'text.secondary', textAlign: 'center', mb: 3 }}>
-          Δημιουργήστε τον λογαριασμό σας
-        </Typography>
+        <Box sx={{ position: 'absolute', top: -80, right: -80, width: 260, height: 260, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.06)' }} />
+        <Box sx={{ position: 'absolute', bottom: -100, left: -60, width: 300, height: 300, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.04)' }} />
 
-        {/* Google Button */}
-        <Button
-          variant="outlined"
-          fullWidth
-          startIcon={<GoogleIcon />}
-          onClick={handleGoogleLogin}
-          disabled={loading}
-          sx={{
-            mb: 2.5,
-            py: 1.2,
-            borderColor: isDark ? 'rgba(255,255,255,0.23)' : '#dadce0',
-            color: isDark ? 'text.primary' : '#3c4043',
-            fontWeight: 500,
-            fontSize: '0.938rem',
-            '&:hover': {
-              bgcolor: isDark ? 'rgba(255,255,255,0.05)' : '#f8f9fa',
-              borderColor: isDark ? 'rgba(255,255,255,0.4)' : '#dadce0',
-            },
-          }}
-        >
-          Εγγραφή με Google
-        </Button>
-
-        <Divider sx={{ my: 2 }}>
-          <Typography variant="body2" sx={{ color: 'text.secondary', px: 1 }}>ή</Typography>
-        </Divider>
-
-        {/* Form */}
-        <Box component="form" onSubmit={handleSignUp}>
-          <Stack spacing={2}>
-            <TextField
-              label="Email"
-              type="email"
-              fullWidth
-              value={email}
-              onChange={e => setEmail(e.target.value)}
-            />
-            <TextField
-              label="Κωδικός"
-              type={showPassword ? 'text' : 'password'}
-              fullWidth
-              value={password}
-              onChange={e => setPassword(e.target.value)}
-              InputProps={{
-                endAdornment: (
-                  <InputAdornment position="end">
-                    <IconButton
-                      onClick={() => setShowPassword(s => !s)}
-                      edge="end"
-                      size="small"
-                    >
-                      {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
-                    </IconButton>
-                  </InputAdornment>
-                ),
-              }}
-            />
-            <PasswordStrengthIndicator password={password} />
-
-            <Box sx={{ display: 'flex', justifyContent: 'center', my: 1 }}>
-              <Turnstile
-                siteKey="0x4AAAAAABiQtKNjlTVw7zFL"
-                onSuccess={(token) => { setTurnstileToken(token); setCanSubmit(true); }}
-                onExpire={() => { setTurnstileToken(''); setCanSubmit(false); }}
-                onError={() => { setTurnstileToken(''); setCanSubmit(false); }}
-                theme={isDark ? 'dark' : 'light'}
-                size="normal"
-              />
+        <Box sx={{ position: 'relative', zIndex: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 4 }}>
+            <Box sx={{
+              width: 40, height: 40, borderRadius: '12px',
+              bgcolor: 'rgba(255,255,255,0.2)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <SchoolIcon sx={{ color: '#fff', fontSize: 22 }} />
             </Box>
-
-            {error && <Alert severity="error">{error}</Alert>}
-            {message && <Alert severity="success">{message}</Alert>}
-
-            <Button
-              variant="contained"
-              fullWidth
-              type="submit"
-              disabled={loading || !canSubmit || !validatePassword(password).isValid}
-              sx={{ py: 1.3, fontSize: '0.938rem' }}
-            >
-              Εγγραφή
-            </Button>
-
-            <Typography variant="body2" sx={{ textAlign: 'center', color: 'text.secondary', mt: 1 }}>
-              Έχεις ήδη λογαριασμό;{' '}
-              <MuiLink component={Link} to="/login" underline="none" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                Είσοδος
-              </MuiLink>
+            <Typography sx={{ color: '#fff', fontWeight: 900, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>
+              DSUth Exam Bank
             </Typography>
-          </Stack>
+          </Box>
+
+          <Typography sx={{ color: '#fff', fontWeight: 900, fontSize: '2rem', lineHeight: 1.15, letterSpacing: '-0.03em', mb: 1.5 }}>
+            Γίνε μέλος<br />της κοινότητας! 🎓
+          </Typography>
+          <Typography sx={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.95rem', mb: 4, lineHeight: 1.65 }}>
+            Δημιούργησε λογαριασμό δωρεάν και αποκτήσε πρόσβαση σε όλο το υλικό.
+          </Typography>
+
+          <FeatureBullet text="Δωρεάν και ανοιχτή πρόσβαση πάντα" />
+          <FeatureBullet text="Αποθήκευσε αγαπημένα μαθήματα" />
+          <FeatureBullet text="Ανέβασε δικά σου θέματα εξετάσεων" />
+          <FeatureBullet text="Συνεισέφερε στην κοινότητα" />
         </Box>
-      </Paper>
+      </Box>
+
+      {/* Right Panel – Form */}
+      <Box
+        sx={{
+          flex: 1,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          px: { xs: 2.5, md: 6 },
+          py: { xs: 4, md: 6 },
+          pb: { xs: 6, md: 6 },
+        }}
+      >
+        <Box sx={{ width: '100%', maxWidth: 400, mx: 'auto' }}>
+          {/* Mobile brand */}
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', justifyContent: 'center', gap: 1.5, mb: 4 }}>
+            <Box sx={{
+              width: 36, height: 36, borderRadius: '10px',
+              background: 'linear-gradient(135deg, #1a73e8, #0052cc)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <Typography sx={{ color: '#fff', fontWeight: 900, fontSize: '0.8rem' }}>DS</Typography>
+            </Box>
+            <Typography sx={{ fontWeight: 800, fontSize: '1rem', color: 'text.primary', letterSpacing: '-0.02em' }}>
+              DSUth Exam Bank
+            </Typography>
+          </Box>
+
+          <Box sx={{ mb: 1, textAlign: { xs: 'center', md: 'left' } }}>
+            <Box sx={{
+              width: 44, height: 44, borderRadius: '14px',
+              bgcolor: isDark ? 'rgba(30,142,62,0.15)' : 'rgba(30,142,62,0.09)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              mb: 2,
+              mx: { xs: 'auto', md: 0 },
+            }}>
+              <PersonAddOutlinedIcon sx={{ color: '#1e8e3e', fontSize: 22 }} />
+            </Box>
+            <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary', letterSpacing: '-0.02em', mb: 0.5 }}>
+              Εγγραφή
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              Δημιουργήστε τον λογαριασμό σας δωρεάν
+            </Typography>
+          </Box>
+
+          {/* Google */}
+          <Button
+            variant="outlined"
+            fullWidth
+            startIcon={<GoogleIcon />}
+            onClick={handleGoogleLogin}
+            disabled={loading}
+            sx={{
+              mt: 2.5,
+              mb: 2.5,
+              py: 1.3,
+              borderRadius: '12px',
+              borderColor: isDark ? 'rgba(255,255,255,0.15)' : '#dadce0',
+              color: isDark ? 'text.primary' : '#3c4043',
+              fontWeight: 600,
+              fontSize: '0.9rem',
+              '&:hover': {
+                bgcolor: isDark ? 'rgba(255,255,255,0.05)' : '#f8f9fa',
+                borderColor: isDark ? 'rgba(255,255,255,0.3)' : '#c5c7c9',
+              },
+            }}
+          >
+            Εγγραφή με Google
+          </Button>
+
+          <Divider sx={{ mb: 2.5 }}>
+            <Typography variant="body2" sx={{ color: 'text.disabled', px: 1, fontSize: '0.8rem' }}>ή με email</Typography>
+          </Divider>
+
+          <Box component="form" onSubmit={handleSignUp}>
+            <Stack spacing={2}>
+              <TextField
+                label="Email"
+                type="email"
+                fullWidth
+                value={email}
+                onChange={e => setEmail(e.target.value)}
+              />
+              <TextField
+                label="Κωδικός"
+                type={showPassword ? 'text' : 'password'}
+                fullWidth
+                value={password}
+                onChange={e => setPassword(e.target.value)}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton onClick={() => setShowPassword(s => !s)} edge="end" size="small">
+                        {showPassword ? <VisibilityOff fontSize="small" /> : <Visibility fontSize="small" />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                }}
+              />
+              <PasswordStrengthIndicator password={password} />
+
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 0.5 }}>
+                <Turnstile
+                  siteKey="0x4AAAAAABiQtKNjlTVw7zFL"
+                  onSuccess={(token) => { setTurnstileToken(token); setCanSubmit(true); }}
+                  onExpire={() => { setTurnstileToken(''); setCanSubmit(false); }}
+                  onError={() => { setTurnstileToken(''); setCanSubmit(false); }}
+                  theme={isDark ? 'dark' : 'light'}
+                  size="normal"
+                />
+              </Box>
+
+              {error && <Alert severity="error" sx={{ borderRadius: '12px' }}>{error}</Alert>}
+              {message && <Alert severity="success" sx={{ borderRadius: '12px' }}>{message}</Alert>}
+
+              <Button
+                variant="contained"
+                fullWidth
+                type="submit"
+                disabled={loading || !canSubmit || !validatePassword(password).isValid}
+                sx={{
+                  py: 1.4,
+                  fontSize: '0.938rem',
+                  fontWeight: 700,
+                  borderRadius: '12px',
+                  background: 'linear-gradient(135deg, #1e8e3e, #0d7234)',
+                  '&:hover': { background: 'linear-gradient(135deg, #17772f, #0a5e25)' },
+                  '&:disabled': { opacity: 0.55 },
+                }}
+              >
+                {loading ? 'Εγγραφή...' : 'Δημιουργία Λογαριασμού'}
+              </Button>
+
+              <Typography variant="body2" sx={{ textAlign: 'center', color: 'text.secondary', mt: 0.5, fontSize: '0.875rem' }}>
+                Έχεις ήδη λογαριασμό;{' '}
+                <MuiLink component={Link} to="/login" underline="none" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                  Είσοδος
+                </MuiLink>
+              </Typography>
+            </Stack>
+          </Box>
+        </Box>
+      </Box>
     </Box>
   );
 };
