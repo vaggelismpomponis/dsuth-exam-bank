@@ -30,9 +30,11 @@ import BottomNav from './components/BottomNav';
 import StudentsDirectory from './pages/StudentsDirectory';
 import { useMediaQuery } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
+import PublicOnly from './components/PublicOnly';
+import { ColorModeContext } from './context/ColorModeContext';
+import { AdminSidebarContext } from './context/AdminSidebarContext';
 
-export const ColorModeContext = React.createContext({ toggleColorMode: () => { } });
-export const AdminSidebarContext = React.createContext({ onToggle: null });
+
 
 /* ── Material Design 3–inspired theme ── */
 const getDesignTokens = (mode) => ({
@@ -355,7 +357,7 @@ function App() {
             <NavBar />
             <Routes>
               <Route path="/" element={<Home />} />
-              <Route path="/login" element={<Login />} />
+              <Route path="/login" element={<PublicOnly><Login /></PublicOnly>} />
               <Route path="/upload" element={<Upload />} />
               <Route path="/favorites" element={<Favorites />} />
               <Route path="/contact" element={<Contact />} />
@@ -371,7 +373,7 @@ function App() {
                 <Route path="requests" element={<Suspense fallback={<div>Loading...</div>}><AdminRequests /></Suspense>} />
                 <Route path="applications" element={<Suspense fallback={<div>Loading...</div>}><AdminApplications /></Suspense>} />
               </Route>
-              <Route path="/register" element={<Register />} />
+              <Route path="/register" element={<PublicOnly><Register /></PublicOnly>} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/admin-application" element={<AdminApplication />} />
               <Route path="/courses" element={<Courses />} />

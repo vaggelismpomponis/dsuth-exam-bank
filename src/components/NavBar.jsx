@@ -7,7 +7,8 @@ import {
 import MenuIcon from '@mui/icons-material/Menu';
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
-import { ColorModeContext, AdminSidebarContext } from '../App';
+import { ColorModeContext } from '../context/ColorModeContext';
+import { AdminSidebarContext } from '../context/AdminSidebarContext';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import AccountCircle from '@mui/icons-material/AccountCircle';

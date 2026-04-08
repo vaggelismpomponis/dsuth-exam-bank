@@ -1,17 +1,144 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, TablePagination, TextField, InputAdornment, Card, CardContent, CardActions, Stack, Skeleton, Tabs, Tab, Chip, Tooltip, Dialog, DialogTitle, DialogContent, DialogActions, IconButton, useMediaQuery, useTheme, CircularProgress } from '@mui/material';
-import { supabase } from '../../supabaseClient';
+import {
+  Typography, Box, Button, Alert, Skeleton, TextField, InputAdornment,
+  IconButton, Chip, Tabs, Tab, Dialog, DialogTitle, DialogContent,
+  DialogActions, Stack, useMediaQuery, useTheme, alpha, CircularProgress, Tooltip,
+} from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
-import DeleteIcon from '@mui/icons-material/Delete';
-import DownloadIcon from '@mui/icons-material/Download';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import HourglassTopIcon from '@mui/icons-material/HourglassTop';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import VerifiedIcon from '@mui/icons-material/Verified';
+import VisibilityOutlinedIcon from '@mui/icons-material/VisibilityOutlined';
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 import DoneIcon from '@mui/icons-material/Done';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
+import FolderOpenIcon from '@mui/icons-material/FolderOpen';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import CloseIcon from '@mui/icons-material/Close';
+import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
+import TablePagination from '@mui/material/TablePagination';
+import { supabase } from '../../supabaseClient';
 import { Capacitor } from '@capacitor/core';
 import PdfPreview from '../../components/PdfPreview';
+
+const StatusChip = ({ approved }) => (
+  <Chip
+    icon={approved
+      ? <CheckCircleOutlineIcon sx={{ fontSize: '13px !important' }} />
+      : <HourglassTopIcon sx={{ fontSize: '13px !important' }} />
+    }
+    label={approved ? 'Εγκεκριμένο' : 'Εκκρεμεί'}
+    size="small"
+    sx={{
+      fontWeight: 700,
+      fontSize: '0.7rem',
+      borderRadius: '8px',
+      background: approved ? alpha('#1e8e3e', 0.12) : alpha('#f57c00', 0.12),
+      color: approved ? '#1e8e3e' : '#f57c00',
+      border: '1px solid',
+      borderColor: approved ? alpha('#1e8e3e', 0.25) : alpha('#f57c00', 0.25),
+      '& .MuiChip-icon': { color: 'inherit' },
+    }}
+  />
+);
+
+const ActionBtn = ({ title, onClick, color = '#1a73e8', bg, hoverBg, icon, href, disabled }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  const defaultBg = isDark ? alpha(color, 0.15) : alpha(color, 0.1);
+  const defaultHoverBg = isDark ? alpha(color, 0.25) : alpha(color, 0.18);
+  return (
+    <Tooltip title={title} arrow>
+      <span>
+        <IconButton
+          size="small"
+          href={href}
+          target={href ? '_blank' : undefined}
+          rel={href ? 'noopener noreferrer' : undefined}
+          onClick={!href ? onClick : undefined}
+          disabled={disabled}
+          sx={{
+            width: 34, height: 34, borderRadius: '10px',
+            background: bg || defaultBg,
+            color: color,
+            transition: 'all 0.18s ease',
+            '&:hover': { background: hoverBg || defaultHoverBg, transform: 'scale(1.08)' },
+            '&:disabled': { opacity: 0.4 },
+          }}
+        >
+          {icon}
+        </IconButton>
+      </span>
+    </Tooltip>
+  );
+};
+
+const ExamCard = ({ exam, users, onApprove, onPreview, onDelete }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  return (
+    <Box sx={{
+      p: 2.5, borderRadius: '16px',
+      background: isDark ? alpha('#fff', 0.04) : '#ffffff',
+      border: '1px solid', borderColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+      boxShadow: isDark ? 'none' : '0 2px 12px rgba(0,0,0,0.04)',
+    }}>
+      <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 1.5 }}>
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', mb: 0.3, lineHeight: 1.3 }}>
+            {exam.course}
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap', mt: 0.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <CalendarTodayIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
+              <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>{exam.year}</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <InsertDriveFileOutlinedIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
+              <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>{exam.period}</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+              <PersonOutlineIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
+              <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary' }}>
+                {users[exam.uploader] || 'Άγνωστος'}
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+        <StatusChip approved={exam.approved} />
+      </Box>
+      <Box sx={{ display: 'flex', gap: 1, mt: 1.5 }}>
+        {!exam.approved && (
+          <ActionBtn
+            title="Έγκριση"
+            onClick={() => onApprove(exam.id)}
+            color="#1e8e3e"
+            icon={<DoneIcon sx={{ fontSize: 16 }} />}
+          />
+        )}
+        <ActionBtn
+          title="Προβολή"
+          onClick={() => onPreview(exam)}
+          color="#1a73e8"
+          icon={<VisibilityOutlinedIcon sx={{ fontSize: 16 }} />}
+        />
+        <ActionBtn
+          title="Λήψη"
+          href={exam.file_url}
+          color="#7b1fa2"
+          icon={<FileDownloadOutlinedIcon sx={{ fontSize: 16 }} />}
+        />
+        <ActionBtn
+          title="Διαγραφή"
+          onClick={() => onDelete(exam.id, exam.file_url)}
+          color="#d32f2f"
+          icon={<DeleteOutlineIcon sx={{ fontSize: 16 }} />}
+        />
+      </Box>
+    </Box>
+  );
+};
 
 const AdminFiles = () => {
   const [exams, setExams] = useState([]);
@@ -22,38 +149,23 @@ const AdminFiles = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [search, setSearch] = useState('');
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 600);
   const [tab, setTab] = useState(0);
   const [confirmDelete, setConfirmDelete] = useState({ open: false, id: null, file_url: null });
-  const [numPages, setNumPages] = useState(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewFile, setPreviewFile] = useState(null);
+  const [approvingId, setApprovingId] = useState(null);
 
   const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const isMobileScreen = useMediaQuery(theme.breakpoints.down('md'));
 
   const cardBg = {
-    background: theme.palette.mode === 'light' ? '#f8fafc' : 'background.paper',
-    boxShadow: theme.palette.mode === 'light' ? '0 2px 12px 0 rgba(31,38,135,0.08)' : '0 4px 20px 0 rgba(0,0,0,0.4)',
-    borderRadius: '18px',
-    border: `1px solid ${theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(255,255,255,0.05)'}`,
+    background: isDark ? alpha('#fff', 0.04) : '#ffffff',
+    border: '1px solid',
+    borderColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+    borderRadius: '16px',
+    boxShadow: isDark ? 'none' : '0 2px 12px rgba(0,0,0,0.04)',
   };
-
-  const [previewOpen, setPreviewOpen] = useState(false);
-  const [previewFile, setPreviewFile] = useState(null);
-
-  const handleOpenPreview = (exam) => {
-    setPreviewFile(exam);
-    setPreviewOpen(true);
-  };
-  const handleClosePreview = () => {
-    setPreviewOpen(false);
-    setPreviewFile(null);
-  };
-
-  useEffect(() => {
-    const handleResize = () => setIsMobile(window.innerWidth < 600);
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const fetchExams = async () => {
     setLoading(true);
@@ -67,286 +179,356 @@ const AdminFiles = () => {
   useEffect(() => { fetchExams(); }, []);
 
   useEffect(() => {
-    // Fetch emails των uploaders αν υπάρχει view/table
-    const getUploaderEmails = async () => {
-      const uploaderIds = [...new Set(exams.map(e => e.uploader).filter(Boolean))];
-      if (uploaderIds.length === 0) return;
-      const { data } = await supabase.from('profiles').select('id,first_name,last_name,email').in('id', uploaderIds);
+    const uploaderIds = [...new Set(exams.map(e => e.uploader).filter(Boolean))];
+    if (!uploaderIds.length) return;
+    supabase.from('profiles').select('id,first_name,last_name,email').in('id', uploaderIds).then(({ data }) => {
       if (data) {
         const map = {};
         data.forEach(u => {
-          map[u.id] = (u.first_name || u.last_name) ? `${u.first_name || ''} ${u.last_name || ''}`.trim() : (u.email || u.id);
+          map[u.id] = (u.first_name || u.last_name)
+            ? `${u.first_name || ''} ${u.last_name || ''}`.trim()
+            : (u.email || u.id);
         });
         setUsers(map);
       }
-    };
-    getUploaderEmails();
+    });
   }, [exams]);
 
   const handleApprove = async (id) => {
+    setApprovingId(id);
     setError(''); setSuccess('');
     const { error } = await supabase.from('exams').update({ approved: true }).eq('id', id);
     if (error) setError(error.message);
     else { setSuccess('Εγκρίθηκε!'); fetchExams(); }
+    setApprovingId(null);
   };
 
   const handleDelete = async (id, file_url) => {
     setError(''); setSuccess('');
-    // Διαγραφή από storage
     const filePath = file_url.split('/exams/')[1];
-    if (filePath) {
-      await supabase.storage.from('exams').remove([filePath]);
-    }
-    // Διαγραφή από DB
+    if (filePath) await supabase.storage.from('exams').remove([filePath]);
     const { error } = await supabase.from('exams').delete().eq('id', id);
     if (error) setError(error.message);
     else { setSuccess('Διαγράφηκε!'); fetchExams(); }
+    setConfirmDelete({ open: false, id: null, file_url: null });
   };
 
-  // Search & Pagination
   const filteredExams = exams.filter(exam => {
-    if (!search) return true;
-    const s = search.toLowerCase();
-    return (
-      (exam.title && exam.title.toLowerCase().includes(s)) ||
-      (exam.course && exam.course.toLowerCase().includes(s)) ||
-      (exam.period && exam.period.toLowerCase().includes(s)) ||
-      (exam.year && String(exam.year).includes(s))
-    );
+    const matchesSearch = !search || (() => {
+      const s = search.toLowerCase();
+      return (
+        (exam.title && exam.title.toLowerCase().includes(s)) ||
+        (exam.course && exam.course.toLowerCase().includes(s)) ||
+        (exam.period && exam.period.toLowerCase().includes(s)) ||
+        (exam.year && String(exam.year).includes(s))
+      );
+    })();
+    const matchesTab = tab === 0 ? !exam.approved : exam.approved;
+    return matchesSearch && matchesTab;
   });
-  const filteredByTab = filteredExams.filter(exam => tab === 0 ? !exam.approved : exam.approved);
-  const paginatedExams = filteredByTab.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
 
-  const handleOpenDelete = (id, file_url) => setConfirmDelete({ open: true, id, file_url });
-  const handleCloseDelete = () => setConfirmDelete({ open: false, id: null, file_url: null });
-  const handleConfirmDelete = async () => {
-    if (confirmDelete.id && confirmDelete.file_url) {
-      await handleDelete(confirmDelete.id, confirmDelete.file_url);
-    }
-    handleCloseDelete();
-  };
+  const paginated = filteredExams.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+  const pendingCount = exams.filter(e => !e.approved).length;
+  const approvedCount = exams.filter(e => e.approved).length;
 
   return (
-    <Box sx={{ mt: 4, mb: 4, width: '100%' }}>
-      <Typography variant="h4" color={theme.palette.mode === 'light' ? '#111' : 'text.primary'} fontWeight={700} gutterBottom align="left">
-        ΔΙΑΧΕΙΡΙΣΗ ΑΡΧΕΙΩΝ
-      </Typography>
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
-      <Stack direction={isMobile ? 'column' : 'row'} spacing={2} sx={{ mb: 2, alignItems: isMobile ? 'stretch' : 'center', justifyContent: 'flex-end' }}>
+    <Box sx={{ width: '100%' }}>
+      {/* Page Header */}
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{
+            width: 44, height: 44, borderRadius: '14px',
+            background: 'linear-gradient(135deg, #1a73e8 0%, #0052cc 100%)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            boxShadow: '0 4px 16px rgba(26,115,232,0.35)',
+          }}>
+            <FolderOpenIcon sx={{ color: '#fff', fontSize: 22 }} />
+          </Box>
+          <Box>
+            <Typography variant="h4" sx={{ fontWeight: 800, lineHeight: 1.2, fontSize: { xs: '1.4rem', sm: '1.75rem' } }}>
+              Διαχείριση Αρχείων
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.2 }}>
+              Έγκριση και διαχείριση εξετάσεων
+            </Typography>
+          </Box>
+        </Box>
+      </Box>
+
+      {error && <Alert severity="error" sx={{ mb: 2, borderRadius: '12px' }} onClose={() => setError('')}>{error}</Alert>}
+      {success && <Alert severity="success" sx={{ mb: 2, borderRadius: '12px' }} onClose={() => setSuccess('')}>{success}</Alert>}
+
+      {/* Filter Row */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, flexWrap: 'wrap' }}>
         <TextField
-          placeholder="ΑΝΑΖΗΤΗΣΗ..."
+          placeholder="Αναζήτηση αρχείου..."
           value={search}
           onChange={e => { setSearch(e.target.value); setPage(0); }}
           size="small"
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
-                <SearchIcon />
+                <SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
               </InputAdornment>
             ),
+            sx: { borderRadius: '12px', background: isDark ? alpha('#fff', 0.05) : '#fff' },
           }}
-          sx={{ flex: 1, minWidth: isMobile ? 0 : 200 }}
+          sx={{ width: { xs: '100%', sm: 300 } }}
         />
-      </Stack>
-      <Tabs value={tab} onChange={(_, v) => { setTab(v); setPage(0); }} sx={{ mb: 2 }} centered>
-        <Tab label="Εκκρεμούν" icon={<HourglassEmptyIcon />} iconPosition="start" sx={{ textTransform: 'none' }} />
-        <Tab label="Εγκεκριμένα" icon={<CheckCircleIcon />} iconPosition="start" sx={{ textTransform: 'none' }} />
-      </Tabs>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Chip
+            label={`Εκκρεμή (${pendingCount})`}
+            onClick={() => { setTab(0); setPage(0); }}
+            icon={<HourglassTopIcon sx={{ fontSize: '14px !important' }} />}
+            sx={{
+              fontWeight: 700, fontSize: '0.78rem', borderRadius: '10px', cursor: 'pointer',
+              background: tab === 0 ? alpha('#f57c00', 0.15) : 'transparent',
+              border: '1px solid', borderColor: tab === 0 ? alpha('#f57c00', 0.3) : 'divider',
+              color: tab === 0 ? '#f57c00' : 'text.secondary',
+              '& .MuiChip-icon': { color: 'inherit' },
+            }}
+          />
+          <Chip
+            label={`Εγκεκριμένα (${approvedCount})`}
+            onClick={() => { setTab(1); setPage(0); }}
+            icon={<VerifiedIcon sx={{ fontSize: '14px !important' }} />}
+            sx={{
+              fontWeight: 700, fontSize: '0.78rem', borderRadius: '10px', cursor: 'pointer',
+              background: tab === 1 ? alpha('#1e8e3e', 0.15) : 'transparent',
+              border: '1px solid', borderColor: tab === 1 ? alpha('#1e8e3e', 0.3) : 'divider',
+              color: tab === 1 ? '#1e8e3e' : 'text.secondary',
+              '& .MuiChip-icon': { color: 'inherit' },
+            }}
+          />
+        </Box>
+      </Box>
+
+      {/* Data */}
       {loading ? (
-        <Box sx={{ mt: 2 }}>
-          {isMobile ? (
-            <Stack spacing={2}>
-              {[...Array(3)].map((_, i) => (
-                <Box key={i} sx={{ ...cardBg, mb: 2, p: 2 }}>
-                  <Skeleton variant="text" width="60%" height={32} sx={{ mb: 1 }} />
-                  <Skeleton variant="text" width="40%" height={24} />
-                  <Skeleton variant="text" width="30%" height={24} />
-                  <Skeleton variant="text" width="30%" height={24} />
-                  <Skeleton variant="text" width="60%" height={24} />
-                  <Skeleton variant="text" width="40%" height={24} />
-                  <Skeleton variant="rectangular" width="100%" height={36} sx={{ mt: 2 }} />
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          {[...Array(4)].map((_, i) => (
+            <Box key={i} sx={{ ...cardBg, p: 2.5 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+                <Box sx={{ flex: 1 }}>
+                  <Skeleton width="50%" height={22} />
+                  <Skeleton width="70%" height={16} sx={{ mt: 0.5 }} />
+                </Box>
+                <Skeleton width={80} height={24} sx={{ borderRadius: '8px' }} />
+              </Box>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                {[...Array(3)].map((_, j) => <Skeleton key={j} variant="rounded" width={34} height={34} sx={{ borderRadius: '10px' }} />)}
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      ) : paginated.length === 0 ? (
+        <Box sx={{ ...cardBg, py: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+          <FolderOpenIcon sx={{ fontSize: 48, color: 'text.secondary', opacity: 0.3 }} />
+          <Typography sx={{ color: 'text.secondary', fontWeight: 500 }}>
+            {tab === 0 ? 'Δεν υπάρχουν εκκρεμή αρχεία' : 'Δεν υπάρχουν εγκεκριμένα αρχεία'}
+          </Typography>
+        </Box>
+      ) : (
+        <>
+          {isMobileScreen ? (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              {paginated.map(exam => (
+                <ExamCard
+                  key={exam.id}
+                  exam={exam}
+                  users={users}
+                  onApprove={handleApprove}
+                  onPreview={(e) => { setPreviewFile(e); setPreviewOpen(true); }}
+                  onDelete={(id, url) => setConfirmDelete({ open: true, id, file_url: url })}
+                />
+              ))}
+            </Box>
+          ) : (
+            <Box sx={{ ...cardBg, overflow: 'hidden' }}>
+              {/* Table header */}
+              <Box sx={{
+                display: 'grid',
+                gridTemplateColumns: '2fr 80px 140px 140px 100px 130px',
+                px: 3, py: 1.5,
+                background: isDark ? alpha('#fff', 0.03) : alpha('#1a73e8', 0.04),
+                borderBottom: '1px solid',
+                borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+              }}>
+                {['Μάθημα', 'Έτος', 'Εξεταστική', 'Uploader', 'Status', 'Ενέργειες'].map(h => (
+                  <Typography key={h} sx={{ fontWeight: 700, fontSize: '0.72rem', color: 'text.secondary', textTransform: 'uppercase', letterSpacing: '0.06em' }}>
+                    {h}
+                  </Typography>
+                ))}
+              </Box>
+              {paginated.map((exam, idx) => (
+                <Box
+                  key={exam.id}
+                  sx={{
+                    display: 'grid',
+                    gridTemplateColumns: '2fr 80px 140px 140px 100px 130px',
+                    px: 3, py: 2,
+                    alignItems: 'center',
+                    borderBottom: idx < paginated.length - 1 ? '1px solid' : 'none',
+                    borderColor: isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.04)',
+                    transition: 'background 0.15s',
+                    '&:hover': { background: isDark ? alpha('#fff', 0.02) : alpha('#1a73e8', 0.02) },
+                  }}
+                >
+                  <Typography sx={{ fontWeight: 600, fontSize: '0.85rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{exam.course}</Typography>
+                  <Typography sx={{ fontSize: '0.82rem', color: 'text.secondary' }}>{exam.year}</Typography>
+                  <Typography sx={{ fontSize: '0.82rem', color: 'text.secondary' }}>{exam.period}</Typography>
+                  <Typography sx={{ fontSize: '0.82rem', color: 'text.secondary', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                    {users[exam.uploader] || '—'}
+                  </Typography>
+                  <Box><StatusChip approved={exam.approved} /></Box>
+                  <Box sx={{ display: 'flex', gap: 0.75 }}>
+                    {!exam.approved && (
+                      <ActionBtn
+                        title="Έγκριση"
+                        onClick={() => handleApprove(exam.id)}
+                        color="#1e8e3e"
+                        disabled={approvingId === exam.id}
+                        icon={approvingId === exam.id ? <CircularProgress size={14} /> : <DoneIcon sx={{ fontSize: 15 }} />}
+                      />
+                    )}
+                    <ActionBtn
+                      title="Προβολή"
+                      onClick={() => { setPreviewFile(exam); setPreviewOpen(true); }}
+                      color="#1a73e8"
+                      icon={<VisibilityOutlinedIcon sx={{ fontSize: 15 }} />}
+                    />
+                    <ActionBtn
+                      title="Λήψη"
+                      href={exam.file_url}
+                      color="#7b1fa2"
+                      icon={<FileDownloadOutlinedIcon sx={{ fontSize: 15 }} />}
+                    />
+                    <ActionBtn
+                      title="Διαγραφή"
+                      onClick={() => setConfirmDelete({ open: true, id: exam.id, file_url: exam.file_url })}
+                      color="#d32f2f"
+                      icon={<DeleteOutlineIcon sx={{ fontSize: 15 }} />}
+                    />
+                  </Box>
                 </Box>
               ))}
-            </Stack>
-          ) : (
-            <TableContainer component={Paper} sx={{ ...cardBg, boxShadow: 'none', mt: 2 }}>
-              <Table>
-                <TableHead>
-                  <TableRow sx={{ background: theme.palette.mode === 'light' ? '#f4f6fa' : 'background.default' }}>
-                    <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Μάθημα</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Έτος</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Εξεταστική</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Uploader</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Status</TableCell>
-                    <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Ενέργειες</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {[...Array(5)].map((_, i) => (
-                    <TableRow key={i}>
-                      <TableCell><Skeleton variant="text" width="80%" /></TableCell>
-                      <TableCell><Skeleton variant="text" width="60%" /></TableCell>
-                      <TableCell><Skeleton variant="text" width="40%" /></TableCell>
-                      <TableCell><Skeleton variant="text" width="60%" /></TableCell>
-                      <TableCell><Skeleton variant="text" width="40%" /></TableCell>
-                      <TableCell><Skeleton variant="rectangular" width={80} height={32} /></TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+            </Box>
           )}
-        </Box>
-      ) : isMobile ? (
-        <Stack spacing={2}>
-          {paginatedExams.length === 0 ? (
-            <Typography align="center">Δεν βρέθηκαν αρχεία.</Typography>
-          ) : (
-            paginatedExams.map((exam) => (
-              <Box key={exam.id} sx={{ ...cardBg, mb: 2, p: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>Μάθημα: <span style={{ fontWeight: 400 }}>{exam.course}</span></Typography>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>Έτος: <span style={{ fontWeight: 400 }}>{exam.year}</span></Typography>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>Εξεταστική: <span style={{ fontWeight: 400 }}>{exam.period}</span></Typography>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>Uploader: <span style={{ fontWeight: 400 }}>{users[exam.uploader] || exam.uploader}</span></Typography>
-                <Box sx={{ mt: 1 }}>
-                  <Chip
-                    label={exam.approved ? 'Εγκεκριμένο' : 'Εκκρεμεί'}
-                    color={exam.approved ? 'success' : 'warning'}
-                    size="small"
-                    sx={{ fontWeight: 600, fontSize: 13, borderRadius: 1 }}
-                  />
-                </Box>
-                <Stack direction="row" spacing={1} sx={{ mt: 2 }}>
-                  {!exam.approved && (
-                    <Tooltip title="Έγκριση">
-                      <Button color="success" size="small" onClick={() => handleApprove(exam.id)} sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#e8f5e9' : 'rgba(76, 175, 80, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#c8e6c9' : 'rgba(76, 175, 80, 0.2)' } }}><DoneIcon /></Button>
-                    </Tooltip>
-                  )}
-                  <Tooltip title="Προβολή">
-                    <Button color="info" size="small" onClick={() => handleOpenPreview(exam)} sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#e3f2fd' : 'rgba(33, 150, 243, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#bbdefb' : 'rgba(33, 150, 243, 0.2)' } }}><VisibilityIcon /></Button>
-                  </Tooltip>
-                  <Tooltip title="Διαγραφή">
-                    <Button color="error" size="small" onClick={() => handleOpenDelete(exam.id, exam.file_url)} sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#ffebee' : 'rgba(244, 67, 54, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#ffcdd2' : 'rgba(244, 67, 54, 0.2)' } }}><DeleteIcon /></Button>
-                  </Tooltip>
-                  <Tooltip title="Λήψη">
-                    <Button color="primary" size="small" href={exam.file_url} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', background: theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(25, 118, 210, 0.1)', borderRadius: 1, '&:hover': { background: theme.palette.mode === 'light' ? '#c5cae9' : 'rgba(25, 118, 210, 0.2)' } }}><DownloadIcon /></Button>
-                  </Tooltip>
-                </Stack>
-              </Box>
-            ))
-          )}
-        </Stack>
-      ) : (
-        <TableContainer component={Paper} sx={{ ...cardBg, mt: 2, overflow: 'hidden' }}>
-          <Table sx={{ minWidth: 650 }} aria-label="admin files table">
-            <TableHead>
-              <TableRow sx={{ background: theme.palette.mode === 'light' ? '#f4f6fa' : 'background.default' }}>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2 }}>Μάθημα</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2 }}>Έτος</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2 }}>Εξεταστική</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2 }}>Uploader</TableCell>
-                <TableCell align="center" sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2 }}>Status</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2, pr: 3 }}>Ενέργειες</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {paginatedExams.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={6} align="center" sx={{ py: 3 }}>Δεν βρέθηκαν αρχεία.</TableCell>
-                </TableRow>
-              ) : (
-                paginatedExams.map((exam) => (
-                  <TableRow key={exam.id} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { bgcolor: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.02)' : 'rgba(255, 255, 255, 0.02)' } }}>
-                    <TableCell sx={{ py: 2, fontWeight: 500 }}>{exam.course}</TableCell>
-                    <TableCell align="center" sx={{ py: 2 }}>{exam.year}</TableCell>
-                    <TableCell align="center" sx={{ py: 2 }}>{exam.period}</TableCell>
-                    <TableCell sx={{ py: 2 }}>{users[exam.uploader] || exam.uploader}</TableCell>
-                    <TableCell align="center" sx={{ py: 2 }}>
-                      <Chip
-                        label={exam.approved ? 'Εγκεκριμένο' : 'Εκκρεμεί'}
-                        color={exam.approved ? 'success' : 'warning'}
-                        size="small"
-                        sx={{ fontWeight: 600, fontSize: 13, borderRadius: 1 }}
-                      />
-                    </TableCell>
-                    <TableCell align="right" sx={{ py: 2, pr: 3 }}>
-                      <Stack direction="row" spacing={1} justifyContent="flex-end">
-                        {!exam.approved && (
-                          <Tooltip title="Έγκριση">
-                            <IconButton color="success" size="small" onClick={() => handleApprove(exam.id)} sx={{ bgcolor: theme.palette.mode === 'light' ? '#e8f5e9' : 'rgba(76, 175, 80, 0.1)', '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#c8e6c9' : 'rgba(76, 175, 80, 0.2)' } }}><DoneIcon fontSize="small" /></IconButton>
-                          </Tooltip>
-                        )}
-                        <Tooltip title="Προβολή">
-                          <IconButton color="info" size="small" onClick={() => handleOpenPreview(exam)} sx={{ bgcolor: theme.palette.mode === 'light' ? '#e3f2fd' : 'rgba(33, 150, 243, 0.1)', '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#bbdefb' : 'rgba(33, 150, 243, 0.2)' } }}><VisibilityIcon fontSize="small" /></IconButton>
-                        </Tooltip>
-                        <Tooltip title="Διαγραφή">
-                          <IconButton color="error" size="small" onClick={() => handleOpenDelete(exam.id, exam.file_url)} sx={{ bgcolor: theme.palette.mode === 'light' ? '#ffebee' : 'rgba(244, 67, 54, 0.1)', '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#ffcdd2' : 'rgba(244, 67, 54, 0.2)' } }}><DeleteIcon fontSize="small" /></IconButton>
-                        </Tooltip>
-                        <Tooltip title="Λήψη">
-                          <IconButton color="primary" size="small" href={exam.file_url} target="_blank" rel="noopener noreferrer" sx={{ bgcolor: theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(25, 118, 210, 0.1)', '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#c5cae9' : 'rgba(25, 118, 210, 0.2)' } }}><DownloadIcon fontSize="small" /></IconButton>
-                        </Tooltip>
-                      </Stack>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
           <TablePagination
             component="div"
             count={filteredExams.length}
             page={page}
-            onPageChange={(_e, newPage) => setPage(newPage)}
+            onPageChange={(_, p) => setPage(p)}
             rowsPerPage={rowsPerPage}
             onRowsPerPageChange={e => { setRowsPerPage(parseInt(e.target.value, 10)); setPage(0); }}
-            rowsPerPageOptions={[5, 10, 25, 50]}
+            rowsPerPageOptions={[5, 10, 25]}
+            sx={{ mt: 1, '& .MuiTablePagination-toolbar': { fontWeight: 500, fontSize: '0.8rem' } }}
           />
-        </TableContainer>
+        </>
       )}
-      <Dialog open={confirmDelete.open} onClose={handleCloseDelete} fullWidth maxWidth="xs" PaperProps={{ sx: { ...cardBg, p: 2 } }}>
-        <DialogTitle>Επιβεβαίωση Διαγραφής</DialogTitle>
-        <DialogContent>Είσαι σίγουρος ότι θέλεις να διαγράψεις αυτό το αρχείο;</DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseDelete} sx={{ textTransform: 'none' }}>Ακύρωση</Button>
-          <Button onClick={handleConfirmDelete} color="error" sx={{ textTransform: 'none' }}>Διαγραφή</Button>
+
+      {/* Confirm Delete Dialog */}
+      <Dialog
+        open={confirmDelete.open}
+        onClose={() => setConfirmDelete({ open: false, id: null, file_url: null })}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '20px',
+            background: isDark ? '#1e1f23' : '#fff',
+            border: '1px solid', borderColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+          },
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 700, pb: 1 }}>Επιβεβαίωση Διαγραφής</DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: 'text.secondary' }}>
+            Είσαι σίγουρος ότι θέλεις να διαγράψεις αυτό το αρχείο; Η ενέργεια δεν αναστρέφεται.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
+          <Button onClick={() => setConfirmDelete({ open: false, id: null, file_url: null })} sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, flex: 1 }}>
+            Ακύρωση
+          </Button>
+          <Button
+            onClick={() => handleDelete(confirmDelete.id, confirmDelete.file_url)}
+            color="error"
+            variant="contained"
+            startIcon={<DeleteOutlineIcon />}
+            sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 700, flex: 1 }}
+          >
+            Διαγραφή
+          </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={previewOpen} onClose={handleClosePreview} fullWidth maxWidth="md" PaperProps={{ sx: { ...cardBg, p: 2, height: '80vh' } }}>
+      {/* Preview Dialog */}
+      <Dialog
+        open={previewOpen}
+        onClose={() => { setPreviewOpen(false); setPreviewFile(null); }}
+        fullWidth
+        maxWidth="md"
+        PaperProps={{
+          sx: {
+            borderRadius: '20px',
+            background: isDark ? '#1a1b1e' : '#fff',
+            border: '1px solid', borderColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+            height: '80vh',
+          },
+        }}
+      >
         <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
-          <Typography variant="h6" sx={{ fontWeight: 700 }}>{previewFile?.course} ({previewFile?.period} {previewFile?.year})</Typography>
-          <IconButton onClick={handleClosePreview}><CloseIcon /></IconButton>
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1rem' }}>
+              {previewFile?.course}
+            </Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              {previewFile?.period} {previewFile?.year}
+            </Typography>
+          </Box>
+          <IconButton
+            onClick={() => { setPreviewOpen(false); setPreviewFile(null); }}
+            size="small"
+            sx={{ color: 'text.secondary' }}
+          >
+            <CloseIcon fontSize="small" />
+          </IconButton>
         </DialogTitle>
-        <DialogContent sx={{ p: 0, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+        <DialogContent sx={{ p: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
           {previewFile && (
-            <Box sx={{ flex: 1, width: '100%', height: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', bgcolor: 'background.default', borderRadius: 2 }}>
-              {previewFile.file_url.match(/\.(jpg|jpeg|png|gif)$/i) ? (
-                <Box component="img" src={previewFile.file_url} sx={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain' }} />
-              ) : previewFile.file_url.match(/\.pdf$/i) ? (
+            <Box sx={{ flex: 1, width: '100%', height: '100%', overflow: 'hidden' }}>
+              {previewFile.file_url?.match(/\.(jpg|jpeg|png|gif)$/i) ? (
+                <Box
+                  component="img"
+                  src={previewFile.file_url}
+                  sx={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', display: 'block', mx: 'auto' }}
+                />
+              ) : previewFile.file_url?.match(/\.pdf$/i) ? (
                 (isMobileScreen || Capacitor.isNativePlatform()) ? (
-                  <Box sx={{ width: '100%', height: '100%' }}>
-                    <PdfPreview fileUrl={previewFile.file_url} showAllPages={true} />
-                  </Box>
+                  <PdfPreview fileUrl={previewFile.file_url} showAllPages={true} />
                 ) : (
-                  <Box component="iframe" src={`${previewFile.file_url}#toolbar=0`} sx={{ width: '100%', height: '100%', border: 'none' }} />
+                  <Box
+                    component="iframe"
+                    src={`${previewFile.file_url}#toolbar=0`}
+                    sx={{ width: '100%', height: '100%', border: 'none' }}
+                  />
                 )
               ) : (
-                <Stack spacing={2} alignItems="center">
-                  <InsertDriveFileIcon sx={{ fontSize: 60, color: 'primary.main' }} />
-                  <Typography variant="body1">Δεν υποστηρίζεται ζωντανή προβολή για αυτόν τον τύπο αρχείου στη συσκευή σου.</Typography>
-                  <Button variant="contained" href={previewFile.file_url} target="_blank" rel="noopener noreferrer" sx={{ textTransform: 'none', borderRadius: 2 }}>Λήψη Αρχείου</Button>
-                </Stack>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 2 }}>
+                  <InsertDriveFileOutlinedIcon sx={{ fontSize: 64, color: 'text.secondary', opacity: 0.4 }} />
+                  <Typography sx={{ color: 'text.secondary' }}>Δεν υποστηρίζεται προεπισκόπηση</Typography>
+                  <Button variant="contained" href={previewFile.file_url} target="_blank" sx={{ borderRadius: '10px', textTransform: 'none' }}>
+                    Λήψη Αρχείου
+                  </Button>
+                </Box>
               )}
             </Box>
           )}
         </DialogContent>
-        <DialogActions sx={{ pt: 2 }}>
-          <Button onClick={handleClosePreview} sx={{ textTransform: 'none', fontWeight: 600 }}>Κλείσιμο</Button>
-        </DialogActions>
       </Dialog>
     </Box>
   );
 };
 
-export default AdminFiles; 
+export default AdminFiles;

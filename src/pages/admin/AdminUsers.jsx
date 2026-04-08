@@ -1,159 +1,327 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Button, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Alert, Skeleton, Select, FormControl, MenuItem, useMediaQuery, useTheme } from '@mui/material';
+import {
+  Typography, Box, Button, Alert, Skeleton, Select, FormControl, MenuItem,
+  useMediaQuery, useTheme, alpha, Avatar, Chip, TextField, InputAdornment,
+  IconButton, Dialog, DialogTitle, DialogContent, DialogActions,
+} from '@mui/material';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
+import SearchIcon from '@mui/icons-material/Search';
+import CheckIcon from '@mui/icons-material/Check';
+import EditIcon from '@mui/icons-material/Edit';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import SchoolIcon from '@mui/icons-material/School';
+import CloseIcon from '@mui/icons-material/Close';
 import { supabase } from '../../supabaseClient';
 
-import { isUserAdminSync } from '../../utils/adminUtils';
-
-const AdminUsers = () => {
-  const [allUsers, setAllUsers] = useState([]);
-  const [usersLoading, setUsersLoading] = useState(true);
-  const [roleSaving, setRoleSaving] = useState({});
-  const [roleError, setRoleError] = useState('');
-  const [roleSuccess, setRoleSuccess] = useState('');
-  const isMobile = useMediaQuery('(max-width:600px)');
-
+const PageHeader = ({ title, subtitle, icon, count }) => {
   const theme = useTheme();
-
-  const cardBg = {
-    background: theme.palette.mode === 'light' ? '#f8fafc' : 'background.paper',
-    boxShadow: theme.palette.mode === 'light' ? '0 2px 12px 0 rgba(31,38,135,0.08)' : '0 4px 20px 0 rgba(0,0,0,0.4)',
-    borderRadius: '18px',
-    border: `1px solid ${theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(255,255,255,0.05)'}`,
-  };
-
-  useEffect(() => {
-    setUsersLoading(true);
-    supabase.from('profiles').select('id,email,first_name,last_name,role').then(({ data, error }) => {
-      if (!error) setAllUsers(data);
-      setUsersLoading(false);
-    });
-  }, []);
-
-  const handleRoleChange = (userId, newRole) => {
-    setAllUsers(prev => prev.map(u => u.id === userId ? { ...u, role: newRole } : u));
-  };
-  const handleRoleSave = async (userId, newRole) => {
-    setRoleSaving(prev => ({ ...prev, [userId]: true }));
-    setRoleError(''); setRoleSuccess('');
-    const { error } = await supabase.from('profiles').update({ role: newRole }).eq('id', userId);
-    if (error) setRoleError('Σφάλμα αλλαγής ρόλου: ' + error.message);
-    else setRoleSuccess('Ο ρόλος άλλαξε!');
-    setRoleSaving(prev => ({ ...prev, [userId]: false }));
-  };
-
+  const isDark = theme.palette.mode === 'dark';
   return (
-    <Box sx={{ mt: 4, mb: 4, width: '100%' }}>
-      <Typography variant="h4" color={theme.palette.mode === 'light' ? '#111' : 'text.primary'} fontWeight={700} gutterBottom align="left">
-        ΔΙΑΧΕΙΡΙΣΗ ΧΡΗΣΤΩΝ
-      </Typography>
-      {roleError && <Alert severity="error" sx={{ mb: 2 }}>{roleError}</Alert>}
-      {roleSuccess && <Alert severity="success" sx={{ mb: 2 }}>{roleSuccess}</Alert>}
-      {isMobile ? (
-        <Box>
-          {usersLoading ? (
-            [...Array(5)].map((_, i) => (
-              <Box key={i} sx={{ ...cardBg, mb: 2, p: 2 }}>
-                <Skeleton variant="text" width="80%" />
-                <Skeleton variant="text" width="60%" />
-                <Skeleton variant="text" width="60%" />
-                <Skeleton variant="rectangular" width={100} height={36} sx={{ my: 1 }} />
-                <Skeleton variant="rectangular" width={80} height={36} />
-              </Box>
-            ))
-          ) : (
-            allUsers.map(u => (
-              <Box key={u.id} sx={{ ...cardBg, mb: 2, p: 2, display: 'flex', flexDirection: 'column', gap: 1 }}>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>Email: <span style={{ fontWeight: 400 }}>{u.email}</span></Typography>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>Όνομα: <span style={{ fontWeight: 400 }}>{u.first_name}</span></Typography>
-                <Typography variant="body2" sx={{ fontWeight: 600 }}>Επώνυμο: <span style={{ fontWeight: 400 }}>{u.last_name}</span></Typography>
-                <FormControl size="small" fullWidth sx={{ background: theme.palette.mode === 'light' ? '#f4f6fa' : 'background.default', borderRadius: 1, mt: 1 }}>
-                  <Select
-                    value={u.role || 'student'}
-                    onChange={e => handleRoleChange(u.id, e.target.value)}
-                    disabled={roleSaving[u.id]}
-                    sx={{ fontWeight: 500 }}
-                  >
-                    <MenuItem value="student">ΦΟΙΤΗΤΗΣ</MenuItem>
-                    <MenuItem value="admin">ADMIN</MenuItem>
-                  </Select>
-                </FormControl>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="small"
-                  disabled={roleSaving[u.id] || !u.role}
-                  onClick={() => handleRoleSave(u.id, u.role)}
-                  sx={{ borderRadius: 1, fontWeight: 600, px: 2, background: theme.palette.mode === 'light' ? '#e3eafc' : 'primary.dark', color: theme.palette.mode === 'light' ? '#1a237e' : '#fff', '&:hover': { background: theme.palette.mode === 'light' ? '#c5cae9' : 'primary.main' }, mt: 1 }}
-                >
-                  ΑΠΟΘΗΚΕΥΣΗ
-                </Button>
-              </Box>
-            ))
-          )}
+    <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Box sx={{
+          width: 44, height: 44, borderRadius: '14px',
+          background: 'linear-gradient(135deg, #1a73e8 0%, #0052cc 100%)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 4px 16px rgba(26,115,232,0.35)',
+        }}>
+          {React.cloneElement(icon, { sx: { color: '#fff', fontSize: 22 } })}
         </Box>
-      ) : (
-        <TableContainer component={Paper} sx={{ ...cardBg, mt: 2, overflow: 'hidden' }}>
-          <Table sx={{ minWidth: 650 }} aria-label="admin users table">
-            <TableHead>
-              <TableRow sx={{ background: theme.palette.mode === 'light' ? '#f4f6fa' : 'background.default' }}>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2 }}>Email</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2 }}>Όνομα</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2 }}>Επώνυμο</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2 }}>Ρόλος</TableCell>
-                <TableCell align="right" sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 15, py: 2, pr: 3 }}>Ενέργεια</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {usersLoading ? (
-                [...Array(5)].map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell><Skeleton variant="text" width="80%" /></TableCell>
-                    <TableCell><Skeleton variant="text" width="60%" /></TableCell>
-                    <TableCell><Skeleton variant="text" width="60%" /></TableCell>
-                    <TableCell><Skeleton variant="rectangular" width={120} height={36} borderRadius={1} /></TableCell>
-                    <TableCell align="right"><Skeleton variant="rectangular" width={100} height={36} borderRadius={1} sx={{ ml: 'auto' }} /></TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                allUsers.map(u => (
-                  <TableRow key={u.id} sx={{ '&:last-child td, &:last-child th': { border: 0 }, '&:hover': { bgcolor: theme.palette.mode === 'light' ? 'rgba(0, 0, 0, 0.02)' : 'rgba(255, 255, 255, 0.02)' } }}>
-                    <TableCell sx={{ py: 2, fontWeight: 500 }}>{u.email}</TableCell>
-                    <TableCell sx={{ py: 2 }}>{u.first_name || '-'}</TableCell>
-                    <TableCell sx={{ py: 2 }}>{u.last_name || '-'}</TableCell>
-                    <TableCell sx={{ py: 2 }}>
-                      <FormControl size="small" sx={{ minWidth: 140, background: theme.palette.mode === 'light' ? '#fff' : 'background.paper', borderRadius: 1 }}>
-                        <Select
-                          value={u.role || 'student'}
-                          onChange={e => handleRoleChange(u.id, e.target.value)}
-                          disabled={roleSaving[u.id]}
-                          sx={{ fontWeight: 600, fontSize: '0.875rem' }}
-                        >
-                          <MenuItem value="student">ΦΟΙΤΗΤΗΣ</MenuItem>
-                          <MenuItem value="admin">ADMIN</MenuItem>
-                        </Select>
-                      </FormControl>
-                    </TableCell>
-                    <TableCell align="right" sx={{ py: 2, pr: 3 }}>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        size="small"
-                        disabled={roleSaving[u.id] || !u.role}
-                        onClick={() => handleRoleSave(u.id, u.role)}
-                        sx={{ borderRadius: 1.5, fontWeight: 600, px: 2, py: 0.75, boxShadow: theme.palette.mode === 'light' ? 1 : 0, background: theme.palette.mode === 'light' ? '#e3eafc' : 'primary.dark', color: theme.palette.mode === 'light' ? '#1a237e' : '#fff', '&:hover': { background: theme.palette.mode === 'light' ? '#c5cae9' : 'primary.main', boxShadow: theme.palette.mode === 'light' ? 2 : 0 } }}
-                      >
-                        ΑΠΟΘΗΚΕΥΣΗ
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 800, lineHeight: 1.2, fontSize: { xs: '1.4rem', sm: '1.75rem' } }}>
+            {title}
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.2 }}>{subtitle}</Typography>
+        </Box>
+      </Box>
+      {count !== undefined && (
+        <Chip
+          label={`${count} χρήστες`}
+          sx={{
+            fontWeight: 700,
+            background: isDark ? alpha('#1a73e8', 0.15) : alpha('#1a73e8', 0.1),
+            color: 'primary.main',
+            border: '1px solid',
+            borderColor: alpha('#1a73e8', 0.2),
+            borderRadius: '10px',
+          }}
+        />
       )}
     </Box>
   );
 };
 
-export default AdminUsers; 
+const RoleChip = ({ role }) => {
+  const isAdmin = role === 'admin';
+  return (
+    <Chip
+      icon={isAdmin ? <AdminPanelSettingsIcon sx={{ fontSize: '14px !important' }} /> : <SchoolIcon sx={{ fontSize: '14px !important' }} />}
+      label={isAdmin ? 'Admin' : 'Φοιτητής'}
+      size="small"
+      sx={{
+        fontWeight: 600,
+        fontSize: '0.72rem',
+        borderRadius: '8px',
+        background: isAdmin ? alpha('#7b1fa2', 0.12) : alpha('#1e8e3e', 0.12),
+        color: isAdmin ? '#7b1fa2' : '#1e8e3e',
+        border: '1px solid',
+        borderColor: isAdmin ? alpha('#7b1fa2', 0.2) : alpha('#1e8e3e', 0.2),
+        '& .MuiChip-icon': { color: 'inherit' },
+      }}
+    />
+  );
+};
+
+const AdminUsers = () => {
+  const [allUsers, setAllUsers] = useState([]);
+  const [usersLoading, setUsersLoading] = useState(true);
+  const [roleSaving, setRoleSaving] = useState({});
+  const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const [search, setSearch] = useState('');
+  const [editUser, setEditUser] = useState(null);
+  const [editRole, setEditRole] = useState('student');
+  const isMobile = useMediaQuery('(max-width:700px)');
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+
+  useEffect(() => {
+    setUsersLoading(true);
+    supabase.from('profiles').select('id,email,first_name,last_name,role').then(({ data, error }) => {
+      if (!error) setAllUsers(data || []);
+      setUsersLoading(false);
+    });
+  }, []);
+
+  const handleOpenEdit = (user) => {
+    setEditUser(user);
+    setEditRole(user.role || 'student');
+  };
+
+  const handleRoleSave = async () => {
+    if (!editUser) return;
+    setRoleSaving(prev => ({ ...prev, [editUser.id]: true }));
+    setError(''); setSuccess('');
+    const { error } = await supabase.from('profiles').update({ role: editRole }).eq('id', editUser.id);
+    if (error) setError('Σφάλμα αλλαγής ρόλου: ' + error.message);
+    else {
+      setSuccess(`Ο ρόλος του ${editUser.first_name || editUser.email} άλλαξε επιτυχώς!`);
+      setAllUsers(prev => prev.map(u => u.id === editUser.id ? { ...u, role: editRole } : u));
+    }
+    setRoleSaving(prev => ({ ...prev, [editUser.id]: false }));
+    setEditUser(null);
+  };
+
+  const filtered = allUsers.filter(u => {
+    if (!search) return true;
+    const s = search.toLowerCase();
+    return (
+      (u.email && u.email.toLowerCase().includes(s)) ||
+      (u.first_name && u.first_name.toLowerCase().includes(s)) ||
+      (u.last_name && u.last_name.toLowerCase().includes(s))
+    );
+  });
+
+  const cardStyle = {
+    p: { xs: 2, sm: 2.5 },
+    borderRadius: '16px',
+    background: isDark ? alpha('#fff', 0.04) : '#ffffff',
+    border: '1px solid',
+    borderColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+    boxShadow: isDark ? 'none' : '0 2px 12px rgba(0,0,0,0.04)',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.08)',
+    },
+  };
+
+  return (
+    <Box sx={{ width: '100%' }}>
+      <PageHeader
+        title="Διαχείριση Χρηστών"
+        subtitle="Διαχείριση ρόλων και αδειών χρηστών"
+        icon={<PeopleAltIcon />}
+        count={usersLoading ? undefined : allUsers.length}
+      />
+
+      {error && <Alert severity="error" sx={{ mb: 2, borderRadius: '12px' }} onClose={() => setError('')}>{error}</Alert>}
+      {success && <Alert severity="success" sx={{ mb: 2, borderRadius: '12px' }} onClose={() => setSuccess('')}>{success}</Alert>}
+
+      {/* Search */}
+      <Box sx={{ mb: 3 }}>
+        <TextField
+          placeholder="Αναζήτηση χρήστη..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          size="small"
+          fullWidth
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+              </InputAdornment>
+            ),
+            sx: { borderRadius: '12px', background: isDark ? alpha('#fff', 0.05) : '#fff' },
+          }}
+          sx={{ maxWidth: 380 }}
+        />
+      </Box>
+
+      {/* Users list */}
+      {usersLoading ? (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {[...Array(5)].map((_, i) => (
+            <Box key={i} sx={cardStyle}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                <Skeleton variant="circular" width={44} height={44} />
+                <Box sx={{ flex: 1 }}>
+                  <Skeleton variant="text" width="40%" height={20} />
+                  <Skeleton variant="text" width="60%" height={16} sx={{ mt: 0.5 }} />
+                </Box>
+                <Skeleton variant="rounded" width={80} height={28} sx={{ borderRadius: '8px' }} />
+                <Skeleton variant="rounded" width={32} height={32} sx={{ borderRadius: '10px' }} />
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      ) : (
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+          {filtered.length === 0 ? (
+            <Box sx={{ ...cardStyle, py: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+              <PeopleAltIcon sx={{ fontSize: 40, color: 'text.secondary', opacity: 0.4 }} />
+              <Typography sx={{ color: 'text.secondary', fontWeight: 500 }}>Δεν βρέθηκαν χρήστες</Typography>
+            </Box>
+          ) : (
+            filtered.map(u => {
+              const initials = `${u.first_name?.[0] || ''}${u.last_name?.[0] || ''}`.toUpperCase() || u.email?.[0]?.toUpperCase() || 'U';
+              const fullName = [u.first_name, u.last_name].filter(Boolean).join(' ') || null;
+              return (
+                <Box key={u.id} sx={cardStyle}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 1.5, sm: 2 }, flexWrap: 'wrap' }}>
+                    {/* Avatar */}
+                    <Avatar
+                      sx={{
+                        width: 44, height: 44, flexShrink: 0,
+                        background: 'linear-gradient(135deg, #1a73e8, #0052cc)',
+                        fontSize: '0.875rem', fontWeight: 700,
+                        boxShadow: '0 2px 8px rgba(26,115,232,0.25)',
+                      }}
+                    >
+                      {initials}
+                    </Avatar>
+                    {/* Info */}
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      {fullName && (
+                        <Typography sx={{ fontWeight: 600, fontSize: '0.875rem', lineHeight: 1.3 }}>
+                          {fullName}
+                        </Typography>
+                      )}
+                      <Typography sx={{
+                        fontSize: '0.8rem', color: fullName ? 'text.secondary' : 'text.primary',
+                        fontWeight: fullName ? 400 : 600,
+                        overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                      }}>
+                        {u.email}
+                      </Typography>
+                    </Box>
+                    {/* Role chip */}
+                    <RoleChip role={u.role} />
+                    {/* Edit button */}
+                    <IconButton
+                      size="small"
+                      onClick={() => handleOpenEdit(u)}
+                      sx={{
+                        width: 36, height: 36, borderRadius: '10px',
+                        background: isDark ? alpha('#1a73e8', 0.12) : alpha('#1a73e8', 0.08),
+                        color: 'primary.main',
+                        '&:hover': { background: isDark ? alpha('#1a73e8', 0.2) : alpha('#1a73e8', 0.14) },
+                      }}
+                    >
+                      <EditIcon sx={{ fontSize: 16 }} />
+                    </IconButton>
+                  </Box>
+                </Box>
+              );
+            })
+          )}
+        </Box>
+      )}
+
+      {/* Edit Role Dialog */}
+      <Dialog
+        open={Boolean(editUser)}
+        onClose={() => setEditUser(null)}
+        maxWidth="xs"
+        fullWidth
+        PaperProps={{
+          sx: {
+            borderRadius: '20px',
+            background: isDark ? '#1e1f23' : '#fff',
+            border: '1px solid',
+            borderColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+          },
+        }}
+      >
+        <DialogTitle sx={{ pb: 1, pt: 2.5, px: 3, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box>
+            <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1rem' }}>Αλλαγή Ρόλου</Typography>
+            <Typography variant="caption" sx={{ color: 'text.secondary' }}>
+              {editUser?.first_name || editUser?.email}
+            </Typography>
+          </Box>
+          <IconButton size="small" onClick={() => setEditUser(null)} sx={{ color: 'text.secondary' }}>
+            <CloseIcon fontSize="small" />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ px: 3, py: 2 }}>
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600, display: 'block', mb: 1 }}>
+            ΕΠΙΛΟΓΗ ΡΟΛΟΥ
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 1.5 }}>
+            {['student', 'admin'].map((role) => (
+              <Box
+                key={role}
+                onClick={() => setEditRole(role)}
+                sx={{
+                  flex: 1, py: 2, px: 2, borderRadius: '14px', cursor: 'pointer',
+                  border: '2px solid',
+                  borderColor: editRole === role ? 'primary.main' : isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)',
+                  background: editRole === role ? alpha('#1a73e8', 0.08) : 'transparent',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1,
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                {role === 'admin'
+                  ? <AdminPanelSettingsIcon sx={{ color: editRole === role ? 'primary.main' : 'text.secondary', fontSize: 28 }} />
+                  : <SchoolIcon sx={{ color: editRole === role ? 'primary.main' : 'text.secondary', fontSize: 28 }} />
+                }
+                <Typography sx={{ fontWeight: 600, fontSize: '0.82rem', color: editRole === role ? 'primary.main' : 'text.secondary' }}>
+                  {role === 'admin' ? 'Admin' : 'Φοιτητής'}
+                </Typography>
+              </Box>
+            ))}
+          </Box>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, pt: 1, gap: 1 }}>
+          <Button
+            onClick={() => setEditUser(null)}
+            sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, flex: 1 }}
+          >
+            Ακύρωση
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleRoleSave}
+            disabled={roleSaving[editUser?.id]}
+            startIcon={<CheckIcon />}
+            sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 700, flex: 1 }}
+          >
+            Αποθήκευση
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+};
+
+export default AdminUsers;
