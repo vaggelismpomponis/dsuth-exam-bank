@@ -1,9 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, Button, TextField, MenuItem, Alert, CircularProgress, Stack, Skeleton, Card, CardContent, Autocomplete, useTheme, useMediaQuery } from '@mui/material';
+import {
+  Typography, Box, Button, TextField, MenuItem, Alert, CircularProgress,
+  Stack, Skeleton, Card, CardContent, Autocomplete, useTheme, useMediaQuery,
+  alpha, Icon, IconButton, Divider, Grid, Tooltip,
+} from '@mui/material';
 import { supabase } from '../../supabaseClient';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import DeleteIcon from '@mui/icons-material/Delete';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
 import { convertToPdf } from '../../utils/pdfConversion';
 import { Capacitor } from '@capacitor/core';
 import PdfPreview from '../../components/PdfPreview';
@@ -33,9 +41,34 @@ function greekToLatin(str) {
     .replace(/\s+/g, ''); // Αφαίρεση κενών
 }
 
+const PageHeader = ({ title, subtitle , icon }) => {
+    return (
+        <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Box sx={{
+                    width: 44, height: 44, borderRadius: '14px',
+                    background: 'linear-gradient(135deg, #1a73e8 0%, #0052cc 100%)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 4px 16px rgba(26,115,232,0.35)',
+                }}>
+                    {React.cloneElement(icon, { sx: { color: '#fff', fontSize: 22 } })}
+                </Box>
+                <Box>
+                    <Typography variant="h4" sx={{ fontWeight: 800, lineHeight: 1.2, fontSize: { xs: '1.4rem', sm: '1.75rem' } }}>
+                        {title}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.2 }}>{subtitle}</Typography>
+                </Box>
+            </Box>
+        </Box>
+    );
+};
+
 const AdminUpload = () => {
   const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  
   const [user, setUser] = useState(undefined);
   const [course, setCourse] = useState('');
   const [year, setYear] = useState('');
@@ -86,175 +119,105 @@ const AdminUpload = () => {
   }, []);
 
   const handleUpload = async (e) => {
-    e.preventDefault();
-    setError('');
-    setSuccess('');
-    setFileResults([]);
+    if (e) e.preventDefault();
+    setError(''); setSuccess(''); setFileResults([]);
     if (!course || !year || !period || files.length === 0) {
       setError('Συμπλήρωσε όλα τα πεδία και επίλεξε αρχεία.');
       return;
     }
     setLoading(true);
     const results = [];
-    // Για αύξοντα αριθμό στα ονόματα
     let fileIndex = 1;
     for (const file of files) {
-      // Δημιουργία νέου ονόματος αρχείου
-      const fileExt = file.name.split('.').pop();
+      const fileExt = 'pdf'; // assuming PDF as we convert
       const courseLatin = greekToLatin(course);
       const periodLatin = greekToLatin(period);
-      const fileName = `${courseLatin}_${year}_${periodLatin}_Themata_${fileIndex}.${fileExt}`;
-      // Δημιουργία νέου File αντικειμένου με το νέο όνομα
-      let renamedFile;
-      try {
-        renamedFile = new File([file], fileName, { type: file.type });
-      } catch (err) {
-        renamedFile = file;
-      }
-      // 1. Ανεβάζουμε το αρχείο στο Supabase Storage
-      const { data: storageData, error: storageError } = await supabase.storage.from('exams').upload(fileName, renamedFile);
+      const fileName = `${courseLatin}_${year}_${periodLatin}_Themata_${fileIndex}_${Date.now()}.${fileExt}`;
+      
+      const { data: storageData, error: storageError } = await supabase.storage.from('exams').upload(fileName, file);
       if (storageError) {
-        results.push({ name: file.name, status: 'error', message: 'Σφάλμα στο ανέβασμα: ' + storageError.message });
-        fileIndex++;
-        continue;
+        results.push({ name: file.name, status: 'error', message: storageError.message });
+        fileIndex++; continue;
       }
-      // 2. Παίρνουμε το public URL
       const { data: publicUrlData } = supabase.storage.from('exams').getPublicUrl(fileName);
-      // 3. Καταχωρούμε στη βάση
       const { error: dbError } = await supabase.from('exams').insert([
-        {
-          course,
-          year: parseInt(year),
-          period,
-          uploader: user?.id || 'admin',
-          file_url: publicUrlData.publicUrl,
-          approved: true,
-        },
+        { course, year: parseInt(year), period, uploader: user?.id || 'admin', file_url: publicUrlData.publicUrl, approved: true },
       ]);
-      if (dbError) {
-        results.push({ name: file.name, status: 'error', message: 'Σφάλμα στη βάση: ' + dbError.message });
-        fileIndex++;
-        continue;
-      }
-      results.push({ name: file.name, status: 'success', message: 'Το αρχείο ανέβηκε!' });
+      if (dbError) results.push({ name: file.name, status: 'error', message: dbError.message });
+      else results.push({ name: file.name, status: 'success', message: 'Ολοκληρώθηκε!' });
       fileIndex++;
     }
     setFileResults(results);
     if (results.every(r => r.status === 'success')) {
       setSuccess('Όλα τα αρχεία ανέβηκαν με επιτυχία!');
-      setCourse('');
-      setYear('');
-      setPeriod('');
-      setSemester('');
       setFiles([]);
-    } else {
-      setError('Κάποια αρχεία δεν ανέβηκαν.');
-    }
+    } else setError('Κάποια αρχεία δεν ανέβηκαν.');
     setLoading(false);
   };
 
-  const filteredCourses = semester
-    ? courses.filter((c) => c.semester === Number(semester))
-    : [];
+  const filteredCourses = semester ? courses.filter((c) => c.semester === Number(semester)) : [];
 
-  // Drag & Drop handlers
-  const acceptedTypes = [
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'image/png',
-    'image/jpeg',
-  ];
-  const filterFiles = (fileList) => {
-    return Array.from(fileList).filter(f => acceptedTypes.includes(f.type));
-  };
-  const mergeFiles = (oldFiles, newFiles) => {
-    const names = new Set(oldFiles.map(f => f.name));
-    return [...oldFiles, ...newFiles.filter(f => !names.has(f.name))];
-  };
   const handleFilesSelection = async (fileList) => {
-    const filtered = filterFiles(fileList);
-    if (filtered.length === 0) return;
-
-    setConversionMessage(`Αρχικοποίηση μετατροπής για ${filtered.length} αρχεία...`);
+    const list = Array.from(fileList);
+    if (!list.length) return;
+    setConversionMessage(`Προετοιμασία ${list.length} αρχείων...`);
     const processedFiles = [];
-
-    for (let i = 0; i < filtered.length; i++) {
-      const file = filtered[i];
-      const progressPrefix = `[${i + 1}/${filtered.length}]`;
-      const processed = await convertToPdf(file, (msg) => setConversionMessage(`${progressPrefix} ${msg}`));
-      processedFiles.push(processed);
+    for (let i = 0; i < list.length; i++) {
+        const file = list[i];
+        setConversionMessage(`[${i + 1}/${list.length}] Μετατροπή: ${file.name}`);
+        const processed = await convertToPdf(file);
+        processedFiles.push(processed);
     }
-
-    setFiles(prev => mergeFiles(prev, processedFiles));
+    setFiles(prev => {
+        const existing = new Set(prev.map(f => f.name));
+        return [...prev, ...processedFiles.filter(f => !existing.has(f.name))];
+    });
     setConversionMessage('');
   };
 
   const handleDrag = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (conversionMessage) return; // disable drag while converting
-    if (e.type === 'dragenter' || e.type === 'dragover') {
-      setDragActive(true);
-    } else if (e.type === 'dragleave') {
-      setDragActive(false);
-    }
+    e.preventDefault(); e.stopPropagation();
+    if (e.type === 'dragenter' || e.type === 'dragover') setDragActive(true);
+    else if (e.type === 'dragleave') setDragActive(false);
   };
   const handleDrop = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (conversionMessage) return;
+    e.preventDefault(); e.stopPropagation();
     setDragActive(false);
-    if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-      handleFilesSelection(e.dataTransfer.files);
-    }
+    if (e.dataTransfer.files?.length) handleFilesSelection(e.dataTransfer.files);
   };
-  const handleFileInput = (e) => {
-    if (e.target.files && e.target.files.length > 0) {
-      handleFilesSelection(e.target.files);
-    }
-    // reset input value so the same files can be selected again if removed
-    e.target.value = null;
+
+  const cardStyle = {
+    p: { xs: 2.5, sm: 4 }, borderRadius: '24px',
+    background: isDark ? alpha('#fff', 0.04) : '#ffffff',
+    border: '1px solid', borderColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+    boxShadow: isDark ? 'none' : '0 8px 32px rgba(0,0,0,0.06)',
   };
 
   return (
-    <Box sx={{ mt: 6, mb: 4, display: 'flex', flexDirection: 'column', alignItems: 'flex-start', width: '100%' }}>
-      <Card sx={{ width: '100%', maxWidth: 480, borderRadius: 4, boxShadow: 6, px: { xs: 1, sm: 3 }, py: 2, background: theme.palette.mode === 'light' ? 'linear-gradient(135deg, #e3eafc 0%, #f4f6f8 100%)' : theme.palette.background.paper }}>
-        <CardContent>
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
-            <Box sx={{
-              width: 72,
-              height: 72,
-              borderRadius: '50%',
-              background: 'linear-gradient(135deg, #1976d2 0%, #64b5f6 100%)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              mb: 1.5,
-              boxShadow: 3
-            }}>
-              <UploadFileIcon sx={{ color: '#fff', fontSize: 40 }} />
-            </Box>
-            <Typography variant="h5" color="primary" fontWeight={700} gutterBottom align="center">
-              ΑΝΕΒΑΣΜΑ ΠΟΛΛΑΠΛΩΝ ΑΡΧΕΙΩΝ ΕΞΕΤΑΣΗΣ (ADMIN)
+    <Box sx={{ width: '100%', maxWidth: '1000px', mx: 'auto' }}>
+      <PageHeader
+        title="Μαζικό Upload"
+        subtitle="Μεταφόρτωση πολλαπλών αρχείων για ένα μάθημα"
+        icon={<CloudUploadIcon />}
+      />
+
+      {error && <Alert severity="error" sx={{ mb: 2, borderRadius: '12px' }} onClose={() => setError('')}>{error}</Alert>}
+      {success && <Alert severity="success" sx={{ mb: 2, borderRadius: '12px' }} onClose={() => setSuccess('')}>{success}</Alert>}
+
+      <Box sx={cardStyle}>
+        <Grid container spacing={4}>
+          <Grid item xs={12} md={5}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 2.5, color: 'text.secondary', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                ΣΤΟΙΧΕΙΑ ΜΑΘΗΜΑΤΟΣ
             </Typography>
-            <Typography variant="body2" color="text.secondary" align="center" sx={{ mb: 1 }}>
-              Συμπλήρωσε τα στοιχεία και ανέβασε πολλά αρχεία (PDF, Word, PNG, JPG) για το ίδιο μάθημα/εξάμηνο/έτος/εξεταστική.
-            </Typography>
-          </Box>
-          {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-          {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
-          <Box component="form" onSubmit={handleUpload} sx={{ mt: 1 }}>
-            <Stack spacing={2} direction="column">
+            <Stack spacing={2.5}>
               <TextField
-                label="ΕΞΑΜΗΝΟ"
+                label="Εξάμηνο"
                 select
                 fullWidth
                 value={semester}
-                onChange={e => {
-                  setSemester(e.target.value);
-                  setCourse('');
-                }}
+                onChange={e => { setSemester(e.target.value); setCourse(''); }}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
               >
                 {[...Array(8)].map((_, i) => (
                   <MenuItem key={i + 1} value={i + 1}>{i + 1}ο Εξάμηνο</MenuItem>
@@ -266,185 +229,132 @@ const AdminUpload = () => {
                 options={filteredCourses.map(c => c.name)}
                 value={course || null}
                 onChange={(e, newValue) => setCourse(newValue || '')}
-                isOptionEqualToValue={(option, value) => option === value}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
                 renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="ΜΑΘΗΜΑ"
-                    helperText={
-                      coursesLoading
-                        ? 'Φόρτωση μαθημάτων...'
-                        : !semester
-                          ? 'Επίλεξε πρώτα εξάμηνο.'
-                          : filteredCourses.length === 0
-                            ? 'Δεν υπάρχουν διαθέσιμα μαθήματα για το εξάμηνο.'
-                            : ''
-                    }
-                  />
+                  <TextField {...params} label="Μάθημα" />
                 )}
               />
               <TextField
-                label="ΕΤΟΣ ΑΡΧΕΙΟΥ"
+                label="Έτος Εξετάσεων"
                 type="number"
                 fullWidth
                 value={year}
                 onChange={e => setYear(e.target.value)}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
               />
               <TextField
-                label="ΕΞΕΤΑΣΤΙΚΗ"
+                label="Εξεταστική"
                 select
                 fullWidth
                 value={period}
                 onChange={e => setPeriod(e.target.value)}
+                sx={{ '& .MuiOutlinedInput-root': { borderRadius: '12px' } }}
               >
-                {periods.map((p) => (
-                  <MenuItem key={p} value={p}>{p}</MenuItem>
-                ))}
+                {periods.map((p) => <MenuItem key={p} value={p}>{p}</MenuItem>)}
               </TextField>
-              {/* Drag & Drop area */}
-              {conversionMessage ? (
-                <Stack direction="column" alignItems="center" justifyContent="center" spacing={2} sx={{ py: 4, mb: 1.5, border: '2px solid', borderColor: 'primary.main', borderRadius: 2, bgcolor: theme.palette.mode === 'light' ? 'rgba(25, 118, 210, 0.04)' : 'rgba(138,180,248,0.08)' }}>
-                  <CircularProgress size={32} />
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: 'primary.main', textAlign: 'center' }}>
-                    {conversionMessage}
-                  </Typography>
-                </Stack>
-              ) : (
+            </Stack>
+          </Grid>
+
+          <Grid item xs={12} md={7}>
+            <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 2.5, color: 'text.secondary', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                ΑΡΧΕΙΑ ΠΡΟΣ ΜΕΤΑΦΟΡΤΩΣΗ
+            </Typography>
+            
+            {/* Drop Zone */}
+            {conversionMessage ? (
+                <Box sx={{
+                    p: 6, borderRadius: '20px', textAlign: 'center',
+                    background: alpha(theme.palette.primary.main, 0.05),
+                    border: '2px dashed', borderColor: 'primary.main',
+                }}>
+                    <CircularProgress size={40} sx={{ mb: 2 }} />
+                    <Typography sx={{ fontWeight: 600, color: 'primary.main' }}>{conversionMessage}</Typography>
+                </Box>
+            ) : (
                 <Box
                   onDragEnter={handleDrag}
                   onDragOver={handleDrag}
                   onDragLeave={handleDrag}
                   onDrop={handleDrop}
+                  onClick={() => document.getElementById('bulk-upload-input').click()}
                   sx={{
-                    border: dragActive ? '2px solid' : '2px dashed',
-                    borderColor: dragActive ? 'primary.main' : (theme.palette.mode === 'light' ? '#90caf9' : 'rgba(138,180,248,0.4)'),
-                    borderRadius: 2,
-                    p: 3,
-                    textAlign: 'center',
-                    background: dragActive ? (theme.palette.mode === 'light' ? 'rgba(25, 118, 210, 0.08)' : 'rgba(138,180,248,0.12)') : 'transparent',
-                    color: 'primary.main',
-                    fontWeight: 600,
-                    mb: 1.5,
-                    cursor: 'pointer',
-                    transition: 'border 0.2s, background 0.2s',
-                    outline: 'none',
-                    userSelect: 'none',
-                    WebkitTapHighlightColor: 'transparent',
+                    p: 4, borderRadius: '20px', textAlign: 'center', cursor: 'pointer',
+                    background: dragActive ? alpha(theme.palette.primary.main, 0.08) : 'transparent',
+                    border: '2px dashed',
+                    borderColor: dragActive ? 'primary.main' : isDark ? alpha('#fff', 0.15) : alpha('#000', 0.1),
+                    transition: 'all 0.25s ease',
+                    '&:hover': { borderColor: 'primary.main', background: alpha(theme.palette.primary.main, 0.05) }
                   }}
-                  tabIndex={0}
-                  onClick={() => document.getElementById('admin-upload-input').click()}
                 >
-                  Σύρε εδώ τα αρχεία ή κάνε κλικ για επιλογή
-                  <input
-                    id="admin-upload-input"
-                    type="file"
-                    multiple
-                    hidden
-                    onChange={handleFileInput}
-                    accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-                  />
-                </Box>
-              )}
-              {/* Εναλλακτικό κουμπί επιλογής */}
-              <Button
-                variant="contained"
-                component="label"
-                startIcon={<UploadFileIcon />}
-                sx={{ fontWeight: 700, borderRadius: 2 }}
-                color="primary"
-                disabled={!!conversionMessage}
-              >
-                Επιλογή Αρχείων
-                <input
-                  type="file"
-                  multiple
-                  hidden
-                  onChange={handleFileInput}
-                  accept=".pdf,.doc,.docx,.png,.jpg,.jpeg"
-                />
-              </Button>
-              {files.length > 0 && (
-                <Box sx={{ mt: 1 }}>
-                  <Typography variant="subtitle2" sx={{ mb: 1, color: 'primary.main', fontWeight: 600 }}>
-                    {files.length} αρχεία επιλεγμένα:
+                  <input id="bulk-upload-input" type="file" multiple hidden accept=".pdf,.doc,.docx,.png,.jpg,.jpeg" onChange={(e) => handleFilesSelection(e.target.files)} />
+                  <CloudUploadIcon sx={{ fontSize: 48, color: 'primary.main', opacity: 0.8, mb: 1.5 }} />
+                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, fontSize: '1rem' }}>
+                    Σύρετε ή πατήστε για επιλογή
                   </Typography>
-                  <Stack spacing={1.5}>
-                    {files.map(f => (
-                      <Box key={f.name} sx={{ display: 'flex', flexDirection: 'column', gap: 1, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 2, bgcolor: theme.palette.mode === 'light' ? '#fff' : 'background.default', position: 'relative' }}>
-                        <IconButton
-                          size="small"
-                          color="error"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            setFiles(prev => prev.filter(file => file.name !== f.name));
-                            setFilePreviews(prev => {
-                              const newPreviews = { ...prev };
-                              delete newPreviews[f.name];
-                              return newPreviews;
-                            });
-                          }}
-                          sx={{
-                            position: 'absolute',
-                            top: 8,
-                            right: 8,
-                            bgcolor: 'background.paper',
-                            boxShadow: 1,
-                            color: '#d32f2f !important',
-                            '&:hover': { bgcolor: 'rgba(211, 47, 47, 0.08) !important' }
-                          }}
-                        >
-                          <DeleteIcon fontSize="small" />
-                        </IconButton>
-                        {f.type.startsWith('image/') ? (
-                          <Box component="img" src={filePreviews[f.name]} sx={{ maxHeight: 150, maxWidth: '100%', objectFit: 'contain', borderRadius: 1 }} />
-                        ) : f.type === 'application/pdf' ? (
-                          (isMobile || Capacitor.isNativePlatform()) ? (
-                            <Box sx={{ width: '100%', height: 250, overflow: 'auto', display: 'flex', justifyContent: 'center', bgcolor: theme.palette.mode === 'light' ? '#f5f5f5' : '#1a1a1a', borderRadius: 1 }}>
-                              <PdfPreview fileUrl={filePreviews[f.name]} showAllPages={false} />
-                            </Box>
-                          ) : (
-                            <Box component="iframe" src={`${filePreviews[f.name]}#toolbar=0`} sx={{ width: '100%', height: 250, border: 'none', borderRadius: 1 }} />
-                          )
-                        ) : (
-                          <InsertDriveFileIcon sx={{ color: 'primary.main', fontSize: 40, alignSelf: 'center', my: 2 }} />
-                        )}
-                        <Typography variant="body2" sx={{ fontWeight: 500, wordBreak: 'break-all', color: 'text.primary' }}>{f.name}</Typography>
-                      </Box>
-                    ))}
-                  </Stack>
+                  <Typography variant="caption" color="text.secondary">
+                    PDF, Word, Images (θα μετατραπούν σε PDF αυτόματα)
+                  </Typography>
                 </Box>
-              )}
-              <Button
-                type="submit"
+            )}
+
+            {/* Selected Files List */}
+            {files.length > 0 && (
+                <Box sx={{ mt: 3 }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                        <Typography sx={{ fontWeight: 700, fontSize: '0.85rem' }}>Επιλεγμένα: {files.length}</Typography>
+                        <Button size="small" color="error" onClick={() => setFiles([])} sx={{ textTransform: 'none', fontWeight: 600 }}>Καθαρισμός</Button>
+                    </Box>
+                    <Stack spacing={1.2} sx={{ maxHeight: 300, overflowY: 'auto', pr: 1, '&::-webkit-scrollbar': { width: 4 }, '&::-webkit-scrollbar-thumb': { background: alpha('#888', 0.3), borderRadius: 4 } }}>
+                        {files.map((file, i) => (
+                            <Box key={file.name + i} sx={{
+                                p: 1.5, borderRadius: '12px', display: 'flex', alignItems: 'center', gap: 1.5,
+                                background: isDark ? alpha('#fff', 0.03) : alpha('#000', 0.02),
+                                border: '1px solid', borderColor: isDark ? alpha('#fff', 0.05) : alpha('#000', 0.05),
+                            }}>
+                                <InsertDriveFileOutlinedIcon sx={{ color: 'primary.main', fontSize: 20 }} />
+                                <Typography sx={{ fontSize: '0.82rem', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{file.name}</Typography>
+                                <IconButton size="small" onClick={() => setFiles(prev => prev.filter((_, idx) => idx !== i))} sx={{ color: 'text.secondary' }}>
+                                    <DeleteIcon fontSize="inherit" />
+                                </IconButton>
+                            </Box>
+                        ))}
+                    </Stack>
+                </Box>
+            )}
+
+            <Button
                 variant="contained"
-                color="success"
-                disabled={loading}
-                sx={{ fontWeight: 700, borderRadius: 2 }}
                 fullWidth
                 size="large"
-                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <UploadFileIcon />}
+                disabled={loading || !files.length || !course || !year || !period}
+                onClick={handleUpload}
+                startIcon={loading ? <CircularProgress size={20} color="inherit" /> : <DoneAllIcon />}
+                sx={{ mt: 4, borderRadius: '14px', py: 1.6, fontWeight: 700, fontSize: '1rem', textTransform: 'none', boxShadow: '0 8px 24px rgba(26,115,232,0.3)' }}
               >
-                ΑΝΕΒΑΣΜΑ
-              </Button>
-            </Stack>
+                {loading ? 'Γίνεται μεταφόρτωση...' : `Μεταφόρτωση ${files.length} αρχείων`}
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* Results Box */}
+      {fileResults.length > 0 && (
+          <Box sx={{ ...cardStyle, mt: 3, p: 3 }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, fontSize: '1rem' }}>Αποτελέσματα Μεταφόρτωσης</Typography>
+              <Stack spacing={1}>
+                  {fileResults.map((res, i) => (
+                      <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                          {res.status === 'success' ? <CheckCircleOutlineIcon sx={{ color: 'success.main', fontSize: 18 }} /> : <Tooltip title={res.message}><Icon color="error" sx={{ fontSize: 18 }}>error</Icon></Tooltip>}
+                          <Typography sx={{ fontSize: '0.85rem', color: res.status === 'success' ? 'text.primary' : 'error.main' }}>
+                              {res.name}: {res.status === 'success' ? 'Ολοκληρώθηκε' : 'Σφάλμα'}
+                          </Typography>
+                      </Box>
+                  ))}
+              </Stack>
           </Box>
-          {fileResults.length > 0 && (
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="subtitle1" fontWeight={700} sx={{ mb: 1 }}>Αποτελέσματα:</Typography>
-              <ul style={{ paddingLeft: 18 }}>
-                {fileResults.map((r, i) => (
-                  <li key={i} style={{ color: r.status === 'success' ? 'green' : 'red', fontWeight: 500 }}>
-                    {r.name}: {r.message}
-                  </li>
-                ))}
-              </ul>
-            </Box>
-          )}
-        </CardContent>
-      </Card>
+      )}
     </Box>
   );
 };
 
-export default AdminUpload; 
+export default AdminUpload;

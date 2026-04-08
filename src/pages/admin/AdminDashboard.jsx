@@ -37,8 +37,8 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import { supabase } from "../../supabaseClient";
 import { AdminSidebarContext } from "../../context/AdminSidebarContext";
 
-const DRAWER_WIDTH = 272;
-const COLLAPSED_WIDTH = 72;
+const DRAWER_WIDTH = 260;
+const COLLAPSED_WIDTH = 68;
 const NAV_HEIGHT_XS = "56px";
 const NAV_HEIGHT_SM = "64px";
 
@@ -541,13 +541,16 @@ const AdminDashboard = () => {
           }}
         >
           {/* Page Content */}
-          <Box
-            sx={{
-              flex: 1,
-              px: { xs: 2, sm: 3, md: 4 },
-              py: { xs: 2.5, md: 3.5 },
-            }}
-          >
+            <Box
+              sx={{
+                flex: 1,
+                px: { xs: 2, sm: 3, md: 4, lg: 6 },
+                py: { xs: 2.5, md: 3.5 },
+                width: "100%",
+                maxWidth: 1400,
+                mx: "auto",
+              }}
+            >
             {isRoot ? (
               /* ─── Dashboard Home ─── */
               <Box>
