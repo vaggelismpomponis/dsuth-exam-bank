@@ -1,31 +1,52 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Box,
-  Paper,
-  Typography,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  IconButton,
-  Chip,
-  Alert,
-  Stack,
-  useTheme,
-  useMediaQuery,
-  Card,
-  CardContent,
-  Grid,
-  Button,
-  Tooltip,
-  Divider,
+  Box, Paper, Typography, IconButton, Chip, Alert, Stack,
+  useTheme, useMediaQuery, Card, CardContent, Grid, Button,
+  Tooltip, Divider, alpha, Skeleton,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
 import ReplayIcon from '@mui/icons-material/Replay';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import MessageIcon from '@mui/icons-material/Message';
 import { supabase } from '../../supabaseClient';
+
+const PageHeader = ({ title, subtitle, icon, count }) => {
+  const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
+  return (
+    <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Box sx={{
+          width: 44, height: 44, borderRadius: '14px',
+          background: 'linear-gradient(135deg, #1a73e8 0%, #0052cc 100%)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          boxShadow: '0 4px 16px rgba(26,115,232,0.35)',
+        }}>
+          {React.cloneElement(icon, { sx: { color: '#fff', fontSize: 22 } })}
+        </Box>
+        <Box>
+          <Typography variant="h4" sx={{ fontWeight: 800, lineHeight: 1.2, fontSize: { xs: '1.4rem', sm: '1.75rem' } }}>
+            {title}
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.2 }}>{subtitle}</Typography>
+        </Box>
+      </Box>
+      {count !== undefined && (
+        <Chip
+          label={`${count} αιτήματα`}
+          sx={{
+            fontWeight: 700,
+            background: isDark ? alpha('#1a73e8', 0.15) : alpha('#1a73e8', 0.1),
+            color: 'primary.main', border: '1px solid', borderColor: alpha('#1a73e8', 0.2), borderRadius: '10px',
+          }}
+        />
+      )}
+    </Box>
+  );
+};
 
 const AdminRequests = () => {
   const [rows, setRows] = useState([]);
@@ -33,6 +54,7 @@ const AdminRequests = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const fetchRows = async () => {
@@ -47,169 +69,157 @@ const AdminRequests = () => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    fetchRows();
-  }, []);
+  useEffect(() => { fetchRows(); }, []);
 
   const toggleStatus = async (id, status) => {
     setError('');
     setSuccess('');
     const next = status === 'open' ? 'closed' : 'open';
-    const { error } = await supabase
-      .from('file_requests')
-      .update({ status: next })
-      .eq('id', id);
+    const { error } = await supabase.from('file_requests').update({ status: next }).eq('id', id);
     if (error) setError(error.message);
     else {
-      setSuccess('Αποθήκευση επιτυχής');
+      setSuccess('Η κατάσταση ενημερώθηκε!');
       setRows((prev) => prev.map((r) => (r.id === id ? { ...r, status: next } : r)));
     }
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('Σίγουρα θέλεις να διαγράψεις αυτό το αίτημα;')) return;
     setError('');
     setSuccess('');
     const { error } = await supabase.from('file_requests').delete().eq('id', id);
     if (error) setError(error.message);
     else {
-      setSuccess('Διαγραφή επιτυχής');
+      setSuccess('Το αίτημα διαγράφηκε!');
       setRows((prev) => prev.filter((r) => r.id !== id));
     }
   };
 
+  const cardStyle = {
+    p: 2.5, borderRadius: '16px',
+    background: isDark ? alpha('#fff', 0.04) : '#ffffff',
+    border: '1px solid',
+    borderColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+    boxShadow: isDark ? 'none' : '0 2px 12px rgba(0,0,0,0.04)',
+    transition: 'all 0.2s ease',
+    '&:hover': {
+      boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.08)',
+    },
+  };
+
   return (
-    <Box sx={{ p: 2 }}>
-      <Typography variant="h5" sx={{ fontWeight: 800, mb: 2 }}>Διαχείριση Αιτημάτων Αρχείων</Typography>
-      {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-      {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
-      {isMobile ? (
+    <Box sx={{ width: '100%' }}>
+      <PageHeader
+        title="Αιτήματα Αρχείων"
+        subtitle="Διαχείριση αιτημάτων από χρήστες για νέα αρχεία"
+        icon={<HelpOutlineIcon />}
+        count={loading ? undefined : rows.length}
+      />
+
+      {error && <Alert severity="error" sx={{ mb: 2, borderRadius: '12px' }} onClose={() => setError('')}>{error}</Alert>}
+      {success && <Alert severity="success" sx={{ mb: 2, borderRadius: '12px' }} onClose={() => setSuccess('')}>{success}</Alert>}
+
+      {loading ? (
         <Stack spacing={2}>
-          {(rows || []).map((r, idx) => (
-            <Card key={r.id} sx={{
-              borderRadius: '16px',
-              border: `1px solid ${theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(255,255,255,0.05)'}`,
-              background: theme.palette.mode === 'light' ? '#f8fafc' : 'background.paper',
-              boxShadow: theme.palette.mode === 'light' ? '0 2px 8px 0 rgba(31,38,135,0.05)' : '0 4px 12px 0 rgba(0,0,0,0.3)',
-            }}>
-              <CardContent>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1, alignItems: 'flex-start' }}>
-                  <Typography variant="subtitle2" sx={{ fontWeight: 800, color: 'primary.main' }}>
-                    #{idx + 1} - {r.course}
-                  </Typography>
-                  <Chip label={r.status === 'closed' ? 'Κλειστό' : 'Ανοιχτό'} color={r.status === 'closed' ? 'success' : 'warning'} size="small" sx={{ fontWeight: 700 }} />
-                </Box>
-
-                <Grid container spacing={1} sx={{ mb: 2 }}>
-                  <Grid item xs={6}>
-                    <Typography variant="caption" color="text.secondary">Έτος</Typography>
-                    <Typography variant="body2">{r.year}</Typography>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Typography variant="caption" color="text.secondary">Εξεταστική</Typography>
-                    <Typography variant="body2">{r.period}</Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="caption" color="text.secondary">Ημ/νία</Typography>
-                    <Typography variant="body2">{new Date(r.created_at).toLocaleDateString('el-GR')}</Typography>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Typography variant="caption" color="text.secondary">Λεπτομέρειες</Typography>
-                    <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{r.details}</Typography>
-                  </Grid>
-                </Grid>
-
-                <Divider sx={{ my: 1.5 }} />
-
-                <Stack direction="row" spacing={1.5} justifyContent="flex-start" sx={{ pt: 0.5 }}>
-                  <Tooltip title={r.status === 'open' ? 'Κλείσιμο' : 'Άνοιγμα'}>
-                    <Button
-                      color={r.status === 'open' ? 'success' : 'warning'}
-                      onClick={() => toggleStatus(r.id, r.status)}
-                      sx={{
-                        minWidth: 44, height: 44, p: 0, borderRadius: 2,
-                        background: theme.palette.mode === 'light' ? (r.status === 'open' ? '#e8f5e9' : '#fff3e0') : (r.status === 'open' ? 'rgba(76, 175, 80, 0.12)' : 'rgba(255, 152, 0, 0.12)'),
-                        '&:hover': { background: theme.palette.mode === 'light' ? (r.status === 'open' ? '#c8e6c9' : '#ffe0b2') : (r.status === 'open' ? 'rgba(76, 175, 80, 0.25)' : 'rgba(255, 152, 0, 0.25)') }
-                      }}
-                    >
-                      {r.status === 'open' ? <CheckCircleIcon fontSize="small" /> : <ReplayIcon fontSize="small" />}
-                    </Button>
-                  </Tooltip>
-                  <Tooltip title="Διαγραφή">
-                    <Button
-                      color="error"
-                      onClick={() => handleDelete(r.id)}
-                      sx={{
-                        minWidth: 44, height: 44, p: 0, borderRadius: 2,
-                        background: theme.palette.mode === 'light' ? '#ffebee' : 'rgba(244, 67, 54, 0.12)',
-                        '&:hover': { background: theme.palette.mode === 'light' ? '#ffcdd2' : 'rgba(244, 67, 54, 0.25)' }
-                      }}
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </Button>
-                  </Tooltip>
-                </Stack>
-              </CardContent>
-            </Card>
+          {[...Array(3)].map((_, i) => (
+            <Box key={i} sx={{ ...cardStyle }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+                <Skeleton width="40%" height={24} />
+                <Skeleton width={80} height={24} sx={{ borderRadius: '8px' }} />
+              </Box>
+              <Skeleton width="90%" height={60} sx={{ borderRadius: '10px' }} />
+            </Box>
           ))}
         </Stack>
+      ) : rows.length === 0 ? (
+        <Box sx={{ ...cardStyle, py: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+          <HelpOutlineIcon sx={{ fontSize: 48, color: 'text.secondary', opacity: 0.3 }} />
+          <Typography sx={{ color: 'text.secondary', fontWeight: 500 }}>Δεν υπάρχουν αιτήματα αρχείων</Typography>
+        </Box>
       ) : (
-        <TableContainer component={Paper} sx={{
-          background: theme.palette.mode === 'light' ? '#f8fafc' : 'background.paper',
-          boxShadow: theme.palette.mode === 'light' ? '0 2px 12px 0 rgba(31,38,135,0.08)' : '0 4px 20px 0 rgba(0,0,0,0.4)',
-          borderRadius: '18px',
-          border: `1px solid ${theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(255,255,255,0.05)'}`,
-        }}>
-          <Table>
-            <TableHead>
-              <TableRow sx={{ background: theme.palette.mode === 'light' ? '#f4f6fa' : 'background.default' }}>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>#</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Μάθημα</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Έτος</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Εξεταστική</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16, width: 520 }}>Λεπτομέρειες</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Κατάσταση</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Ημ/νία</TableCell>
-                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Ενέργειες</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {(rows || []).map((r, idx) => (
-                <TableRow key={r.id}>
-                  <TableCell>{idx + 1}</TableCell>
-                  <TableCell>{r.course}</TableCell>
-                  <TableCell>{r.year}</TableCell>
-                  <TableCell>{r.period}</TableCell>
-                  <TableCell sx={{ maxWidth: 520, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{r.details}</TableCell>
-                  <TableCell>
-                    <Chip label={r.status === 'closed' ? 'Κλειστό' : 'Ανοιχτό'} color={r.status === 'closed' ? 'success' : 'warning'} size="small" sx={{ fontWeight: 700 }} />
-                  </TableCell>
-                  <TableCell>{new Date(r.created_at).toLocaleDateString('el-GR')}</TableCell>
-                  <TableCell>
-                    <Stack direction="row" spacing={1}>
-                      <IconButton color={r.status === 'open' ? 'success' : 'warning'} onClick={() => toggleStatus(r.id, r.status)} size="small" title={r.status === 'open' ? 'Κλείσιμο' : 'Άνοιγμα'}>
-                        {r.status === 'open' ? <CheckCircleIcon /> : <ReplayIcon />}
-                      </IconButton>
-                      <IconButton color="error" onClick={() => handleDelete(r.id)} size="small" title="Διαγραφή">
-                        <DeleteIcon />
-                      </IconButton>
-                    </Stack>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-      {!rows?.length && !loading && (
-        <Typography sx={{ mt: 2, color: 'text.secondary' }}>Δεν υπάρχουν αιτήματα.</Typography>
-      )}
-      {loading && (
-        <Typography sx={{ mt: 2, color: 'text.secondary' }}>Φόρτωση...</Typography>
+        <Stack spacing={2}>
+          {rows.map((r) => (
+            <Box key={r.id} sx={cardStyle}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2, flexWrap: 'wrap', gap: 1 }}>
+                <Box>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 800, color: 'primary.main', lineHeight: 1.2 }}>
+                    {r.course}
+                  </Typography>
+                  <Stack direction="row" spacing={2} sx={{ mt: 0.5 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <CalendarTodayIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
+                      <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary' }}>{r.year} · {r.period}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <AccessTimeIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
+                      <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary' }}>
+                        {new Date(r.created_at).toLocaleDateString('el-GR')}
+                      </Typography>
+                    </Box>
+                  </Stack>
+                </Box>
+                <Chip
+                  label={r.status === 'closed' ? 'Κλειστό' : 'Ανοιχτό'}
+                  size="small"
+                  sx={{
+                    fontWeight: 700, fontSize: '0.7rem', borderRadius: '8px',
+                    background: r.status === 'closed' ? alpha('#1e8e3e', 0.12) : alpha('#f57c00', 0.12),
+                    color: r.status === 'closed' ? '#1e8e3e' : '#f57c00',
+                    border: '1px solid', borderColor: r.status === 'closed' ? alpha('#1e8e3e', 0.2) : alpha('#f57c00', 0.2),
+                  }}
+                />
+              </Box>
+
+              <Box sx={{
+                p: 2, borderRadius: '12px', mb: 2,
+                background: isDark ? alpha('#fff', 0.03) : alpha('#000', 0.02),
+                border: '1px solid', borderColor: isDark ? alpha('#fff', 0.05) : alpha('#000', 0.05),
+                display: 'flex', gap: 1.5,
+              }}>
+                <MessageIcon sx={{ fontSize: 18, color: 'text.secondary', mt: 0.3 }} />
+                <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: 'text.primary', fontSize: '0.85rem' }}>
+                  {r.details || <span style={{ opacity: 0.5, fontStyle: 'italic' }}>Καμία λεπτομέρεια</span>}
+                </Typography>
+              </Box>
+
+              <Stack direction="row" spacing={1} justifyContent="flex-end">
+                <Tooltip title={r.status === 'open' ? 'Κλείσιμο Αιτήματος' : 'Επαναφορά (Άνοιγμα)'} arrow>
+                  <Button
+                    size="small"
+                    onClick={() => toggleStatus(r.id, r.status)}
+                    startIcon={r.status === 'open' ? <CheckCircleOutlineIcon /> : <ReplayIcon />}
+                    sx={{
+                      borderRadius: '10px', textTransform: 'none', fontWeight: 600,
+                      background: r.status === 'open' ? alpha('#1e8e3e', 0.1) : alpha('#f57c00', 0.1),
+                      color: r.status === 'open' ? '#1e8e3e' : '#f57c00',
+                      '&:hover': { background: r.status === 'open' ? alpha('#1e8e3e', 0.18) : alpha('#f57c00', 0.18) },
+                    }}
+                  >
+                    {r.status === 'open' ? 'Κλείσιμο' : 'Άνοιγμα'}
+                  </Button>
+                </Tooltip>
+                <Tooltip title="Διαγραφή Αιτήματος" arrow>
+                  <Button
+                    size="small"
+                    color="error"
+                    onClick={() => handleDelete(r.id)}
+                    startIcon={<DeleteOutlineIcon />}
+                    sx={{
+                      borderRadius: '10px', textTransform: 'none', fontWeight: 600,
+                      background: alpha('#d32f2f', 0.1),
+                      '&:hover': { background: alpha('#d32f2f', 0.18) },
+                    }}
+                  >
+                    Διαγραφή
+                  </Button>
+                </Tooltip>
+              </Stack>
+            </Box>
+          ))}
+        </Stack>
       )}
     </Box>
   );
 };
 
 export default AdminRequests;
-
-

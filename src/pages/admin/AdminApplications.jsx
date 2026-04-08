@@ -1,31 +1,53 @@
 import React, { useEffect, useState } from 'react';
 import {
-    Box,
-    Paper,
-    Typography,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    IconButton,
-    Chip,
-    Alert,
-    Stack,
-    useTheme,
-    useMediaQuery,
-    Card,
-    CardContent,
-    Grid,
-    Button,
-    Divider,
-    Tooltip,
+    Box, Paper, Typography, IconButton, Chip, Alert, Stack,
+    useTheme, useMediaQuery, Card, CardContent, Grid, Button,
+    Divider, Tooltip, alpha, Skeleton, Avatar,
 } from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
+import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined';
+import AssignmentIndIcon from '@mui/icons-material/AssignmentInd';
+import EmailOutlinedIcon from '@mui/icons-material/EmailOutlined';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import MessageIcon from '@mui/icons-material/Message';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import { supabase } from '../../supabaseClient';
+
+const PageHeader = ({ title, subtitle, icon, count }) => {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
+    return (
+        <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Box sx={{
+                    width: 44, height: 44, borderRadius: '14px',
+                    background: 'linear-gradient(135deg, #1a73e8 0%, #0052cc 100%)',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: '0 4px 16px rgba(26,115,232,0.35)',
+                }}>
+                    {React.cloneElement(icon, { sx: { color: '#fff', fontSize: 22 } })}
+                </Box>
+                <Box>
+                    <Typography variant="h4" sx={{ fontWeight: 800, lineHeight: 1.2, fontSize: { xs: '1.4rem', sm: '1.75rem' } }}>
+                        {title}
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.2 }}>{subtitle}</Typography>
+                </Box>
+            </Box>
+            {count !== undefined && (
+                <Chip
+                    label={`${count} αιτήσεις`}
+                    sx={{
+                        fontWeight: 700,
+                        background: isDark ? alpha('#1a73e8', 0.15) : alpha('#1a73e8', 0.1),
+                        color: 'primary.main', border: '1px solid', borderColor: alpha('#1a73e8', 0.2), borderRadius: '10px',
+                    }}
+                />
+            )}
+        </Box>
+    );
+};
 
 const AdminApplications = () => {
     const [rows, setRows] = useState([]);
@@ -33,6 +55,7 @@ const AdminApplications = () => {
     const [error, setError] = useState('');
     const [success, setSuccess] = useState('');
     const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
     const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
     const fetchRows = async () => {
@@ -47,222 +70,195 @@ const AdminApplications = () => {
         setLoading(false);
     };
 
-    useEffect(() => {
-        fetchRows();
-    }, []);
+    useEffect(() => { fetchRows(); }, []);
 
     const handleApprove = async (id, userId) => {
-        setError('');
-        setSuccess('');
-
-        // 1. Update application status
-        const { error: appError } = await supabase
-            .from('admin_applications')
-            .update({ status: 'approved' })
-            .eq('id', id);
-
-        if (appError) {
-            setError('Σφάλμα κατά την έγκριση (application): ' + appError.message);
-            return;
-        }
-
-        // 2. Update user profile role to admin
-        const { error: profileError } = await supabase
-            .from('profiles')
-            .update({ role: 'admin' })
-            .eq('id', userId);
-
-        if (profileError) {
-            setError('Σφάλμα κατά την έγκριση (profile): ' + profileError.message);
-            return;
-        }
-
+        if (!window.confirm('Σίγουρα θέλεις να εγκρίνεις αυτή την αίτηση; Ο χρήστης θα γίνει Admin.')) return;
+        setError(''); setSuccess('');
+        const { error: appError } = await supabase.from('admin_applications').update({ status: 'approved' }).eq('id', id);
+        if (appError) { setError('Σφάλμα: ' + appError.message); return; }
+        const { error: profileError } = await supabase.from('profiles').update({ role: 'admin' }).eq('id', userId);
+        if (profileError) { setError('Σφάλμα (profile): ' + profileError.message); return; }
         setSuccess('Ο χρήστης εγκρίθηκε και έγινε Admin!');
         setRows((prev) => prev.map((r) => (r.id === id ? { ...r, status: 'approved' } : r)));
     };
 
     const handleReject = async (id) => {
-        setError('');
-        setSuccess('');
-        const { error } = await supabase
-            .from('admin_applications')
-            .update({ status: 'rejected' })
-            .eq('id', id);
-
-        if (error) {
-            setError('Σφάλμα κατά την απόρριψη: ' + error.message);
-            return;
-        }
-
+        if (!window.confirm('Σίγουρα θέλεις να απορρίψεις αυτή την αίτηση;')) return;
+        setError(''); setSuccess('');
+        const { error } = await supabase.from('admin_applications').update({ status: 'rejected' }).eq('id', id);
+        if (error) { setError('Σφάλμα: ' + error.message); return; }
         setSuccess('Η αίτηση απορρίφθηκε.');
         setRows((prev) => prev.map((r) => (r.id === id ? { ...r, status: 'rejected' } : r)));
     };
 
     const handleDelete = async (id) => {
-        setError('');
-        setSuccess('');
+        if (!window.confirm('Σίγουρα θέλεις να διαγράψεις αυτή την αίτηση;')) return;
+        setError(''); setSuccess('');
         const { error } = await supabase.from('admin_applications').delete().eq('id', id);
         if (error) setError(error.message);
         else {
-            setSuccess('Διαγραφή αίτησης επιτυχής');
+            setSuccess('Η αίτηση διαγράφηκε!');
             setRows((prev) => prev.filter((r) => r.id !== id));
         }
     };
 
     const getStatusChip = (status) => {
         switch (status) {
-            case 'approved': return <Chip label="Εγκρίθηκε" color="success" size="small" sx={{ fontWeight: 700 }} />;
-            case 'rejected': return <Chip label="Απορρίφθηκε" color="error" size="small" sx={{ fontWeight: 700 }} />;
-            default: return <Chip label="Εκκρεμεί" color="warning" size="small" sx={{ fontWeight: 700 }} />;
+            case 'approved': return <Chip label="Εγκρίθηκε" size="small" sx={{ fontWeight: 700, fontSize: '0.7rem', borderRadius: '8px', background: alpha('#1e8e3e', 0.12), color: '#1e8e3e', border: '1px solid', borderColor: alpha('#1e8e3e', 0.2) }} />;
+            case 'rejected': return <Chip label="Απορρίφθηκε" size="small" sx={{ fontWeight: 700, fontSize: '0.7rem', borderRadius: '8px', background: alpha('#d32f2f', 0.12), color: '#d32f2f', border: '1px solid', borderColor: alpha('#d32f2f', 0.2) }} />;
+            default: return <Chip label="Εκκρεμεί" size="small" sx={{ fontWeight: 700, fontSize: '0.7rem', borderRadius: '8px', background: alpha('#f57c00', 0.12), color: '#f57c00', border: '1px solid', borderColor: alpha('#f57c00', 0.2) }} />;
         }
     };
 
+    const cardStyle = {
+        p: 3, borderRadius: '16px',
+        background: isDark ? alpha('#fff', 0.04) : '#ffffff',
+        border: '1px solid',
+        borderColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)',
+        boxShadow: isDark ? 'none' : '0 2px 12px rgba(0,0,0,0.04)',
+        transition: 'all 0.2s ease',
+        '&:hover': {
+            boxShadow: isDark ? '0 4px 20px rgba(0,0,0,0.3)' : '0 4px 20px rgba(0,0,0,0.08)',
+        },
+    };
+
     return (
-        <Box sx={{ mt: 4, mb: 4, width: '100%' }}>
-            <Typography variant="h4" color={theme.palette.mode === 'light' ? '#111' : 'text.primary'} fontWeight={700} gutterBottom align="left">
-                ΑΙΤΗΣΕΙΣ ADMIN
-            </Typography>
-            {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
-            {success && <Alert severity="success" sx={{ mb: 2 }}>{success}</Alert>}
-            {isMobile ? (
+        <Box sx={{ width: '100%' }}>
+            <PageHeader
+                title="Αιτήσεις Admin"
+                subtitle="Διαχείριση αιτήσεων από χρήστες για δικαιώματα διαχειριστή"
+                icon={<AssignmentIndIcon />}
+                count={loading ? undefined : rows.length}
+            />
+
+            {error && <Alert severity="error" sx={{ mb: 2, borderRadius: '12px' }} onClose={() => setError('')}>{error}</Alert>}
+            {success && <Alert severity="success" sx={{ mb: 2, borderRadius: '12px' }} onClose={() => setSuccess('')}>{success}</Alert>}
+
+            {loading ? (
                 <Stack spacing={2}>
-                    {(rows || []).map((r) => (
-                        <Card key={r.id} sx={{
-                            borderRadius: '16px',
-                            border: `1px solid ${theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(255,255,255,0.05)'}`,
-                            background: theme.palette.mode === 'light' ? '#f8fafc' : 'background.paper',
-                            boxShadow: theme.palette.mode === 'light' ? '0 2px 8px 0 rgba(31,38,135,0.05)' : '0 4px 12px 0 rgba(0,0,0,0.3)',
-                        }}>
-                            <CardContent>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1, alignItems: 'flex-start' }}>
-                                    <Typography variant="subtitle2" sx={{ fontWeight: 800, color: 'primary.main' }}>
-                                        {r.name}
-                                    </Typography>
-                                    {getStatusChip(r.status)}
+                    {[...Array(3)].map((_, i) => (
+                        <Box key={i} sx={{ ...cardStyle }}>
+                            <Box sx={{ display: 'flex', gap: 2, mb: 1.5 }}>
+                                <Skeleton variant="circular" width={44} height={44} />
+                                <Box sx={{ flex: 1 }}>
+                                    <Skeleton width="40%" height={20} />
+                                    <Skeleton width="60%" height={16} sx={{ mt: 0.5 }} />
                                 </Box>
-
-                                <Grid container spacing={1} sx={{ mb: 2 }}>
-                                    <Grid item xs={12}>
-                                        <Typography variant="caption" color="text.secondary">Email</Typography>
-                                        <Typography variant="body2">{r.email}</Typography>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <Typography variant="caption" color="text.secondary">Ημ/νία</Typography>
-                                        <Typography variant="body2">{new Date(r.created_at).toLocaleDateString('el-GR')}</Typography>
-                                    </Grid>
-                                    <Grid item xs={12}>
-                                        <Typography variant="caption" color="text.secondary">Μήνυμα/Λόγος</Typography>
-                                        <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', p: 1.5, bgcolor: theme.palette.mode === 'light' ? 'rgba(0,0,0,0.03)' : 'rgba(255,255,255,0.03)', borderRadius: 2 }}>
-                                            {r.message}
-                                        </Typography>
-                                    </Grid>
-                                </Grid>
-
-                                <Divider sx={{ my: 1.5 }} />
-
-                                <Stack direction="row" spacing={1.5} justifyContent="flex-start" sx={{ pt: 0.5 }}>
-                                    {r.status === 'pending' && (
-                                        <>
-                                            <Tooltip title="Έγκριση">
-                                                <Button
-                                                    color="success"
-                                                    onClick={() => handleApprove(r.id, r.user_id)}
-                                                    sx={{
-                                                        minWidth: 44, height: 44, p: 0, borderRadius: 2,
-                                                        background: theme.palette.mode === 'light' ? '#e8f5e9' : 'rgba(76, 175, 80, 0.12)',
-                                                        '&:hover': { background: theme.palette.mode === 'light' ? '#c8e6c9' : 'rgba(76, 175, 80, 0.25)' }
-                                                    }}
-                                                >
-                                                    <CheckCircleIcon fontSize="small" />
-                                                </Button>
-                                            </Tooltip>
-                                            <Tooltip title="Απόρριψη">
-                                                <Button
-                                                    color="warning"
-                                                    onClick={() => handleReject(r.id)}
-                                                    sx={{
-                                                        minWidth: 44, height: 44, p: 0, borderRadius: 2,
-                                                        background: theme.palette.mode === 'light' ? '#fff3e0' : 'rgba(255, 152, 0, 0.12)',
-                                                        '&:hover': { background: theme.palette.mode === 'light' ? '#ffe0b2' : 'rgba(255, 152, 0, 0.25)' }
-                                                    }}
-                                                >
-                                                    <CancelIcon fontSize="small" />
-                                                </Button>
-                                            </Tooltip>
-                                        </>
-                                    )}
-                                    <Tooltip title="Διαγραφή">
-                                        <Button
-                                            color="error"
-                                            onClick={() => handleDelete(r.id)}
-                                            sx={{
-                                                minWidth: 44, height: 44, p: 0, borderRadius: 2,
-                                                background: theme.palette.mode === 'light' ? '#ffebee' : 'rgba(244, 67, 54, 0.12)',
-                                                '&:hover': { background: theme.palette.mode === 'light' ? '#ffcdd2' : 'rgba(244, 67, 54, 0.25)' }
-                                            }}
-                                        >
-                                            <DeleteIcon fontSize="small" />
-                                        </Button>
-                                    </Tooltip>
-                                </Stack>
-                            </CardContent>
-                        </Card>
+                            </Box>
+                            <Skeleton width="100%" height={80} sx={{ borderRadius: '12px' }} />
+                        </Box>
                     ))}
                 </Stack>
+            ) : rows.length === 0 ? (
+                <Box sx={{ ...cardStyle, py: 8, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                    <AssignmentIndIcon sx={{ fontSize: 48, color: 'text.secondary', opacity: 0.3 }} />
+                    <Typography sx={{ color: 'text.secondary', fontWeight: 500 }}>Δεν υπάρχουν αιτήσεις Admin</Typography>
+                </Box>
             ) : (
-                <TableContainer component={Paper} sx={{
-                    background: theme.palette.mode === 'light' ? '#f8fafc' : 'background.paper',
-                    boxShadow: theme.palette.mode === 'light' ? '0 2px 12px 0 rgba(31,38,135,0.08)' : '0 4px 20px 0 rgba(0,0,0,0.4)',
-                    borderRadius: '18px',
-                    border: `1px solid ${theme.palette.mode === 'light' ? '#e3eafc' : 'rgba(255,255,255,0.05)'}`,
-                }}>
-                    <Table>
-                        <TableHead>
-                            <TableRow sx={{ background: theme.palette.mode === 'light' ? '#f4f6fa' : 'background.default' }}>
-                                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Όνομα</TableCell>
-                                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Email</TableCell>
-                                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16, width: 400 }}>Μήνυμα</TableCell>
-                                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Κατάσταση</TableCell>
-                                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16 }}>Ημ/νία</TableCell>
-                                <TableCell sx={{ fontWeight: 700, color: theme.palette.mode === 'light' ? '#1a237e' : 'primary.main', fontSize: 16, textAlign: 'center' }}>Ενέργειες</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {(rows || []).map((r) => (
-                                <TableRow key={r.id}>
-                                    <TableCell>{r.name}</TableCell>
-                                    <TableCell>{r.email}</TableCell>
-                                    <TableCell sx={{ maxWidth: 400, whiteSpace: 'pre-wrap', wordBreak: 'break-word', fontSize: '0.85rem' }}>{r.message}</TableCell>
-                                    <TableCell>{getStatusChip(r.status)}</TableCell>
-                                    <TableCell>{new Date(r.created_at).toLocaleDateString('el-GR')}</TableCell>
-                                    <TableCell align="center">
-                                        <Stack direction="row" spacing={1} justifyContent="center">
-                                            {r.status === 'pending' && (
-                                                <>
-                                                    <IconButton color="success" onClick={() => handleApprove(r.id, r.user_id)} size="small" title="Έγκριση">
-                                                        <CheckCircleIcon />
-                                                    </IconButton>
-                                                    <IconButton color="warning" onClick={() => handleReject(r.id)} size="small" title="Απόρριψη">
-                                                        <CancelIcon />
-                                                    </IconButton>
-                                                </>
-                                            )}
-                                            <IconButton color="error" onClick={() => handleDelete(r.id)} size="small" title="Διαγραφή">
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </Stack>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            )}
-            {!rows?.length && !loading && (
-                <Typography sx={{ mt: 2, color: 'text.secondary' }}>Δεν υπάρχουν αιτήσεις.</Typography>
-            )}
-            {loading && (
-                <Typography sx={{ mt: 2, color: 'text.secondary' }}>Φόρτωση...</Typography>
+                <Stack spacing={2}>
+                    {rows.map((r) => (
+                        <Box key={r.id} sx={cardStyle}>
+                            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2, flexWrap: 'wrap', gap: 2 }}>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                                    <Avatar
+                                        sx={{
+                                            width: 44, height: 44,
+                                            background: 'linear-gradient(135deg, #1a73e8, #0052cc)',
+                                            fontSize: '0.875rem', fontWeight: 700,
+                                            boxShadow: '0 2px 8px rgba(26,115,232,0.25)',
+                                        }}
+                                    >
+                                        {r.name?.[0]?.toUpperCase() || 'U'}
+                                    </Avatar>
+                                    <Box>
+                                        <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', lineHeight: 1.2 }}>
+                                            {r.name}
+                                        </Typography>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexWrap: 'wrap', mt: 0.5 }}>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                <EmailOutlinedIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
+                                                <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary' }}>{r.email}</Typography>
+                                            </Box>
+                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                                <AccessTimeIcon sx={{ fontSize: 12, color: 'text.secondary' }} />
+                                                <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary' }}>
+                                                    {new Date(r.created_at).toLocaleDateString('el-GR')}
+                                                </Typography>
+                                            </Box>
+                                        </Box>
+                                    </Box>
+                                </Box>
+                                {getStatusChip(r.status)}
+                            </Box>
+
+                            <Box sx={{
+                                p: 2, borderRadius: '12px', mb: 2.5,
+                                background: isDark ? alpha('#fff', 0.03) : alpha('#000', 0.02),
+                                border: '1px solid', borderColor: isDark ? alpha('#fff', 0.05) : alpha('#000', 0.05),
+                            }}>
+                                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5 }}>
+                                    <MessageIcon sx={{ fontSize: 18, color: 'text.secondary', mt: 0.3 }} />
+                                    <Box sx={{ flex: 1 }}>
+                                        <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em', mb: 0.5, display: 'block' }}>
+                                            Μήνυμα/Λόγος Αίτησης
+                                        </Typography>
+                                        <Typography variant="body2" sx={{ whiteSpace: 'pre-wrap', wordBreak: 'break-word', color: 'text.primary', fontSize: '0.875rem', lineHeight: 1.5 }}>
+                                            {r.message || <span style={{ opacity: 0.5, fontStyle: 'italic' }}>Δεν υπάρχει μήνυμα</span>}
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            </Box>
+
+                            <Stack direction="row" spacing={1.5} justifyContent="flex-end">
+                                {r.status === 'pending' && (
+                                    <>
+                                        <Tooltip title="Έγκριση" arrow>
+                                            <Button
+                                                variant="contained"
+                                                color="success"
+                                                size="small"
+                                                onClick={() => handleApprove(r.id, r.user_id)}
+                                                startIcon={<CheckCircleOutlineIcon />}
+                                                sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 700, px: 2 }}
+                                            >
+                                                Έγκριση
+                                            </Button>
+                                        </Tooltip>
+                                        <Tooltip title="Απόρριψη" arrow>
+                                            <Button
+                                                variant="outlined"
+                                                color="warning"
+                                                size="small"
+                                                onClick={() => handleReject(r.id)}
+                                                startIcon={<CancelOutlinedIcon />}
+                                                sx={{ borderRadius: '10px', textTransform: 'none', fontWeight: 600, px: 2 }}
+                                            >
+                                                Απόρριψη
+                                            </Button>
+                                        </Tooltip>
+                                    </>
+                                )}
+                                <Tooltip title="Διαγραφή Αίτησης" arrow>
+                                    <Button
+                                        variant="outlined"
+                                        color="error"
+                                        size="small"
+                                        onClick={() => handleDelete(r.id)}
+                                        startIcon={<DeleteOutlineIcon />}
+                                        sx={{
+                                            borderRadius: '10px', textTransform: 'none', fontWeight: 600, px: 2,
+                                            borderColor: alpha('#d32f2f', 0.3),
+                                            '&:hover': { background: alpha('#d32f2f', 0.05), borderColor: '#d32f2f' },
+                                        }}
+                                    >
+                                        Διαγραφή
+                                    </Button>
+                                </Tooltip>
+                            </Stack>
+                        </Box>
+                    ))}
+                </Stack>
             )}
         </Box>
     );

@@ -348,7 +348,7 @@ const AdminFiles = () => {
               {/* Table header */}
               <Box sx={{
                 display: 'grid',
-                gridTemplateColumns: '2fr 80px 140px 140px 100px 130px',
+                gridTemplateColumns: 'minmax(250px, 1fr) 80px 140px 180px 120px 160px',
                 px: 3, py: 1.5,
                 background: isDark ? alpha('#fff', 0.03) : alpha('#1a73e8', 0.04),
                 borderBottom: '1px solid',
@@ -365,7 +365,7 @@ const AdminFiles = () => {
                   key={exam.id}
                   sx={{
                     display: 'grid',
-                    gridTemplateColumns: '2fr 80px 140px 140px 100px 130px',
+                    gridTemplateColumns: 'minmax(250px, 1fr) 80px 140px 180px 120px 160px',
                     px: 3, py: 2,
                     alignItems: 'center',
                     borderBottom: idx < paginated.length - 1 ? '1px solid' : 'none',
