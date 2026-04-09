@@ -22,6 +22,7 @@ import RefreshIcon              from '@mui/icons-material/Refresh';
 import { supabase }   from '../../supabaseClient';
 import { Capacitor }  from '@capacitor/core';
 import PdfPreview     from '../../components/PdfPreview';
+import FilePreviewDrawer from '../../components/FilePreviewDrawer';
 
 /* ─── Shared helpers ────────────────────────────── */
 const cardBase = (dark) => ({
@@ -237,7 +238,7 @@ const AdminFiles = () => {
   const [approvingId,   setApprovingId]   = useState(null);
   const [alert,         setAlert]         = useState({ type: '', msg: '' });
   const [confirmDel,    setConfirmDel]    = useState({ open: false, id: null, url: null });
-  const [preview,       setPreview]       = useState({ open: false, exam: null });
+  const [previewFile,   setPreviewFile]   = useState(null);
 
   /* fetch */
   const load = useCallback(async () => {
@@ -274,7 +275,11 @@ const AdminFiles = () => {
     setApprovingId(id);
     const { error } = await supabase.from('exams').update({ approved: true }).eq('id', id);
     if (error) notify('error', error.message);
-    else { notify('success', 'Εγκρίθηκε επιτυχώς!'); await load(); }
+    else {
+      notify('success', 'Εγκρίθηκε επιτυχώς!');
+      setPreviewFile(f => f && f.id === id ? { ...f, approved: true } : f);
+      await load();
+    }
     setApprovingId(null);
   };
 
@@ -392,7 +397,7 @@ const AdminFiles = () => {
             <ExamCard
               key={exam.id} exam={exam} users={users} approvingId={approvingId}
               onApprove={handleApprove}
-              onPreview={exam => setPreview({ open: true, exam })}
+              onPreview={exam => setPreviewFile(exam)}
               onDelete={(id, url) => setConfirmDel({ open: true, id, url })}
             />
           ))}
@@ -405,7 +410,7 @@ const AdminFiles = () => {
               key={exam.id} exam={exam} users={users} approvingId={approvingId}
               last={i === paginated.length - 1}
               onApprove={handleApprove}
-              onPreview={exam => setPreview({ open: true, exam })}
+              onPreview={exam => setPreviewFile(exam)}
               onDelete={(id, url) => setConfirmDel({ open: true, id, url })}
             />
           ))}
@@ -445,37 +450,17 @@ const AdminFiles = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Preview */}
-      <Dialog open={preview.open} onClose={() => setPreview({ open: false, exam: null })} fullWidth maxWidth="md"
-        PaperProps={{ sx: { borderRadius: '18px', background: dark ? '#1a1b1e' : '#fff', border: '1px solid', borderColor: dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)', height: '82vh' } }}>
-        <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', pb: 1 }}>
-          <Box>
-            <Typography variant="h6" sx={{ fontWeight: 700, fontSize: '1rem' }}>{preview.exam?.course}</Typography>
-            <Typography variant="caption" sx={{ color: 'text.secondary' }}>{preview.exam?.period} {preview.exam?.year}</Typography>
-          </Box>
-          <IconButton size="small" onClick={() => setPreview({ open: false, exam: null })} sx={{ color: 'text.secondary' }}>
-            <CloseIcon fontSize="small" />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent sx={{ p: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-          {preview.exam && (() => {
-            const url = preview.exam.file_url;
-            if (url?.match(/\.(jpg|jpeg|png|gif|webp)$/i))
-              return <Box component="img" src={url} sx={{ maxWidth: '100%', maxHeight: '100%', objectFit: 'contain', display: 'block', mx: 'auto', mt: 2 }} />;
-            if (url?.match(/\.pdf$/i))
-              return (isMobile || Capacitor.isNativePlatform())
-                ? <PdfPreview fileUrl={url} showAllPages />
-                : <Box component="iframe" src={`${url}#toolbar=0`} sx={{ width: '100%', height: '100%', border: 'none' }} />;
-            return (
-              <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 2 }}>
-                <InsertDriveFileOutlinedIcon sx={{ fontSize: 60, color: 'text.secondary', opacity: 0.3 }} />
-                <Typography sx={{ color: 'text.secondary' }}>Δεν υποστηρίζεται προεπισκόπηση</Typography>
-                <Button variant="contained" href={url} target="_blank" sx={{ borderRadius: '10px', textTransform: 'none' }}>Λήψη</Button>
-              </Box>
-            );
-          })()}
-        </DialogContent>
-      </Dialog>
+      {/* File Preview Drawer */}
+      <FilePreviewDrawer
+        open={Boolean(previewFile)}
+        onClose={() => setPreviewFile(null)}
+        file={previewFile}
+        uploader={previewFile ? (users[previewFile.uploader] || '') : ''}
+        isAdmin
+        approvingId={approvingId}
+        onApprove={handleApprove}
+        onDelete={(id, url) => { setPreviewFile(null); setConfirmDel({ open: true, id, url }); }}
+      />
     </Box>
   );
 };
