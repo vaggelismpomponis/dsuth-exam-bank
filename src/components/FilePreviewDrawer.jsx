@@ -375,7 +375,7 @@ const FilePreviewDrawer = ({
           anchor="bottom"
           open={open}
           onClose={onClose}
-          disableScrollLock
+          ModalProps={{ disableScrollLock: true }}
           PaperProps={{
             sx: {
               width: '100%',

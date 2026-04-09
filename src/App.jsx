@@ -220,7 +220,7 @@ const getDesignTokens = (mode) => ({
     },
     MuiDrawer: {
       defaultProps: {
-        disableScrollLock: true,
+        ModalProps: { disableScrollLock: true },
       },
       styleOverrides: {
         paper: {
@@ -262,11 +262,7 @@ const getDesignTokens = (mode) => ({
         },
       },
     },
-    MuiModal: {
-      defaultProps: {
-        disableScrollLock: true,
-      },
-    },
+
     MuiLinearProgress: {
       styleOverrides: {
         root: {
