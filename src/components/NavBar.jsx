@@ -398,7 +398,7 @@ const NavBar = () => {
         anchor="right"
         open={mobileOpen}
         onClose={() => setMobileOpen(false)}
-        disableScrollLock={true}
+        ModalProps={{ disableScrollLock: true }}
         PaperProps={{
           sx: {
             width: 300,
