@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { Container, Typography, Box, Button, Skeleton, Stack, Alert, Tooltip, Chip, useTheme, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, useMediaQuery, TextField, MenuItem, Drawer, IconButton, Snackbar } from '@mui/material';
+import { useParams } from 'react-router-dom';
+import { Container, Typography, Box, Button, Skeleton, Stack, Alert, Tooltip, Chip, useTheme, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, useMediaQuery, TextField, MenuItem, Drawer, IconButton, Snackbar, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -12,10 +12,12 @@ import FilterListIcon from '@mui/icons-material/FilterList';
 import CloseIcon from '@mui/icons-material/Close';
 import FolderZipIcon from '@mui/icons-material/FolderZip';
 import ShareIcon from '@mui/icons-material/Share';
+import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import { supabase } from '../supabaseClient';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { downloadFile, shareFile } from '../utils/nativeDownload';
+import FilePreviewDrawer from '../components/FilePreviewDrawer';
 
 const periods = ['Ιανουάριος', 'Ιούνιος', 'Σεπτέμβριος', 'Επαναληπτική'];
 
@@ -32,7 +34,6 @@ const toDisplayPeriod = (value) => periodDisplayMap[value] || value;
 
 const CourseFiles = () => {
   const { id } = useParams();
-  const navigate = useNavigate();
   const [course, setCourse] = useState(null);
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -51,6 +52,9 @@ const CourseFiles = () => {
   const isMobile = useMediaQuery('(max-width:599px)');
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const showNotification = (message, severity = 'success') => setSnackbar({ open: true, message, severity });
+  // File preview drawer
+  const [previewFile, setPreviewFile] = useState(null);
+  const [confirmDel, setConfirmDel] = useState(null); // file object for confirm dialog
 
   const yearOptions = Array.from(new Set(files.map(f => f.year))).sort((a, b) => b - a);
 
@@ -179,22 +183,10 @@ const CourseFiles = () => {
     </Stack>
   );
 
-  const handleView = (file) => {
-    const url = getCleanUrl(file.file_url);
-    const params = new URLSearchParams({
-      url,
-      name: getFilenameFromUrl(url),
-      course: course?.name || '',
-      period: toDisplayPeriod(file.period) || '',
-      year: String(file.year || ''),
-    });
-    navigate(`/viewer?${params.toString()}`);
-  };
-
   const ActionButtons = ({ file }) => (
     <Stack direction="row" spacing={0.5}>
       <Tooltip title="Προβολή">
-        <IconButton size="small" onClick={() => handleView(file)} sx={{ color: 'text.secondary', border: '1px solid', borderColor: 'divider', borderRadius: 2, '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#e8f0fe' : 'rgba(255,255,255,0.08)', color: 'primary.main' } }}>
+        <IconButton size="small" onClick={() => setPreviewFile({ ...file, period: toDisplayPeriod(file.period), course: course?.name })} sx={{ color: 'text.secondary', border: '1px solid', borderColor: 'divider', borderRadius: 2, '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#e8f0fe' : 'rgba(255,255,255,0.08)', color: 'primary.main' } }}>
           <VisibilityIcon sx={{ fontSize: 18 }} />
         </IconButton>
       </Tooltip>
@@ -217,7 +209,7 @@ const CourseFiles = () => {
       )}
       {user && isAdmin && (
         <Tooltip title="Διαγραφή">
-          <IconButton size="small" onClick={() => handleDelete(file.id, file.file_url)} sx={{ color: 'error.main', border: '1px solid', borderColor: 'divider', borderRadius: 2, '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#fce8e6' : 'rgba(211,47,47,0.15)' } }}>
+          <IconButton size="small" onClick={() => setConfirmDel(file)} sx={{ color: 'error.main', border: '1px solid', borderColor: 'divider', borderRadius: 2, '&:hover': { bgcolor: theme.palette.mode === 'light' ? '#fce8e6' : 'rgba(211,47,47,0.15)' } }}>
             <DeleteIcon sx={{ fontSize: 18 }} />
           </IconButton>
         </Tooltip>
@@ -225,12 +217,21 @@ const CourseFiles = () => {
     </Stack>
   );
 
+  const handleDeleteConfirmed = async () => {
+    if (!confirmDel) return;
+    await handleDelete(confirmDel.id, confirmDel.file_url);
+    setConfirmDel(null);
+  };
+
+  /* Navigate back helper */
+  const handleBack = () => window.history.length > 1 ? window.history.back() : window.location.assign('/courses');
+
   return (
     <Container maxWidth="md" sx={{ pt: { xs: 2, md: 5 }, pb: { xs: 12, md: 5 } }}>
       {/* Header */}
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1 }}>
         <IconButton
-          onClick={() => window.history.length > 1 ? window.history.back() : window.location.assign('/courses')}
+          onClick={handleBack}
           sx={{ color: 'text.secondary', border: '1px solid', borderColor: 'divider', borderRadius: 2.5 }}
         >
           <ArrowBackIcon sx={{ fontSize: 20 }} />
@@ -384,6 +385,34 @@ const CourseFiles = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* File Preview Drawer */}
+      <FilePreviewDrawer
+        open={Boolean(previewFile)}
+        onClose={() => setPreviewFile(null)}
+        file={previewFile}
+        uploader={previewFile ? (uploaders[previewFile.uploader] || '') : ''}
+        isAdmin={isAdmin}
+        onApprove={async (id) => { await handleApprove(id); setPreviewFile(f => f ? { ...f, approved: true } : f); }}
+        onDelete={(id, url) => { setPreviewFile(null); setConfirmDel({ id, file_url: url }); }}
+      />
+
+      {/* Confirm delete dialog */}
+      <Dialog open={Boolean(confirmDel)} onClose={() => setConfirmDel(null)} maxWidth="xs" fullWidth>
+        <DialogTitle sx={{ fontWeight: 700, pt: 2.5, fontSize: '1rem' }}>Διαγραφή Αρχείου</DialogTitle>
+        <DialogContent>
+          <Typography sx={{ color: 'text.secondary', fontSize: '0.9rem' }}>
+            Είσαι σίγουρος; Το αρχείο θα διαγραφεί οριστικά.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 3, gap: 1 }}>
+          <Button onClick={() => setConfirmDel(null)} sx={{ flex: 1, borderRadius: '10px', textTransform: 'none', fontWeight: 600 }}>Ακύρωση</Button>
+          <Button onClick={handleDeleteConfirmed} color="error" variant="contained" startIcon={<DeleteOutlineIcon />}
+            sx={{ flex: 1, borderRadius: '10px', textTransform: 'none', fontWeight: 700 }}>
+            Διαγραφή
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Container>
   );
 };
