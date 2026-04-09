@@ -33,7 +33,7 @@ const ActionBtn = ({ title, onClick, href, icon, color, disabled, loading: isLoa
         <IconButton
           size="small"
           disabled={disabled || isLoading}
-          href={href}
+          href={href || undefined}
           target={href ? '_blank' : undefined}
           rel={href ? 'noopener noreferrer' : undefined}
           onClick={!href ? onClick : undefined}
