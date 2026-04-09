@@ -99,9 +99,41 @@ export const shareFile = async (blobOrUrl, filename) => {
             }
         }
     } else {
-        // Web fallback: just download
+        // Web: try the native Web Share API first (works on mobile browsers)
+        try {
+            let blob = blobOrUrl;
+            if (typeof blobOrUrl === 'string') {
+                const response = await fetch(blobOrUrl, { mode: 'cors' });
+                if (!response.ok) throw new Error('Fetch failed');
+                blob = await response.blob();
+            }
+
+            const file = new File([blob], filename, { type: blob.type });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: filename,
+                });
+                return;
+            }
+        } catch (e) {
+            // If share was cancelled by user, don't fall back to download
+            if (e?.name === 'AbortError') return;
+            console.warn('Web Share API failed, falling back to download:', e);
+        }
+
+        // Final fallback: download
         if (typeof blobOrUrl !== 'string') {
             fallbackDownload(blobOrUrl, filename);
+        } else {
+            try {
+                const response = await fetch(blobOrUrl, { mode: 'cors' });
+                const blob = await response.blob();
+                fallbackDownload(blob, filename);
+            } catch {
+                fallbackDownload(null, filename);
+            }
         }
     }
 };
