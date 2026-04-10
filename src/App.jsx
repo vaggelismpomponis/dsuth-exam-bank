@@ -331,6 +331,13 @@ function App() {
   const navigate = useNavigate();
   const isAdminRoute = location.pathname.startsWith('/admin');
   const isAuthRoute = location.pathname === '/login' || location.pathname === '/register';
+  const isFooterlessRoute =
+    location.pathname.startsWith('/courses') ||
+    location.pathname === '/upload' ||
+    location.pathname === '/favorites' ||
+    location.pathname === '/students' ||
+    location.pathname === '/profile' ||
+    location.pathname === '/requests';
   const backPressedRef = useRef(false);
 
   // Android back button/gesture handler
@@ -427,7 +434,7 @@ function App() {
             </Routes>
           </Box>
           {isMobile && !isAdminRoute && !isAuthRoute && <BottomNav />}
-          {!isAdminRoute && !isAuthRoute && <Footer />}
+          {!isAdminRoute && !isAuthRoute && !isFooterlessRoute && <Footer />}
         </SnackbarProvider>
       </ThemeProvider>
     </ColorModeContext.Provider>
