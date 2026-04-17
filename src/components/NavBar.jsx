@@ -489,9 +489,7 @@ const NavBar = () => {
               return (
                 <ListItemButton
                   key={item.label}
-                  component={Link}
-                  to={item.to}
-                  onClick={() => setMobileOpen(false)}
+                  onClick={() => { navigate(item.to); setMobileOpen(false); }}
                   sx={{
                     borderRadius: 0,
                     mb: 0.5,
@@ -544,11 +542,9 @@ const NavBar = () => {
               </Box>
             ) : (
               <Button
-                component={Link}
-                to="/login"
                 variant="contained"
                 fullWidth
-                onClick={() => setMobileOpen(false)}
+                onClick={() => { navigate('/login'); setMobileOpen(false); }}
                 sx={{ borderRadius: 0, py: 1.2, fontWeight: 700 }}
               >
                 Είσοδος
