@@ -174,13 +174,14 @@ const Login = () => {
         <Box sx={{ width: '100%', maxWidth: 400, mx: 'auto' }}>
           {/* Mobile brand */}
           <Box sx={{ display: { xs: 'flex', md: 'none' }, alignItems: 'center', justifyContent: 'center', gap: 1.5, mb: 4 }}>
-            <Box sx={{
-              width: 36, height: 36, borderRadius: '10px',
-              background: 'linear-gradient(135deg, #1a73e8, #0052cc)',
-              display: 'flex', alignItems: 'center', justifyContent: 'center',
-            }}>
-              <Typography sx={{ color: '#fff', fontWeight: 900, fontSize: '0.8rem' }}>DS</Typography>
-            </Box>
+            <Box
+              component="img"
+              src="/favicon.png"
+              alt="DS Logo"
+              sx={{
+                width: 36, height: 36, borderRadius: 0,
+              }}
+            />
             <Typography sx={{ fontWeight: 800, fontSize: '1rem', color: 'text.primary', letterSpacing: '-0.02em' }}>
               DSUth Exam Bank
             </Typography>
