@@ -170,22 +170,17 @@ const NavBar = () => {
               }}
             >
               <Box
+                component="img"
+                src="/favicon.png"
+                alt="DS Logo"
                 sx={{
                   width: 34,
                   height: 34,
                   borderRadius: 0,
-                  background: 'linear-gradient(135deg, #1a73e8, #0052cc)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
                   flexShrink: 0,
                   boxShadow: '0 2px 8px rgba(26,115,232,0.35)',
                 }}
-              >
-                <Typography sx={{ color: '#fff', fontWeight: 900, fontSize: '0.85rem', letterSpacing: '-0.02em' }}>
-                  DS
-                </Typography>
-              </Box>
+              />
               <Typography
                 sx={{
                   fontWeight: 800,
@@ -424,18 +419,15 @@ const NavBar = () => {
           >
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
               <Box
+                component="img"
+                src="/favicon.png"
+                alt="DS Logo"
                 sx={{
                   width: 32,
                   height: 32,
                   borderRadius: 0,
-                  background: 'linear-gradient(135deg, #1a73e8, #0052cc)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
                 }}
-              >
-                <Typography sx={{ color: '#fff', fontWeight: 900, fontSize: '0.75rem' }}>DS</Typography>
-              </Box>
+              />
               <Typography sx={{ fontWeight: 800, fontSize: '0.95rem', color: 'text.primary', letterSpacing: '-0.01em' }}>
                 DSUth Exam Bank
               </Typography>

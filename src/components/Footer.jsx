@@ -55,22 +55,17 @@ const Footer = () => {
           {/* Logo + name */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
             <Box
+              component="img"
+              src="/favicon.png"
+              alt="DS Logo"
               sx={{
                 width: 38,
                 height: 38,
-                borderRadius: '12px',
-                background: 'linear-gradient(135deg, #1a73e8, #0052cc)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                borderRadius: 0,
                 boxShadow: '0 4px 12px rgba(26,115,232,0.3)',
                 flexShrink: 0,
               }}
-            >
-              <Typography sx={{ color: '#fff', fontWeight: 900, fontSize: '0.85rem', letterSpacing: '-0.02em' }}>
-                DS
-              </Typography>
-            </Box>
+            />
             <Typography sx={{ fontWeight: 800, fontSize: '1.05rem', color: 'text.primary', letterSpacing: '-0.02em' }}>
               DSUth Exam Bank
             </Typography>
