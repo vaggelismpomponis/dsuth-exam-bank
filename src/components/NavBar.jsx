@@ -25,6 +25,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { useSnackbar } from 'notistack';
 import { isUserAdmin } from '../utils/adminUtils';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import GroupIcon from '@mui/icons-material/Group';
 import PersonIcon from '@mui/icons-material/Person';
@@ -322,8 +323,8 @@ const NavBar = () => {
                       onClick={() => { navigate('/admin'); setAnchorEl(null); }}
                       sx={{ borderRadius: 0, mb: 0.25, py: 1, px: 1.5, gap: 1.5 }}
                     >
-                      <SettingsIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
-                      <Typography sx={{ fontWeight: 500, fontSize: '0.875rem', color: 'text.primary' }}>Admin</Typography>
+                      <DashboardIcon sx={{ fontSize: 18, color: 'text.secondary' }} />
+                      <Typography sx={{ fontWeight: 500, fontSize: '0.875rem', color: 'text.primary' }}>Dashboard</Typography>
                     </MenuItem>
                   )}
                   <Divider sx={{ my: 0.75 }} />
@@ -516,8 +517,28 @@ const NavBar = () => {
           {/* Bottom actions */}
           <Box sx={{ px: 2.5, mt: 'auto', pb: 3, pt: 2, borderTop: '1px solid', borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}>
             {user ? (
-              <Box
-                onClick={() => { handleLogout(); setMobileOpen(false); }}
+              <>
+                {isAdmin && (
+                  <Box
+                    onClick={() => { navigate('/admin'); setMobileOpen(false); }}
+                    sx={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 1.5,
+                      p: 1.5,
+                      mb: 1,
+                      borderRadius: 0,
+                      cursor: 'pointer',
+                      color: 'primary.main',
+                      '&:hover': { bgcolor: isDark ? 'rgba(26,115,232,0.12)' : 'rgba(26,115,232,0.08)' },
+                    }}
+                  >
+                    <DashboardIcon sx={{ fontSize: 20, color: 'inherit' }} />
+                    <Typography sx={{ fontWeight: 600, fontSize: '0.875rem', color: 'inherit' }}>Dashboard</Typography>
+                  </Box>
+                )}
+                <Box
+                  onClick={() => { handleLogout(); setMobileOpen(false); }}
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
@@ -532,6 +553,7 @@ const NavBar = () => {
                 <LogoutIcon sx={{ fontSize: 20, color: 'inherit' }} />
                 <Typography sx={{ fontWeight: 600, fontSize: '0.875rem', color: 'inherit' }}>Αποσύνδεση</Typography>
               </Box>
+              </>
             ) : (
               <Button
                 variant="contained"
