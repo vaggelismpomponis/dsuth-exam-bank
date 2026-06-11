@@ -597,6 +597,7 @@ function FileCard({ file, idx, semColor, isDark, isAdmin, user, course, onPrevie
 
   return (
     <Box
+      onClick={onPreview}
       sx={{
         p: { xs: '14px 16px', sm: '16px 20px' },
         borderRadius: '16px',
@@ -609,6 +610,7 @@ function FileCard({ file, idx, semColor, isDark, isAdmin, user, course, onPrevie
         transition: 'all 0.22s ease',
         position: 'relative',
         overflow: 'hidden',
+        cursor: 'pointer',
         animation: 'fadeInUp 0.4s ease both',
         animationDelay: `${0.04 + idx * 0.04}s`,
         '&::before': {
@@ -682,7 +684,7 @@ function FileCard({ file, idx, semColor, isDark, isAdmin, user, course, onPrevie
       </Box>
 
       {/* Actions */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
+      <Box onClick={e => e.stopPropagation()} sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
         <ActionBtn title="Προβολή" onClick={onPreview} color={semColor} isDark={isDark}>
           <VisibilityRoundedIcon sx={{ fontSize: 17 }} />
         </ActionBtn>
