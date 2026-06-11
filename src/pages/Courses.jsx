@@ -9,6 +9,7 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import { cachedQuery } from '../lib/queryCache';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
@@ -46,31 +47,46 @@ const Courses = () => {
   }, []);
 
   useEffect(() => {
-    const fetchCourses = async () => {
+    const fetchAll = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('courses')
-        .select('*')
-        .order('semester, name', { ascending: true });
-      if (!error && data) setCourses(data);
+
+      // Both queries run in parallel and are cached independently.
+      // Courses: 10-minute TTL (course list almost never changes).
+      // Exam counts: 5-minute TTL (new uploads approved a few times a day at most).
+      const [coursesData, examsRaw] = await Promise.all([
+        cachedQuery(
+          'courses:list',
+          async () => {
+            const { data } = await supabase
+              .from('courses')
+              .select('*')
+              .order('semester, name', { ascending: true });
+            return data ?? [];
+          },
+          10 * 60 * 1000
+        ),
+        cachedQuery(
+          'exams:counts',
+          async () => {
+            const { data } = await supabase
+              .from('exams')
+              .select('course, id')
+              .eq('approved', true);
+            return data ?? [];
+          },
+          5 * 60 * 1000
+        ),
+      ]);
+
+      setCourses(coursesData);
+
+      const counts = {};
+      examsRaw.forEach(e => { counts[e.course] = (counts[e.course] || 0) + 1; });
+      setExamCounts(counts);
+
       setLoading(false);
     };
-    fetchCourses();
-  }, []);
-
-  useEffect(() => {
-    const fetchExamCounts = async () => {
-      const { data, error } = await supabase
-        .from('exams')
-        .select('course, id', { count: 'exact', head: false })
-        .eq('approved', true);
-      if (!error && data) {
-        const counts = {};
-        data.forEach(e => { counts[e.course] = (counts[e.course] || 0) + 1; });
-        setExamCounts(counts);
-      }
-    };
-    fetchExamCounts();
+    fetchAll();
   }, []);
 
   useEffect(() => {

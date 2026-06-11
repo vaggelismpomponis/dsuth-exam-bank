@@ -78,7 +78,7 @@ const Requests = () => {
     const payload = { request_id: activeRequest.id, responder: user?.id || null, message: replyMessage?.trim() || null, file_url: null };
     if (replyFile) {
       const path = `requests/${activeRequest.id}/${replyFile.name}`;
-      const { error: upErr } = await supabase.storage.from('exams').upload(path, replyFile, { upsert: true, contentType: replyFile.type || 'application/octet-stream' });
+      const { error: upErr } = await supabase.storage.from('exams').upload(path, replyFile, { upsert: true, contentType: replyFile.type || 'application/octet-stream', cacheControl: '604800' });
       if (upErr) { setError('Αποτυχία ανεβάσματος αρχείου'); return; }
       const { data: pub } = supabase.storage.from('exams').getPublicUrl(path);
       payload.file_url = pub?.publicUrl || null;

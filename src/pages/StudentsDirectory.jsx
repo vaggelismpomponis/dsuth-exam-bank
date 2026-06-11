@@ -9,6 +9,7 @@ import PeopleAltOutlinedIcon from '@mui/icons-material/PeopleAltOutlined';
 import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
 import PersonSearchOutlinedIcon from '@mui/icons-material/PersonSearchOutlined';
 import { supabase } from '../supabaseClient';
+import { cachedQuery } from '../lib/queryCache';
 import { useNavigate } from 'react-router-dom';
 
 /* ── avatar palette – cycles through vibrant hues ── */
@@ -144,14 +145,22 @@ const StudentsDirectory = () => {
     });
 
     const fetchStudents = async () => {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, first_name, last_name, role')
-        .eq('role', 'student')
-        .order('last_name', { ascending: true });
+      // Cache for 10 minutes — student list changes only when new users register
+      const data = await cachedQuery(
+        'students:directory',
+        async () => {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('id, first_name, last_name, role')
+            .eq('role', 'student')
+            .order('last_name', { ascending: true });
+          return error ? [] : (data ?? []);
+        },
+        10 * 60 * 1000
+      );
 
       if (!ignore) {
-        if (!error && data) setStudents(data);
+        setStudents(data);
         setLoading(false);
       }
     };

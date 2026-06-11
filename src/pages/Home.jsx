@@ -4,6 +4,7 @@ import {
 } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import { supabase } from '../supabaseClient';
+import { cachedQuery } from '../lib/queryCache';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -78,13 +79,21 @@ const Home = () => {
   useEffect(() => {
     const fetchExams = async () => {
       setLoading(true);
-      const { data, error } = await supabase
-        .from('exams')
-        .select('*')
-        .eq('approved', true)
-        .order('created_at', { ascending: false })
-        .limit(6);
-      if (!error) setExams(data);
+      // Cache for 5 minutes — home page recent exams change infrequently
+      const data = await cachedQuery(
+        'home:recent-exams',
+        async () => {
+          const { data, error } = await supabase
+            .from('exams')
+            .select('*')
+            .eq('approved', true)
+            .order('created_at', { ascending: false })
+            .limit(6);
+          return error ? [] : (data ?? []);
+        },
+        5 * 60 * 1000
+      );
+      setExams(data);
       setLoading(false);
     };
     fetchExams();
