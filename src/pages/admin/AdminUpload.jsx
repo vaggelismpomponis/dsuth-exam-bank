@@ -101,7 +101,8 @@ const AdminUpload = () => {
     for (let i = 0; i < files.length; i++) {
       const f    = files[i];
       const name = `${greekToLatin(course)}_${year}_${greekToLatin(period)}_${i+1}_${Date.now()}.pdf`;
-      const { error: se } = await supabase.storage.from('exams').upload(name, f);
+      // cacheControl: 7 days — CDN caches the file so repeat downloads don't hit Storage
+      const { error: se } = await supabase.storage.from('exams').upload(name, f, { cacheControl: '604800' });
       if (se) { rs.push({ name: f.name, ok: false, msg: se.message }); continue; }
       const { data: { publicUrl } } = supabase.storage.from('exams').getPublicUrl(name);
       const { error: de } = await supabase.from('exams').insert([{

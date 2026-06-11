@@ -21,6 +21,7 @@ import CalendarTodayRoundedIcon from '@mui/icons-material/CalendarTodayRounded';
 import EventRoundedIcon from '@mui/icons-material/EventRounded';
 import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
 import { supabase } from '../supabaseClient';
+import { cachedQuery, invalidateCacheByPrefix } from '../lib/queryCache';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { downloadFile, shareFile } from '../utils/nativeDownload';
@@ -112,29 +113,77 @@ const CourseFiles = () => {
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true); setError('');
-      const { data: courseData, error: courseError } = await supabase.from('courses').select('*').eq('id', id).single();
-      if (courseError) { setError('Σφάλμα ανάκτησης μαθήματος'); setLoading(false); return; }
+
+      // Course details — 15-minute TTL (course metadata almost never changes)
+      let courseData;
+      try {
+        courseData = await cachedQuery(
+          `course:${id}`,
+          async () => {
+            const { data, error } = await supabase
+              .from('courses').select('*').eq('id', id).single();
+            if (error) throw error;
+            return data;
+          },
+          15 * 60 * 1000
+        );
+      } catch {
+        setError('Σφάλμα ανάκτησης μαθήματος'); setLoading(false); return;
+      }
       setCourse(courseData);
-      let query = supabase.from('exams').select('*').eq('course', courseData.name).order('created_at', { ascending: false });
-      if (!user || !isAdmin) query = query.eq('approved', true);
-      const { data: filesData, error: filesError } = await query;
-      if (filesError) { setError('Σφάλμα ανάκτησης αρχείων'); setLoading(false); return; }
+
+      // Exams list — cached for non-admins only (5-minute TTL).
+      // Admins always get a live query so they can see pending/unapproved files.
+      let filesData;
+      try {
+        filesData = await cachedQuery(
+          isAdmin ? null : `exams:course:${id}`,
+          async () => {
+            let query = supabase
+              .from('exams')
+              .select('*')
+              .eq('course', courseData.name)
+              .order('created_at', { ascending: false });
+            if (!isAdmin) query = query.eq('approved', true);
+            const { data, error } = await query;
+            if (error) throw error;
+            return data ?? [];
+          },
+          5 * 60 * 1000
+        );
+      } catch {
+        setError('Σφάλμα ανάκτησης αρχείων'); setLoading(false); return;
+      }
       setFiles(filesData);
+
+      // Uploader profile names — 30-minute TTL (names basically never change)
       const uploaderIds = [...new Set((filesData || []).map(f => f.uploader).filter(Boolean))];
       if (uploaderIds.length > 0) {
-        const { data: uploaderProfiles } = await supabase.from('profiles').select('id,first_name,last_name,email').in('id', uploaderIds);
-        if (uploaderProfiles) {
-          const map = {};
-          uploaderProfiles.forEach(u => {
-            map[u.id] = (u.first_name || u.last_name) ? `${u.first_name || ''} ${u.last_name || ''}`.trim() : (u.email || u.id);
-          });
-          setUploaders(map);
-        }
+        const cacheKey = `profiles:uploaders:${uploaderIds.slice().sort().join(',')}`;
+        const uploaderProfiles = await cachedQuery(
+          cacheKey,
+          async () => {
+            const { data } = await supabase
+              .from('profiles')
+              .select('id,first_name,last_name,email')
+              .in('id', uploaderIds);
+            return data ?? [];
+          },
+          30 * 60 * 1000
+        );
+        const map = {};
+        uploaderProfiles.forEach(u => {
+          map[u.id] = (u.first_name || u.last_name)
+            ? `${u.first_name || ''} ${u.last_name || ''}`.trim()
+            : (u.email || u.id);
+        });
+        setUploaders(map);
       }
+
       setLoading(false);
     };
     fetchData();
-  }, [id, user]);
+  }, [id, user, isAdmin]);
 
   useEffect(() => { window.scrollTo(0, 0); }, [id]);
   useEffect(() => { if (!loading) window.scrollTo(0, 0); }, [loading]);
@@ -144,7 +193,14 @@ const CourseFiles = () => {
     setError(''); setSuccess('');
     const { error } = await supabase.from('exams').update({ approved: true }).eq('id', fileId);
     if (error) setError('Σφάλμα έγκρισης: ' + error.message);
-    else { setSuccess('Εγκρίθηκε!'); setFiles(files => files.map(f => f.id === fileId ? { ...f, approved: true } : f)); }
+    else {
+      setSuccess('Εγκρίθηκε!');
+      setFiles(files => files.map(f => f.id === fileId ? { ...f, approved: true } : f));
+      // Bust the cached exam list and counts so other users see the newly approved file
+      invalidateCacheByPrefix(`exams:course:${id}`);
+      invalidateCacheByPrefix('exams:counts');
+      invalidateCacheByPrefix('home:recent-exams');
+    }
   };
 
   const handleDelete = async (fileId, file_url) => {
@@ -153,7 +209,14 @@ const CourseFiles = () => {
     if (filePath) await supabase.storage.from('exams').remove([filePath]);
     const { error } = await supabase.from('exams').delete().eq('id', fileId);
     if (error) setError('Σφάλμα διαγραφής: ' + error.message);
-    else { setSuccess('Διαγράφηκε!'); setFiles(files => files.filter(f => f.id !== fileId)); }
+    else {
+      setSuccess('Διαγράφηκε!');
+      setFiles(files => files.filter(f => f.id !== fileId));
+      // Bust the cached exam list and counts so deletions propagate to other users
+      invalidateCacheByPrefix(`exams:course:${id}`);
+      invalidateCacheByPrefix('exams:counts');
+      invalidateCacheByPrefix('home:recent-exams');
+    }
   };
 
   const handleDownloadAll = async () => {

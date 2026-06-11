@@ -130,7 +130,11 @@ const Upload = () => {
     } catch (err) {
       renamedFile = file;
     }
-    const { data: storageData, error: storageError } = await supabase.storage.from('exams').upload(fileName, renamedFile);
+    // cacheControl: 7 days — Supabase CDN will serve repeat downloads from edge cache
+    // instead of re-fetching from storage disk on every request. This directly reduces Cached Egress.
+    const { data: storageData, error: storageError } = await supabase.storage
+      .from('exams')
+      .upload(fileName, renamedFile, { cacheControl: '604800' });
     if (storageError) {
       setError('Σφάλμα στο ανέβασμα: ' + storageError.message);
       setLoading(false);
