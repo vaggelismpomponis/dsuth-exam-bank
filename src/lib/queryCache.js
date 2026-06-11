@@ -10,11 +10,49 @@
  *
  *   const data = await cachedQuery('my-key', () => supabase.from(...), 5 * 60 * 1000);
  *   invalidateCache('my-key'); // call after mutations (upload, approve, delete)
+ *
+ * ── Exam-Season Mode ──────────────────────────────────────────────────────────
+ * During peak traffic periods (exam seasons), data changes even less frequently
+ * than usual (admins rarely upload mid-exam). We automatically detect these
+ * windows and multiply all TTLs by EXAM_SEASON_MULTIPLIER (6×), so a 5-minute
+ * cache becomes 30 minutes and a 10-minute cache becomes 60 minutes.
+ *
+ * Greek university exam seasons:
+ *   • January / February   (winter exams)
+ *   • May / June           (spring exams)
+ *   • September            (resit exams)
+ * ─────────────────────────────────────────────────────────────────────────────
  */
 
 const memCache = new Map();
 
 const SESSION_PREFIX = 'sqcache:';
+
+/** Months (0-indexed) that are considered exam-season peak periods. */
+const EXAM_SEASON_MONTHS = new Set([0, 1, 4, 5, 8]); // Jan, Feb, May, Jun, Sep
+
+/** How much to multiply TTLs by during exam season (6× = 5 min → 30 min, 10 min → 60 min) */
+const EXAM_SEASON_MULTIPLIER = 6;
+
+/**
+ * Returns true if today falls within a known exam-season peak window.
+ * Result is memoized for the lifetime of the page (recalculates on reload).
+ */
+let _examSeasonCached = null;
+export function isExamSeason() {
+  if (_examSeasonCached !== null) return _examSeasonCached;
+  const month = new Date().getMonth(); // 0 = January
+  _examSeasonCached = EXAM_SEASON_MONTHS.has(month);
+  return _examSeasonCached;
+}
+
+/**
+ * Returns the effective TTL to use for a cache entry.
+ * During exam season, TTLs are multiplied by EXAM_SEASON_MULTIPLIER.
+ */
+function effectiveTtl(baseTtlMs) {
+  return isExamSeason() ? baseTtlMs * EXAM_SEASON_MULTIPLIER : baseTtlMs;
+}
 
 /**
  * Fetch data with TTL-based caching.
@@ -29,11 +67,13 @@ export async function cachedQuery(key, queryFn, ttlMs = 5 * 60 * 1000) {
   if (!key) return queryFn();
 
   const now = Date.now();
+  // Apply exam-season multiplier: during peak periods TTLs are 6× longer
+  const ttl = effectiveTtl(ttlMs);
 
   // ── Layer 1: memory cache (fastest, zero serialization cost) ──
   if (memCache.has(key)) {
     const { data, ts } = memCache.get(key);
-    if (now - ts < ttlMs) return data;
+    if (now - ts < ttl) return data;
     memCache.delete(key); // expired
   }
 
@@ -42,7 +82,7 @@ export async function cachedQuery(key, queryFn, ttlMs = 5 * 60 * 1000) {
     const raw = sessionStorage.getItem(SESSION_PREFIX + key);
     if (raw) {
       const { data, ts } = JSON.parse(raw);
-      if (now - ts < ttlMs) {
+      if (now - ts < ttl) {
         memCache.set(key, { data, ts }); // warm the memory layer
         return data;
       }

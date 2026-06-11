@@ -18,6 +18,7 @@ import DoneIcon from '@mui/icons-material/Done';
 import { Capacitor } from '@capacitor/core';
 import { downloadFile, shareFile } from '../utils/nativeDownload';
 import PdfPreview from './PdfPreview';
+import { trackEvent } from '../lib/analytics';
 
 /* ─── helpers ─── */
 const getExt = (url = '') => url.split('/').pop().split('?')[0].split('.').pop().toLowerCase();
@@ -121,12 +122,14 @@ const FilePreviewDrawer = ({
       notify('Γίνεται λήψη...', 'info');
       await downloadFile(url, filename);
       notify('Αρχείο αποθηκεύτηκε!', 'success');
+      // Track download from drawer
+      trackEvent('download', { courseId: file?.courseId, examId: file?.id, filename });
     } catch {
       notify('Αποτυχία λήψης!', 'error');
     } finally {
       setDlLoading(false);
     }
-  }, [url, filename]);
+  }, [url, filename, file]);
 
   const handleShare = useCallback(async () => {
     if (!url) return;

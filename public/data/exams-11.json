@@ -1,0 +1,20 @@
+[
+  {
+    "id": "f4c2e8cc-48a8-46d6-b281-563d8a8aa8ce",
+    "course": "Εισαγωγή στον Προγραμματισμό",
+    "year": 2024,
+    "period": "Ιανουάριος",
+    "created_at": "2025-09-15T18:01:43.733733+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/EisagogistonProgrammatismo_2024_Ianoyarios_Themata_2.pdf",
+    "uploader": "677b685b-b6a0-422c-b2da-eb0d8f6a126b"
+  },
+  {
+    "id": "cb3be935-791f-4caa-8316-bcce9b3dba88",
+    "course": "Εισαγωγή στον Προγραμματισμό",
+    "year": 2024,
+    "period": "Ιανουάριος",
+    "created_at": "2025-09-15T18:00:20.186303+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/EisagogistonProgrammatismo_2024_Ianoyarios_Themata.pdf",
+    "uploader": "677b685b-b6a0-422c-b2da-eb0d8f6a126b"
+  }
+]

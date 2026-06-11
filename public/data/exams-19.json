@@ -1,0 +1,65 @@
+[
+  {
+    "id": "669d1a3d-2019-485a-aa3e-64e804310678",
+    "course": "Ανάλυση και Σχεδίαση Συστημάτων",
+    "year": 2026,
+    "period": "Ιούνιος",
+    "created_at": "2026-06-09T14:06:59.416754+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/AnalysikaiSchediasiSystimaton_2026_Ioynios_1_1781014023022.pdf",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+  },
+  {
+    "id": "783fdcd0-cafd-4766-8d5b-7c6f9330fc50",
+    "course": "Ανάλυση και Σχεδίαση Συστημάτων",
+    "year": 2026,
+    "period": "Ιούνιος",
+    "created_at": "2026-06-09T14:03:10.3167+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/AnalysikaiSchediasiSystimaton_2026_Ioynios_2_1781013793752.pdf",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+  },
+  {
+    "id": "e81d7dee-8c3d-4da6-a5b1-6e07ab2725f0",
+    "course": "Ανάλυση και Σχεδίαση Συστημάτων",
+    "year": 2026,
+    "period": "Ιούνιος",
+    "created_at": "2026-06-09T14:03:09.18445+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/AnalysikaiSchediasiSystimaton_2026_Ioynios_1_1781013792813.pdf",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+  },
+  {
+    "id": "9e3580ac-1891-466f-b2cb-20caa2bbe2b5",
+    "course": "Ανάλυση και Σχεδίαση Συστημάτων",
+    "year": 2025,
+    "period": "Σεπτέμβριος",
+    "created_at": "2026-06-08T09:13:51.758361+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/AnalysikaiSchediasiSystimaton_2025_Septemvrios_Themata.pdf",
+    "uploader": "d21f3644-339b-4a8e-8df3-c0decc3fd7ea"
+  },
+  {
+    "id": "c85b7802-1842-4d72-b141-bbdfdd37d072",
+    "course": "Ανάλυση και Σχεδίαση Συστημάτων",
+    "year": 2025,
+    "period": "Ιούνιος",
+    "created_at": "2025-11-11T17:10:29.527448+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/AnalysikaiSchediasiSystimaton_2025_Ioynios_Themata.pdf",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "991fb655-9571-4aac-b786-2998a91739bf",
+    "course": "Ανάλυση και Σχεδίαση Συστημάτων",
+    "year": 2022,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:26:30.097087+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/AnalisiSxediastSystimaton_2022_Earino_Themata_B.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "7095912d-8457-40f7-a11e-0793d1f44791",
+    "course": "Ανάλυση και Σχεδίαση Συστημάτων",
+    "year": 2022,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:26:28.540263+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/AnalisiSxediastSystimaton_2022_Earino_Themata_A.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  }
+]

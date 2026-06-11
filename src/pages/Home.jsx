@@ -5,6 +5,7 @@ import {
 import DescriptionIcon from '@mui/icons-material/Description';
 import { supabase } from '../supabaseClient';
 import { cachedQuery } from '../lib/queryCache';
+import { withStaticFallback } from '../lib/staticData';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
@@ -79,18 +80,23 @@ const Home = () => {
   useEffect(() => {
     const fetchExams = async () => {
       setLoading(true);
-      // Cache for 5 minutes — home page recent exams change infrequently
+      // 1st priority: pre-generated static JSON from CDN (zero Supabase egress)
+      // 2nd priority: browser sessionStorage/memory cache (5 min base TTL, 30 min in exam season)
+      // 3rd priority: live Supabase query
       const data = await cachedQuery(
         'home:recent-exams',
-        async () => {
-          const { data, error } = await supabase
-            .from('exams')
-            .select('*')
-            .eq('approved', true)
-            .order('created_at', { ascending: false })
-            .limit(6);
-          return error ? [] : (data ?? []);
-        },
+        () => withStaticFallback(
+          '/data/recent-exams.json',
+          async () => {
+            const { data, error } = await supabase
+              .from('exams')
+              .select('*')
+              .eq('approved', true)
+              .order('created_at', { ascending: false })
+              .limit(6);
+            return error ? [] : (data ?? []);
+          }
+        ),
         5 * 60 * 1000
       );
       setExams(data);

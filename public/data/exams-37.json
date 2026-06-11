@@ -1,0 +1,20 @@
+[
+  {
+    "id": "f73662cc-3cde-4918-b784-a4dc2d9fdc53",
+    "course": "Παράλληλα και Κατανεμημένα Συστήματα",
+    "year": 2026,
+    "period": "Ιανουάριος",
+    "created_at": "2026-01-26T08:30:43.531229+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/ParallilakaiKatanemimenaSystimata_2026_Ianoyarios_Themata.jpeg",
+    "uploader": "b6fba071-9fa7-4f08-8b35-5c0224c10fed"
+  },
+  {
+    "id": "33d8179a-cb14-4f0e-a18b-089453ff9ef3",
+    "course": "Παράλληλα και Κατανεμημένα Συστήματα",
+    "year": 2025,
+    "period": "Επαναληπτική",
+    "created_at": "2025-12-12T08:16:28.859064+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/ParallilakaiKatanemimenaSystimata_2025_Epanaliptiki_Themata.jpeg",
+    "uploader": "b6fba071-9fa7-4f08-8b35-5c0224c10fed"
+  }
+]

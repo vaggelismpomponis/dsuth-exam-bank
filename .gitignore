@@ -124,6 +124,8 @@ playwright/.cache/
 # Sensitive files
 notes.txt
 scripts/
+!scripts/prebuild-static-data.js
 
 #Instructions
 Instructions.md
+caching-exam.md

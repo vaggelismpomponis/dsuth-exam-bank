@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Container, Typography, Box, Button, TextField, MenuItem, Alert, CircularProgress, Stack, Skeleton, IconButton, Tooltip, Paper, Autocomplete, useMediaQuery, useTheme } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
+import { trackEvent } from '../lib/analytics';
 import UploadFileIcon from '@mui/icons-material/UploadFile';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
@@ -149,6 +150,11 @@ const Upload = () => {
       setLoading(false);
       return;
     }
+    
+    // Log the upload event with resolved course ID
+    const courseObj = courses.find(c => c.name === course);
+    trackEvent('upload', { courseId: courseObj?.id, courseName: course, year: parseInt(year), period });
+
     setSuccess('Το αρχείο ανέβηκε με επιτυχία!');
     enqueueSnackbar('Το αρχείο ανέβηκε με επιτυχία!', { variant: 'success' });
     setCourse(''); setYear(''); setPeriod(''); setFile(null);

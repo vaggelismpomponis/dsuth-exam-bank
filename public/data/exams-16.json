@@ -1,0 +1,65 @@
+[
+  {
+    "id": "46c07ee0-f808-4fda-bb58-99cecd133b31",
+    "course": "Πιθανότητες και Στατιστική",
+    "year": 2025,
+    "period": "Ιούνιος",
+    "created_at": "2025-08-26T12:12:24.330617+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PithanotiteskaiStatistiki_2025_Ioynios_Themata_1.pdf",
+    "uploader": "7106ee55-d9d1-466c-865c-d0627cc3dbde"
+  },
+  {
+    "id": "300c93d6-6fc3-4a1c-8c20-e0f7eac6c1b6",
+    "course": "Πιθανότητες και Στατιστική",
+    "year": 2025,
+    "period": "Ιούνιος",
+    "created_at": "2025-08-14T08:17:53.486772+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PithanotiteskaiStatistiki_2025_Ioynios_Themata.pdf",
+    "uploader": "a792b8d5-97f0-4a90-a16c-98761ceecc4c"
+  },
+  {
+    "id": "59e0c7d5-7add-4e73-bf51-84fa909ff746",
+    "course": "Πιθανότητες και Στατιστική",
+    "year": 2024,
+    "period": "Proodos",
+    "created_at": "2025-07-03T14:29:29.302621+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PithanotitesStatistiki_2024_Proodos_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "cfc6faf7-1cba-4bbc-8937-f3162cdf201d",
+    "course": "Πιθανότητες και Στατιστική",
+    "year": 2024,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:29:26.503944+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PithanotitesStatistiki_2024_Earino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "47f81f83-737b-4eab-aaed-9370c464678a",
+    "course": "Πιθανότητες και Στατιστική",
+    "year": 2023,
+    "period": "Epanaliptiki",
+    "created_at": "2025-07-03T14:29:25.609946+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PithanotitesStatistiki_2023_Epanaliptiki_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "dfa7d0e2-7eec-451c-bf20-2d2bd990d47d",
+    "course": "Πιθανότητες και Στατιστική",
+    "year": 2023,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:29:24.753893+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PithanotitesStatistiki_2023_Earino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "e7c136ef-ae5b-4bd7-ac9b-28235139abfb",
+    "course": "Πιθανότητες και Στατιστική",
+    "year": 2022,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:29:23.738961+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PithanotitesStatistiki_2022_Earino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  }
+]

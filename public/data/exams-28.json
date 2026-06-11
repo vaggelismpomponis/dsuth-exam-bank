@@ -1,0 +1,38 @@
+[
+  {
+    "id": "867a6a99-7f6d-413c-9d92-7c3c02f6a01d",
+    "course": "Ψηφιακή Επεξεργασία Σήματος",
+    "year": 2025,
+    "period": "Σεπτέμβριος",
+    "created_at": "2025-09-15T16:45:21.132106+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakiEpexergasiaSimatos_2025_Septemvrios_Themata.png",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+  },
+  {
+    "id": "98e8eb02-4ed9-45cd-ab2f-ddcc5524a5d1",
+    "course": "Ψηφιακή Επεξεργασία Σήματος",
+    "year": 2024,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:29:56.402162+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakiEpeksergasiaSimatos_2024_Earino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "cd5fb61b-3f4f-4bf4-8104-cae1022e9d67",
+    "course": "Ψηφιακή Επεξεργασία Σήματος",
+    "year": 2023,
+    "period": "Epanaliptiki",
+    "created_at": "2025-07-03T14:29:53.973483+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakiEpeksergasiaSimatos_2023_Epanaliptiki_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "bffea075-78a1-4f48-a7d6-facad7e8fa33",
+    "course": "Ψηφιακή Επεξεργασία Σήματος",
+    "year": 2023,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:29:52.920051+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakiEpeksergasiaSimatos_2023_Earino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  }
+]

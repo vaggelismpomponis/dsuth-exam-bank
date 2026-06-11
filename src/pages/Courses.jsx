@@ -10,6 +10,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import { useNavigate, Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { cachedQuery } from '../lib/queryCache';
+import { withStaticFallback } from '../lib/staticData';
 import SearchIcon from '@mui/icons-material/Search';
 import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
 import MenuBookRoundedIcon from '@mui/icons-material/MenuBookRounded';
@@ -56,32 +57,45 @@ const Courses = () => {
       const [coursesData, examsRaw] = await Promise.all([
         cachedQuery(
           'courses:list',
-          async () => {
-            const { data } = await supabase
-              .from('courses')
-              .select('*')
-              .order('semester, name', { ascending: true });
-            return data ?? [];
-          },
+          () => withStaticFallback(
+            '/data/courses.json',
+            async () => {
+              const { data } = await supabase
+                .from('courses')
+                .select('*')
+                .order('semester, name', { ascending: true });
+              return data ?? [];
+            }
+          ),
           10 * 60 * 1000
         ),
         cachedQuery(
           'exams:counts',
-          async () => {
-            const { data } = await supabase
-              .from('exams')
-              .select('course, id')
-              .eq('approved', true);
-            return data ?? [];
-          },
+          () => withStaticFallback(
+            '/data/exams-counts.json',
+            async () => {
+              const { data } = await supabase
+                .from('exams')
+                .select('course, id')
+                .eq('approved', true);
+              return data ?? [];
+            }
+          ),
           5 * 60 * 1000
         ),
       ]);
 
       setCourses(coursesData);
 
-      const counts = {};
-      examsRaw.forEach(e => { counts[e.course] = (counts[e.course] || 0) + 1; });
+      // exams-counts.json is already a { courseName: count } map from the prebuild script.
+      // The live Supabase fallback returns an array of { course, id } rows — re-aggregate those.
+      let counts;
+      if (Array.isArray(examsRaw)) {
+        counts = {};
+        examsRaw.forEach(e => { counts[e.course] = (counts[e.course] || 0) + 1; });
+      } else {
+        counts = examsRaw; // already a map from static JSON
+      }
       setExamCounts(counts);
 
       setLoading(false);

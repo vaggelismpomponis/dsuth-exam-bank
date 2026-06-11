@@ -1,0 +1,20 @@
+[
+  {
+    "id": "3cf5ded3-2f45-4cb7-bc15-e3dbeb1b4d8b",
+    "course": "Πληροφοριακά Συστήματα Διοίκησης",
+    "year": 2025,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:29:33.516613+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PlirforSysDioikisis_2025_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "7b950f6f-c1ea-4304-af4c-ca16d52781ff",
+    "course": "Πληροφοριακά Συστήματα Διοίκησης",
+    "year": 2024,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:29:30.242283+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PlirforSysDioikisis_2024_Xeimerino_Themata_A.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  }
+]

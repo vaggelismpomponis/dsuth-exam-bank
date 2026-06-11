@@ -1,0 +1,65 @@
+[
+  {
+    "id": "6df1eb90-e871-403b-9594-2c73c30f36c1",
+    "course": "Δομές Δεδομένων",
+    "year": 2026,
+    "period": "Ιανουάριος",
+    "created_at": "2026-02-05T12:47:30.648043+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DomesDedomenon_2026_Ianoyarios_Themata.jpeg",
+    "uploader": "7106ee55-d9d1-466c-865c-d0627cc3dbde"
+  },
+  {
+    "id": "a665e3a2-9fbe-4a62-8f75-a5a1ca417a83",
+    "course": "Δομές Δεδομένων",
+    "year": 2025,
+    "period": "Σεπτέμβριος",
+    "created_at": "2025-09-12T09:29:22.695391+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DomesDedomenon_2025_Septemvrios_Themata_2.jpg",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+  },
+  {
+    "id": "6cd7d67c-fe7a-4acc-bd87-5e15c1d4781c",
+    "course": "Δομές Δεδομένων",
+    "year": 2025,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:28:13.220757+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DomesDedomenon_2025_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "bac2cf50-3ba1-4b0e-8311-b7555805818a",
+    "course": "Δομές Δεδομένων",
+    "year": 2024,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:28:08.698013+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DomesDedomenon_2024_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "13171f03-f7a1-4b03-9f24-ea9aab7f3fb8",
+    "course": "Δομές Δεδομένων",
+    "year": 2024,
+    "period": "Epanaliptiki",
+    "created_at": "2025-07-03T14:28:08.202769+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DomesDedomenon_2024_Epanaliptiki_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "17395584-44bf-446c-813d-592bffbf6e04",
+    "course": "Δομές Δεδομένων",
+    "year": 2023,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:28:04.774999+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DomesDedomenon_2023_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "764c0ff6-6887-4c90-abfb-f300b4545d05",
+    "course": "Δομές Δεδομένων",
+    "year": 2023,
+    "period": "Epanaliptiki",
+    "created_at": "2025-07-03T14:28:03.932187+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DomesDedomenon_2023_Epanaliptiki_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  }
+]

@@ -1,0 +1,56 @@
+[
+  {
+    "id": "b1f643b1-26c9-41dd-9052-44422b100f1f",
+    "course": "Ψηφιακά Τηλεπικοινωνιακά Συστήματα",
+    "year": 2026,
+    "period": "Ιανουάριος",
+    "created_at": "2026-01-27T17:21:41.288769+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakaTilepikoinoniakaSystimata_2026_Ianoyarios_Themata_1.pdf",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "77abcc33-2ae7-4ac0-9f7a-de0f45a9a336",
+    "course": "Ψηφιακά Τηλεπικοινωνιακά Συστήματα",
+    "year": 2025,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:29:51.807189+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakaTilepSys_2025_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "1488c59d-598d-430a-9794-bf0bcb037946",
+    "course": "Ψηφιακά Τηλεπικοινωνιακά Συστήματα",
+    "year": 2024,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:29:44.16465+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakaTilepSys_2024_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "99668c3d-2ff7-4fcf-b546-be5928bd9622",
+    "course": "Ψηφιακά Τηλεπικοινωνιακά Συστήματα",
+    "year": 2024,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:29:43.127863+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakaTilepSys_2024_Earino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "27362652-2a38-429d-9400-ea39d4715eef",
+    "course": "Ψηφιακά Τηλεπικοινωνιακά Συστήματα",
+    "year": 2022,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:29:40.951085+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakaTilepSys_2022_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "8074611e-36f3-482c-932f-b62781e9d8dc",
+    "course": "Ψηφιακά Τηλεπικοινωνιακά Συστήματα",
+    "year": 2022,
+    "period": "Epanaliptiki",
+    "created_at": "2025-07-03T14:29:39.984695+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakaTilepSys_2022_Epanaliptiki_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  }
+]

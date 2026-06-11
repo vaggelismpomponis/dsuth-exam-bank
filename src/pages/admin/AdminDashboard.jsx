@@ -4,49 +4,51 @@ import {
   Box, Drawer, ListItemButton, Divider, Typography, Avatar,
   Tooltip, Chip, IconButton, Button, useTheme, useMediaQuery, alpha,
 } from "@mui/material";
-import MenuIcon         from "@mui/icons-material/Menu";
-import CloseIcon        from "@mui/icons-material/Close";
-import FolderOpenIcon   from "@mui/icons-material/FolderOpen";
-import PeopleAltIcon    from "@mui/icons-material/PeopleAlt";
-import HomeIcon         from "@mui/icons-material/Home";
-import MenuBookIcon     from "@mui/icons-material/MenuBook";
-import CloudUploadIcon  from "@mui/icons-material/CloudUpload";
-import HelpOutlineIcon  from "@mui/icons-material/HelpOutline";
+import MenuIcon from "@mui/icons-material/Menu";
+import CloseIcon from "@mui/icons-material/Close";
+import FolderOpenIcon from "@mui/icons-material/FolderOpen";
+import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
+import HomeIcon from "@mui/icons-material/Home";
+import MenuBookIcon from "@mui/icons-material/MenuBook";
+import CloudUploadIcon from "@mui/icons-material/CloudUpload";
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
-import DashboardIcon    from "@mui/icons-material/Dashboard";
+import DashboardIcon from "@mui/icons-material/Dashboard";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import PeopleIcon       from "@mui/icons-material/People";
+import PeopleIcon from "@mui/icons-material/People";
 import HourglassTopIcon from "@mui/icons-material/HourglassTop";
 import MarkEmailUnreadIcon from "@mui/icons-material/MarkEmailUnread";
 import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ChevronLeftIcon  from "@mui/icons-material/ChevronLeft";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import BarChartIcon from "@mui/icons-material/BarChart";
 
 import { supabase } from "../../supabaseClient";
 import { AdminSidebarContext } from "../../context/AdminSidebarContext";
 
 /* ─── Constants ─────────────────────────────────── */
-const DRAWER_W   = 256;
+const DRAWER_W = 256;
 const COLLAPSE_W = 64;
-const NAV_H      = 64;   // must match NavBar height on md+
-const NAV_H_XS   = 56;
+const NAV_H = 64;   // must match NavBar height on md+
+const NAV_H_XS = 56;
 
 /* ─── Navigation menu ───────────────────────────── */
 const adminMenu = [
-  { text: "Αρχεία",    sub: "Αρχεία & εξετάσεις",    icon: <FolderOpenIcon  />, path: "/admin/files"         },
-  { text: "Χρήστες",   sub: "Χρήστες & ρόλοι",        icon: <PeopleAltIcon   />, path: "/admin/users"         },
-  { text: "Μαθήματα",  sub: "Μαθήματα & εξάμηνα",    icon: <MenuBookIcon    />, path: "/admin/courses"       },
-  { text: "Upload",    sub: "Μαζική μεταφόρτωση",     icon: <CloudUploadIcon />, path: "/admin/upload"        },
-  { text: "Αιτήματα", sub: "Αιτήματα χρηστών",       icon: <HelpOutlineIcon />, path: "/admin/requests"      },
-  { text: "Αιτήσεις", sub: "Αιτήσεις για admin",      icon: <AssignmentIndIcon/>, path: "/admin/applications" },
+  { text: "Στατιστικά", sub: "Στατιστικά & Analytics", icon: <BarChartIcon />, path: "/admin/analytics" },
+  { text: "Αρχεία", sub: "Αρχεία & εξετάσεις", icon: <FolderOpenIcon />, path: "/admin/files" },
+  { text: "Χρήστες", sub: "Χρήστες & ρόλοι", icon: <PeopleAltIcon />, path: "/admin/users" },
+  { text: "Μαθήματα", sub: "Μαθήματα & εξάμηνα", icon: <MenuBookIcon />, path: "/admin/courses" },
+  { text: "Ανέβασμα Αρχείων", sub: "Μαζική μεταφόρτωση", icon: <CloudUploadIcon />, path: "/admin/upload" },
+  { text: "Αιτήματα", sub: "Αιτήματα χρηστών", icon: <HelpOutlineIcon />, path: "/admin/requests" },
+  { text: "Αιτήσεις για admin", sub: "Αιτήσεις για admin", icon: <AssignmentIndIcon />, path: "/admin/applications" },
 ];
 
 /* ─── Metric card definitions ───────────────────── */
 const METRICS = [
-  { key: "users",        label: "Χρήστες",         icon: <PeopleIcon />,             color: "#1a73e8", path: "/admin/users"        },
-  { key: "pendingFiles", label: "Εκκρεμή Αρχεία",  icon: <HourglassTopIcon />,       color: "#f57c00", path: "/admin/files"        },
-  { key: "openRequests", label: "Ανοιχτά Αιτήματα",icon: <MarkEmailUnreadIcon />,    color: "#d32f2f", path: "/admin/requests"     },
-  { key: "adminApps",    label: "Αιτήσεις Admin",   icon: <AdminPanelSettingsIcon />, color: "#7b1fa2", path: "/admin/applications" },
+  { key: "users", label: "Χρήστες", icon: <PeopleIcon />, color: "#1a73e8", path: "/admin/users" },
+  { key: "pendingFiles", label: "Εκκρεμή Αρχεία", icon: <HourglassTopIcon />, color: "#f57c00", path: "/admin/files" },
+  { key: "openRequests", label: "Ανοιχτά Αιτήματα", icon: <MarkEmailUnreadIcon />, color: "#d32f2f", path: "/admin/requests" },
+  { key: "adminApps", label: "Αιτήσεις Admin", icon: <AdminPanelSettingsIcon />, color: "#7b1fa2", path: "/admin/applications" },
 ];
 
 /* ─── NavItem ────────────────────────────────────── */
@@ -74,7 +76,7 @@ const NavItem = ({ item, active, mini, onClick }) => {
           "&:hover": {
             background: active
               ? dark ? alpha("#1a73e8", 0.24) : alpha("#1a73e8", 0.15)
-              : dark ? alpha("#fff", 0.06)     : alpha("#000", 0.04),
+              : dark ? alpha("#fff", 0.06) : alpha("#000", 0.04),
           },
           "&.Mui-selected": { background: "transparent" },
         }}
@@ -125,7 +127,7 @@ const NavItem = ({ item, active, mini, onClick }) => {
 /* ─── Sidebar content ────────────────────────────── */
 const Sidebar = ({ mini, mobile, location, navigate, onClose, onToggle }) => {
   const theme = useTheme();
-  const dark  = theme.palette.mode === "dark";
+  const dark = theme.palette.mode === "dark";
   const isRoot = location.pathname === "/admin";
 
   return (
@@ -188,7 +190,8 @@ const Sidebar = ({ mini, mobile, location, navigate, onClose, onToggle }) => {
       </Box>
 
       {/* ── Nav ── */}
-      <Box sx={{ flex: 1, overflowY: "auto", overflowX: "hidden", py: 1.5,
+      <Box sx={{
+        flex: 1, overflowY: "auto", overflowX: "hidden", py: 1.5,
         "&::-webkit-scrollbar": { width: 4 },
         "&::-webkit-scrollbar-thumb": { background: alpha("#888", 0.25), borderRadius: 4 },
       }}>
@@ -351,24 +354,24 @@ const MetricCard = ({ card, value, loading, onClick }) => {
 
 /* ─── Main Component ─────────────────────────────── */
 const AdminDashboard = () => {
-  const navigate  = useNavigate();
-  const location  = useLocation();
-  const theme     = useTheme();
-  const isMobile  = useMediaQuery(theme.breakpoints.down("sm"));
-  const dark      = theme.palette.mode === "dark";
+  const navigate = useNavigate();
+  const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const dark = theme.palette.mode === "dark";
 
-  const [drawerOpen,  setDrawerOpen]  = useState(true);
-  const [mobileOpen,  setMobileOpen]  = useState(false);
-  const [metrics,     setMetrics]     = useState({});
+  const [drawerOpen, setDrawerOpen] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [metrics, setMetrics] = useState({});
   const [metricsLoad, setMetricsLoad] = useState(true);
 
-  const isRoot  = location.pathname === "/admin";
-  const mini    = !drawerOpen && !isMobile;          // collapsed desktop mode
+  const isRoot = location.pathname === "/admin";
+  const mini = !drawerOpen && !isMobile;          // collapsed desktop mode
 
   /* Toggle sidebar */
   const handleToggle = () => {
     if (isMobile) setMobileOpen(p => !p);
-    else          setDrawerOpen(p => !p);
+    else setDrawerOpen(p => !p);
   };
 
   /* Fetch metrics only on dashboard root */
@@ -451,7 +454,7 @@ const AdminDashboard = () => {
           component="main"
           sx={{
             flexGrow: 1,
-            ml: isMobile ? 0 : mini ? `${COLLAPSE_W}px` : `${DRAWER_W}px`,
+            ml: 0,
             transition: "margin-left 0.28s cubic-bezier(.4,0,.2,1)",
             minHeight: "100vh",
             display: "flex", flexDirection: "column",
@@ -673,23 +676,6 @@ const AdminDashboard = () => {
             ) : (
               /* ─── Sub-page shell ─── */
               <Box>
-                <Button
-                  startIcon={<ArrowBackIosNewIcon sx={{ fontSize: "13px !important" }} />}
-                  onClick={() => navigate("/admin")}
-                  size="small"
-                  sx={{
-                    mb: 3, fontWeight: 600, fontSize: "0.8rem",
-                    color: "text.secondary", textTransform: "none",
-                    borderRadius: "9px", px: 2, py: 0.7,
-                    background: dark ? alpha("#fff", 0.05) : alpha("#000", 0.04),
-                    "&:hover": {
-                      background: dark ? alpha("#fff", 0.09) : alpha("#000", 0.07),
-                      color: "text.primary",
-                    },
-                  }}
-                >
-                  Dashboard
-                </Button>
                 <Outlet />
               </Box>
             )}

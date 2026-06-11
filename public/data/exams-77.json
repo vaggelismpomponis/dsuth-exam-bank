@@ -1,0 +1,38 @@
+[
+  {
+    "id": "db75ad37-a4a9-4831-b6db-50016e6789c5",
+    "course": "Κβαντική Υπολογιστική",
+    "year": 2024,
+    "period": "Ιανουάριος",
+    "created_at": "2026-06-06T22:01:14.07135+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/KvantikiYpologistiki_2024_Ianoyarios_Themata.pdf",
+    "uploader": "d34f6bc4-65c5-4bca-ad70-75e74f9e57e3"
+  },
+  {
+    "id": "447fd7bf-9276-484a-b2c0-0de745fd1434",
+    "course": "Κβαντική Υπολογιστική",
+    "year": 2026,
+    "period": "Επαναληπτική",
+    "created_at": "2026-05-14T16:49:26.872647+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/KvantikiYpologistiki_2026_Epanaliptiki_1_1778777367947.pdf",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+  },
+  {
+    "id": "39d57e82-fe48-4104-a01d-628e0cd9de81",
+    "course": "Κβαντική Υπολογιστική",
+    "year": 2025,
+    "period": "Ιούνιος",
+    "created_at": "2025-09-12T17:10:16.413508+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/KvantikiYpologistiki_2025_Ioynios_Themata.jpg",
+    "uploader": "4966a3d3-a513-4c3f-b7de-e67f899fe38d"
+  },
+  {
+    "id": "f9be69ec-79b5-4104-9c62-e2ae720a13d7",
+    "course": "Κβαντική Υπολογιστική",
+    "year": 2023,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:29:05.088379+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/KvantikiYpol_2023_Earino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  }
+]

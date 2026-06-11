@@ -1,0 +1,56 @@
+[
+  {
+    "id": "2839e031-0067-45b1-ba94-e3714f224672",
+    "course": "Ασφάλεια Ψηφιακών Συστημάτων",
+    "year": 2026,
+    "period": "Ιούνιος",
+    "created_at": "2026-06-09T14:07:22.505379+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/AsfaleiaPsifiakonSystimaton_2026_Ioynios_1_1781014046237.pdf",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+  },
+  {
+    "id": "53eb8bcb-1c8b-4948-938c-ae479412fd3e",
+    "course": "Ασφάλεια Ψηφιακών Συστημάτων",
+    "year": 2025,
+    "period": "Ιούνιος",
+    "created_at": "2025-08-18T20:14:10.466332+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/AsfaleiaPsifiakonSystimaton_2025_Ioynios_Themata.jpeg",
+    "uploader": "eef66c37-7bd6-45b6-9343-82d4a1cd8e57"
+  },
+  {
+    "id": "f05d9334-2478-4cde-872a-10f436657771",
+    "course": "Ασφάλεια Ψηφιακών Συστημάτων",
+    "year": 2024,
+    "period": "Proodos",
+    "created_at": "2025-07-03T14:27:35.371477+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/AsfaliaPsifiakonSystimaton_2024_Proodos_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "cd9406c9-3dda-475f-8a1d-9ff0c0c5f7ee",
+    "course": "Ασφάλεια Ψηφιακών Συστημάτων",
+    "year": 2024,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:27:31.264747+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/AsfaliaPsifiakonSystimaton_2024_Earino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "abd98de6-1e04-4cd0-86c0-61b4cf27a040",
+    "course": "Ασφάλεια Ψηφιακών Συστημάτων",
+    "year": 2023,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:27:27.62777+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/AsfaliaPsifiakonSystimaton_2023_Earino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "1aa22c52-934e-4e6b-8c07-f26a0a776b18",
+    "course": "Ασφάλεια Ψηφιακών Συστημάτων",
+    "year": 2022,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:27:27.001646+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/AsfaliaPsifiakonSystimaton_2022_Earino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  }
+]

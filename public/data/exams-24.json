@@ -1,0 +1,56 @@
+[
+  {
+    "id": "b9d8dd41-0d21-4daa-be0d-3496c6ab56dc",
+    "course": "Σήματα και Συστήματα",
+    "year": 2025,
+    "period": "Σεπτέμβριος",
+    "created_at": "2025-09-10T17:08:21.9902+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/SimatakaiSystimata_2025_Septemvrios_Themata_1.jpg",
+    "uploader": "126106e7-7e33-46dd-ad6e-1e7309f3b1d6"
+  },
+  {
+    "id": "34b3edf4-e0d5-4b96-8f0c-813f1247f5aa",
+    "course": "Σήματα και Συστήματα",
+    "year": 2025,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:30:18.824408+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/SymataSystimata_2025_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "b85722e9-6063-445e-a7de-aba4b2ea9950",
+    "course": "Σήματα και Συστήματα",
+    "year": 2024,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:30:15.413992+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/SymataSystimata_2024_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "0d0b4f70-49cf-4fe7-bf8b-12010e2d1b0f",
+    "course": "Σήματα και Συστήματα",
+    "year": 2024,
+    "period": "Epanaliptiki",
+    "created_at": "2025-07-03T14:30:14.545013+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/SymataSystimata_2024_Epanaliptiki_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "bd49086e-9398-4d78-a4bc-95b5491150a6",
+    "course": "Σήματα και Συστήματα",
+    "year": 2023,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:30:12.230733+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/SymataSystimata_2023_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "0abf1516-1092-408d-b351-ed33ff0b8bf0",
+    "course": "Σήματα και Συστήματα",
+    "year": 2022,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:30:11.351773+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/SymataSystimata_2022_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  }
+]

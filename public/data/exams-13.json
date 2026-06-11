@@ -1,0 +1,47 @@
+[
+  {
+    "id": "cd2ffd49-1a4a-43a4-af6d-9a27405db5e0",
+    "course": "Φυσική",
+    "year": 2026,
+    "period": "Ιανουάριος",
+    "created_at": "2026-01-22T16:40:04.163993+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/Fysiki_2026_Ianoyarios_Themata.jpg",
+    "uploader": "7bf2e7aa-b3c5-4831-bedf-100363b71498"
+  },
+  {
+    "id": "eb34f520-95e1-4d45-8287-6f342a2f5d30",
+    "course": "Φυσική",
+    "year": 2025,
+    "period": "Ιανουάριος",
+    "created_at": "2026-01-22T16:39:49.003293+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/Fysiki_2025_Ianoyarios_Themata.jpg",
+    "uploader": "7bf2e7aa-b3c5-4831-bedf-100363b71498"
+  },
+  {
+    "id": "2bc74d7c-bf4d-4081-b9b8-e5845283ddb6",
+    "course": "Φυσική",
+    "year": 2024,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:28:31.758414+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/Fysiki_2024_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "a82f5264-0494-430c-b4fa-344aaf6278af",
+    "course": "Φυσική",
+    "year": 2023,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:28:31.094042+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/Fysiki_2023_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "9a31ade3-4ead-4f1e-ab87-65aff41624db",
+    "course": "Φυσική",
+    "year": 2023,
+    "period": "Epanaliptiki",
+    "created_at": "2025-07-03T14:28:29.608535+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/Fysiki_2023_Epanaliptiki_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  }
+]

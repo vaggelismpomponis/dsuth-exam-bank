@@ -1,0 +1,74 @@
+[
+  {
+    "id": "a2d80271-6b64-4fc7-8ab2-25b25e87bef5",
+    "course": "Διακριτά Μαθηματικά",
+    "year": 2024,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:27:51.642104+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DiakritaMathimatika_2024_Earino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "4db75d96-0abd-41d8-8eec-27114d44889f",
+    "course": "Διακριτά Μαθηματικά",
+    "year": 2023,
+    "period": "Proodos",
+    "created_at": "2025-07-03T14:27:50.167794+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DiakritaMathimatika_2023_Proodos_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "2a4c3dae-9267-483a-be83-5e2ebad7da0c",
+    "course": "Διακριτά Μαθηματικά",
+    "year": 2023,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:27:49.265848+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DiakritaMathimatika_2023_Earino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "d7359179-4d77-45e9-b8f5-bcb73db46bb6",
+    "course": "Διακριτά Μαθηματικά",
+    "year": 2022,
+    "period": "Proodos",
+    "created_at": "2025-07-03T14:27:48.376711+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DiakritaMathimatika_2022_Proodos_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "f55c16b0-fa1a-421d-88b1-6600332e57a2",
+    "course": "Διακριτά Μαθηματικά",
+    "year": 2022,
+    "period": "Epanaliptiki",
+    "created_at": "2025-07-03T14:27:46.507015+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DiakritaMathimatika_2022_Epanaliptiki_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "a97e21c3-9205-49de-b7f1-bf4c1541a233",
+    "course": "Διακριτά Μαθηματικά",
+    "year": 2022,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:27:45.694029+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DiakritaMathimatika_2022_Earino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "bfcec0c2-fb88-4962-906a-71aed9d63bd4",
+    "course": "Διακριτά Μαθηματικά",
+    "year": 2021,
+    "period": "Epanaliptiki",
+    "created_at": "2025-07-03T14:27:44.690299+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DiakritaMathimatika_2021_Epanaliptiki_Themata_B.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "18a68563-8879-424a-82a7-eaf802459942",
+    "course": "Διακριτά Μαθηματικά",
+    "year": 2021,
+    "period": "Epanaliptiki",
+    "created_at": "2025-07-03T14:27:43.81385+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DiakritaMathimatika_2021_Epanaliptiki_Themata_A.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  }
+]

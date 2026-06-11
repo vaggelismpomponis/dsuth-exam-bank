@@ -1,0 +1,83 @@
+[
+  {
+    "id": "c7e04f31-a490-4b45-bc16-458191712542",
+    "course": "Μαθηματική Ανάλυση",
+    "year": 2025,
+    "period": "Σεπτέμβριος",
+    "created_at": "2025-09-18T12:46:23.227474+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/MathimatikiAnalysi_2025_Septemvrios_Themata.pdf",
+    "uploader": "3507a4a9-c7c5-4d79-8f4b-b4f780d8ea14"
+  },
+  {
+    "id": "caed1902-c440-4959-a687-84cdf672bd53",
+    "course": "Μαθηματική Ανάλυση",
+    "year": 2025,
+    "period": "Ιανουάριος",
+    "created_at": "2025-08-26T13:08:51.715839+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/MathimatikiAnalysi_2025_Ianoyarios_Themata.pdf",
+    "uploader": "7106ee55-d9d1-466c-865c-d0627cc3dbde"
+  },
+  {
+    "id": "33b306df-0714-4681-88b6-991b67ffecb5",
+    "course": "Μαθηματική Ανάλυση",
+    "year": 2025,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:29:20.013747+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/MathimatikiAnalisi_2025_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "bb64a10f-37ed-4153-9b58-d76c4680a936",
+    "course": "Μαθηματική Ανάλυση",
+    "year": 2023,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:29:19.080873+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/MathimatikiAnalisi_2023_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "a7ebd60d-0518-4bd5-ae27-b781527e01e3",
+    "course": "Μαθηματική Ανάλυση",
+    "year": 2021,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:29:18.13754+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/MathimatikiAnalisi_2021_Xeimerino_Themata_B.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "30a22f32-0954-47ea-a25e-dde6970e42cf",
+    "course": "Μαθηματική Ανάλυση",
+    "year": 2021,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:29:17.59353+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/MathimatikiAnalisi_2021_Xeimerino_Themata_A.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "d6d0446b-7206-4226-9db1-d989e495bf55",
+    "course": "Μαθηματική Ανάλυση",
+    "year": 2020,
+    "period": "Epanaliptiki",
+    "created_at": "2025-07-03T14:29:16.539267+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/MathimatikiAnalisi_2020_Epanaliptiki_Themata_B.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "b86561f6-ef2c-448d-9620-69b022dcc915",
+    "course": "Μαθηματική Ανάλυση",
+    "year": 2020,
+    "period": "Epanaliptiki",
+    "created_at": "2025-07-03T14:29:15.887288+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/MathimatikiAnalisi_2020_Epanaliptiki_Themata_A.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "6c830be0-2d13-46a6-b18b-534b03fb6fda",
+    "course": "Μαθηματική Ανάλυση",
+    "year": 2020,
+    "period": "Epanaliptiki",
+    "created_at": "2025-07-03T14:29:14.993935+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/MathimatikiAnalisi_2020_Epanaliptiki_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  }
+]

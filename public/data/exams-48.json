@@ -1,0 +1,29 @@
+[
+  {
+    "id": "875b9d45-401d-4a88-951f-fbbd4099b137",
+    "course": "Αρχιτεκτονική Υπολογιστών",
+    "year": 2026,
+    "period": "Ιανουάριος",
+    "created_at": "2026-05-14T16:50:53.261609+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/ArchitektonikiYpologiston_2026_Ianoyarios_1_1778777455003.pdf",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+  },
+  {
+    "id": "4d25d265-24ce-430c-b650-698796689109",
+    "course": "Αρχιτεκτονική Υπολογιστών",
+    "year": 2026,
+    "period": "Επαναληπτική",
+    "created_at": "2026-01-26T08:34:28.213261+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/ArchitektonikiYpologiston_2026_Epanaliptiki_Themata.jpg",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+  },
+  {
+    "id": "6e5a87d6-aa7c-41c5-a112-87b67641e259",
+    "course": "Αρχιτεκτονική Υπολογιστών",
+    "year": 2025,
+    "period": "Ιούνιος",
+    "created_at": "2025-08-18T20:12:42.031381+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/ArchitektonikiYpologiston_2025_Ioynios_Themata.jpeg",
+    "uploader": "eef66c37-7bd6-45b6-9343-82d4a1cd8e57"
+  }
+]

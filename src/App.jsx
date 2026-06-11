@@ -23,6 +23,7 @@ import FileViewer from './pages/FileViewer';
 import { SnackbarProvider } from 'notistack';
 import AdminUpload from './pages/admin/AdminUpload';
 import RequireAdmin from './components/RequireAdmin';
+import { trackEvent } from './lib/analytics';
 import FAQ from './pages/FAQ';
 import Privacy from './pages/Privacy';
 import Requests from './pages/Requests';
@@ -285,6 +286,7 @@ const AdminFiles = lazy(() => import('./pages/admin/AdminFiles'));
 const AdminUsers = lazy(() => import('./pages/admin/AdminUsers'));
 const AdminRequests = lazy(() => import('./pages/admin/AdminRequests'));
 const AdminApplications = lazy(() => import('./pages/admin/AdminApplications'));
+const AdminAnalytics = lazy(() => import('./pages/admin/AdminAnalytics'));
 
 function ScrollToTop() {
   const location = useLocation();
@@ -329,6 +331,27 @@ function App() {
 
   const location = useLocation();
   const navigate = useNavigate();
+
+  // Track page views
+  useEffect(() => {
+    let courseId = null;
+    const courseMatch = location.pathname.match(/^\/courses\/([a-zA-Z0-9-]+)/);
+    if (courseMatch) {
+      courseId = courseMatch[1];
+    }
+
+    const params = new URLSearchParams(location.search);
+    const meta = {};
+    if (location.pathname === '/viewer') {
+      meta.fileName = params.get('name');
+      meta.courseName = params.get('course');
+      meta.period = params.get('period');
+      meta.year = params.get('year');
+    }
+
+    trackEvent('page_view', { courseId, ...meta });
+  }, [location.pathname, location.search]);
+
   const isAdminRoute = location.pathname.startsWith('/admin');
   const isAuthRoute = location.pathname === '/login' || location.pathname === '/register';
   const isFooterlessRoute =
@@ -420,6 +443,7 @@ function App() {
                 <Route path="upload" element={<AdminUpload />} />
                 <Route path="requests" element={<Suspense fallback={<div>Loading...</div>}><AdminRequests /></Suspense>} />
                 <Route path="applications" element={<Suspense fallback={<div>Loading...</div>}><AdminApplications /></Suspense>} />
+                <Route path="analytics" element={<Suspense fallback={<div>Loading...</div>}><AdminAnalytics /></Suspense>} />
               </Route>
               <Route path="/register" element={<PublicOnly><Register /></PublicOnly>} />
               <Route path="/profile" element={<Profile />} />

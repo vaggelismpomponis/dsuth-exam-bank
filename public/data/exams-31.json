@@ -1,0 +1,29 @@
+[
+  {
+    "id": "84605115-381a-4177-953f-fcab2ea9619c",
+    "course": "Δίκτυα Υπολογιστών II",
+    "year": 2026,
+    "period": "Επαναληπτική",
+    "created_at": "2026-01-27T20:04:25.894228+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DiktyaYpologistonII_2026_Epanaliptiki_Themata_1.pdf",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "56c2ab1b-9a2c-4f82-9c66-6cc2808ed2c1",
+    "course": "Δίκτυα Υπολογιστών II",
+    "year": 2023,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:28:03.215914+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/Diktya2_2023_Earino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  },
+  {
+    "id": "9adcbd73-4689-483d-aa5d-7e7166a9a51c",
+    "course": "Δίκτυα Υπολογιστών II",
+    "year": 2022,
+    "period": "Earino",
+    "created_at": "2025-07-03T14:28:02.440864+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/Diktya2_2022_Earino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  }
+]

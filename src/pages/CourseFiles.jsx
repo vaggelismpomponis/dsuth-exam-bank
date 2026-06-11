@@ -22,10 +22,12 @@ import EventRoundedIcon from '@mui/icons-material/EventRounded';
 import SchoolRoundedIcon from '@mui/icons-material/SchoolRounded';
 import { supabase } from '../supabaseClient';
 import { cachedQuery, invalidateCacheByPrefix } from '../lib/queryCache';
+import { withStaticFallback } from '../lib/staticData';
 import JSZip from 'jszip';
 import { saveAs } from 'file-saver';
 import { downloadFile, shareFile } from '../utils/nativeDownload';
 import FilePreviewDrawer from '../components/FilePreviewDrawer';
+import { trackEvent } from '../lib/analytics';
 
 /* ── Semester accent palette (mirrors Courses.jsx) ── */
 const SEMESTER_PALETTE = [
@@ -132,23 +134,37 @@ const CourseFiles = () => {
       }
       setCourse(courseData);
 
-      // Exams list — cached for non-admins only (5-minute TTL).
-      // Admins always get a live query so they can see pending/unapproved files.
+      // Exams list:
+      //   - Admins always get live data (they must see pending/unapproved files)
+      //   - Regular users: try static CDN JSON first, then browser cache, then live Supabase
       let filesData;
       try {
         filesData = await cachedQuery(
           isAdmin ? null : `exams:course:${id}`,
-          async () => {
-            let query = supabase
-              .from('exams')
-              .select('*')
-              .eq('course', courseData.name)
-              .order('created_at', { ascending: false });
-            if (!isAdmin) query = query.eq('approved', true);
-            const { data, error } = await query;
-            if (error) throw error;
-            return data ?? [];
-          },
+          isAdmin
+            ? async () => {
+                let query = supabase
+                  .from('exams')
+                  .select('*')
+                  .eq('course', courseData.name)
+                  .order('created_at', { ascending: false });
+                const { data, error } = await query;
+                if (error) throw error;
+                return data ?? [];
+              }
+            : () => withStaticFallback(
+                `/data/exams-${id}.json`,
+                async () => {
+                  const { data, error } = await supabase
+                    .from('exams')
+                    .select('*')
+                    .eq('course', courseData.name)
+                    .eq('approved', true)
+                    .order('created_at', { ascending: false });
+                  if (error) throw error;
+                  return data ?? [];
+                }
+              ),
           5 * 60 * 1000
         );
       } catch {
@@ -232,17 +248,23 @@ const CourseFiles = () => {
     const content = await zip.generateAsync({ type: 'blob' });
     await downloadFile(content, `DSUth_Mathima_${course?.name || 'files'}.zip`);
     setDownloadingAll(false);
+    
+    // Log bulk ZIP download
+    trackEvent('download_all', { courseId: id, filesCount: files.length });
   };
 
   const getCleanUrl = url => (url ? url.trim().replace(/\?$/, '') : '');
   const getFilenameFromUrl = (url) => url.split('/').pop().split('?')[0];
 
-  const handleDownload = async (url) => {
+  const handleDownload = async (file) => {
+    const url = getCleanUrl(file.file_url);
     const filename = getFilenameFromUrl(url);
     try {
       showNotification('Γίνεται λήψη...', 'info');
       await downloadFile(url, filename);
       showNotification('Αρχείο αποθηκεύτηκε στα Έγγραφα!', 'success');
+      // Log single download
+      trackEvent('download', { courseId: id, examId: file.id, filename });
     } catch (e) { showNotification('Αποτυχία λήψης αρχείου!', 'error'); }
   };
 
@@ -506,8 +528,11 @@ const CourseFiles = () => {
                 isAdmin={isAdmin}
                 user={user}
                 course={course}
-                onPreview={() => setPreviewFile({ ...file, period: toDisplayPeriod(file.period), course: course?.name })}
-                onDownload={() => handleDownload(getCleanUrl(file.file_url))}
+                 onPreview={() => {
+                   setPreviewFile({ ...file, period: toDisplayPeriod(file.period), course: course?.name, courseId: course?.id });
+                   trackEvent('preview', { courseId: id, examId: file.id });
+                 }}
+                 onDownload={() => handleDownload(file)}
                 onShare={() => handleShare(getCleanUrl(file.file_url))}
                 onApprove={() => handleApprove(file.id)}
                 onDelete={() => setConfirmDel(file)}

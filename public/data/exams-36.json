@@ -1,0 +1,38 @@
+[
+  {
+    "id": "2752e940-1bc8-4365-9d5f-e42a46f21927",
+    "course": "Παράλληλος Προγραμματισμός",
+    "year": 2026,
+    "period": "Ιανουάριος",
+    "created_at": "2026-01-26T08:31:59.569195+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/ParallilosProgrammatismos_2026_Ianoyarios_Themata_1.jpg",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+  },
+  {
+    "id": "7181290a-91eb-41e3-b887-15d64af4daa3",
+    "course": "Παράλληλος Προγραμματισμός",
+    "year": 2026,
+    "period": "Ιανουάριος",
+    "created_at": "2026-01-20T14:39:47.574707+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/ParallilosProgrammatismos_2026_Ianoyarios_Themata.jpg",
+    "uploader": "126106e7-7e33-46dd-ad6e-1e7309f3b1d6"
+  },
+  {
+    "id": "914bcb41-027e-4825-bd05-52b0c503ec4d",
+    "course": "Παράλληλος Προγραμματισμός",
+    "year": 2024,
+    "period": "Ιανουάριος",
+    "created_at": "2026-01-17T21:59:56.555096+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/ParallilosProgrammatismos_2024_Ianoyarios_Themata.docx",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+  },
+  {
+    "id": "99b13411-4aae-45f0-9576-f3914bf7e5fa",
+    "course": "Παράλληλος Προγραμματισμός",
+    "year": 2022,
+    "period": "Xeimerino",
+    "created_at": "2025-07-03T14:29:22.918793+00:00",
+    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/ParallilosProgramatismos_2022_Xeimerino_Themata.pdf?",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+  }
+]
