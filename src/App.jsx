@@ -35,6 +35,8 @@ import PublicOnly from './components/PublicOnly';
 import { ColorModeContext } from './context/ColorModeContext';
 import { AdminSidebarContext } from './context/AdminSidebarContext';
 
+// Module-level cache: courseId → courseName (persists for the app session)
+const _courseNameCache = new Map();
 
 
 /* ── Material Design 3–inspired theme ── */
@@ -349,8 +351,29 @@ function App() {
       meta.year = params.get('year');
     }
 
-    trackEvent('page_view', { courseId, ...meta });
+    if (courseId && !meta.courseName) {
+      // Async: fetch course name and fire a richer page_view event
+      // Uses a module-level cache to avoid repeated DB calls per session
+      const cached = _courseNameCache.get(courseId);
+      if (cached) {
+        trackEvent('page_view', { courseId, courseName: cached, ...meta });
+      } else {
+        // Fire basic event immediately, then replace with enriched one
+        trackEvent('page_view', { courseId, ...meta });
+        import('./supabaseClient').then(({ supabase }) => {
+          supabase.from('courses').select('name').eq('id', courseId).single()
+            .then(({ data }) => {
+              if (data?.name) {
+                _courseNameCache.set(courseId, data.name);
+              }
+            });
+        });
+      }
+    } else {
+      trackEvent('page_view', { courseId, ...meta });
+    }
   }, [location.pathname, location.search]);
+
 
   const isAdminRoute = location.pathname.startsWith('/admin');
   const isAuthRoute = location.pathname === '/login' || location.pathname === '/register';

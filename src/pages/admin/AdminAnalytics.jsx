@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box, Typography, Grid, Paper, Select, MenuItem, FormControl, InputLabel,
   CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead,
-  TableRow, Chip, LinearProgress, Avatar, Stack, Card, CardContent,
+  TableRow, TablePagination, Chip, LinearProgress, Avatar, Stack, Card, CardContent,
   useTheme, alpha, Button, IconButton, Tooltip
 } from '@mui/material';
 import BarChartIcon from '@mui/icons-material/BarChart';
@@ -22,10 +22,19 @@ const AdminAnalytics = () => {
   const theme = useTheme();
   const dark = theme.palette.mode === 'dark';
 
-  const [timeframe, setTimeframe] = useState('30d'); // 24h, 7d, 30d, all
+  const [timeframe, setTimeframe] = useState('24h'); // 24h, 7d, 30d, all
   const [events, setEvents] = useState([]);
+  const [userProfiles, setUserProfiles] = useState({}); // user_id -> display name
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
+
+  // ── Live Feed pagination state ────────────────────
+  const [feedEvents, setFeedEvents] = useState([]);
+  const [feedTotal, setFeedTotal] = useState(0);
+  const [feedPage, setFeedPage] = useState(0);
+  const [feedPageSize, setFeedPageSize] = useState(10);
+  const [feedLoading, setFeedLoading] = useState(false);
 
   // Helper: date limit calculators
   const getDateLimit = (range) => {
@@ -41,28 +50,18 @@ const AdminAnalytics = () => {
   useEffect(() => {
     const fetchAnalytics = async () => {
       setLoading(true);
+      setFetchError(null);
       try {
         const limit = getDateLimit(timeframe);
-        
+
+        // NOTE: We intentionally avoid FK joins (courses/exams) here because
+        // Supabase throws "multiple relationships found" when there is ambiguity.
+        // All label resolution falls back to the metadata JSONB column instead.
         let query = supabase
           .from('analytics_events')
-          .select(`
-            id,
-            event_type,
-            page_path,
-            visitor_id,
-            created_at,
-            metadata,
-            courses (
-              name
-            ),
-            exams (
-              year,
-              period,
-              course
-            )
-          `)
-          .order('created_at', { ascending: false });
+          .select('id, event_type, page_path, visitor_id, user_id, course_id, exam_id, created_at, metadata')
+          .order('created_at', { ascending: false })
+          .limit(2000);
 
         if (limit) {
           query = query.gte('created_at', limit);
@@ -70,9 +69,28 @@ const AdminAnalytics = () => {
 
         const { data, error } = await query;
         if (error) throw error;
-        setEvents(data || []);
+        const eventsData = data || [];
+        setEvents(eventsData);
+
+        // Batch-fetch profile names for all authenticated user_ids
+        const userIds = [...new Set(eventsData.map(e => e.user_id).filter(Boolean))];
+        if (userIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from('profiles')
+            .select('id, first_name, last_name, email, role')
+            .in('id', userIds);
+          if (profiles) {
+            const map = {};
+            profiles.forEach(p => {
+              const name = [p.first_name, p.last_name].filter(Boolean).join(' ').trim();
+              map[p.id] = { name: name || p.email || 'Χρήστης', role: p.role };
+            });
+            setUserProfiles(map);
+          }
+        }
       } catch (err) {
-        console.error('Error fetching analytics:', err);
+        console.error('[Analytics] fetch error:', err);
+        setFetchError(err?.message || 'Σφάλμα φόρτωσης δεδομένων');
       } finally {
         setLoading(false);
       }
@@ -80,6 +98,58 @@ const AdminAnalytics = () => {
 
     fetchAnalytics();
   }, [timeframe, refreshKey]);
+
+  // ── Live Feed: server-side paginated fetch ────────
+  useEffect(() => {
+    const fetchFeed = async () => {
+      setFeedLoading(true);
+      try {
+        const limit = getDateLimit(timeframe);
+        const from = feedPage * feedPageSize;
+        const to = from + feedPageSize - 1;
+
+        let query = supabase
+          .from('analytics_events')
+          .select('id, event_type, page_path, visitor_id, user_id, created_at, metadata', { count: 'exact' })
+          .order('created_at', { ascending: false })
+          .range(from, to);
+
+        if (limit) query = query.gte('created_at', limit);
+
+        const { data, error, count } = await query;
+        if (error) throw error;
+
+        const rows = data || [];
+        setFeedEvents(rows);
+        setFeedTotal(count ?? 0);
+
+        // Fetch profiles only for user_ids on this page
+        const pageUserIds = [...new Set(rows.map(e => e.user_id).filter(Boolean))];
+        if (pageUserIds.length > 0) {
+          const { data: profiles } = await supabase
+            .from('profiles')
+            .select('id, first_name, last_name, email, role')
+            .in('id', pageUserIds);
+          if (profiles) {
+            setUserProfiles(prev => {
+              const next = { ...prev };
+              profiles.forEach(p => {
+                const name = [p.first_name, p.last_name].filter(Boolean).join(' ').trim();
+                next[p.id] = { name: name || p.email || 'Χρήστης', role: p.role };
+              });
+              return next;
+            });
+          }
+        }
+      } catch (err) {
+        console.error('[Analytics] feed fetch error:', err);
+      } finally {
+        setFeedLoading(false);
+      }
+    };
+
+    fetchFeed();
+  }, [timeframe, refreshKey, feedPage, feedPageSize]);
 
   // ── Traffic Stats: DAU / WAU / MAU ──────────────────
   const trafficStats = useMemo(() => {
@@ -136,29 +206,22 @@ const AdminAnalytics = () => {
 
       if (type === 'page_view') {
         views++;
-        const courseName = event.courses?.name || event.metadata?.courseName;
+        // Use metadata.courseName since we no longer join courses table
+        const courseName = event.metadata?.courseName;
         if (courseName) {
           courseViews[courseName] = (courseViews[courseName] || 0) + 1;
         }
       } else if (type === 'preview') {
         previews++;
       } else if (type === 'download') {
-        const count = 1;
-        downloads += count;
-
-        // Resolve exam identifier
-        let examLabel = 'Άγνωστο Αρχείο';
-        if (event.exams) {
-          examLabel = `${event.exams.course} - ${event.exams.year} (${event.exams.period})`;
-        } else if (event.metadata?.filename) {
-          examLabel = event.metadata.filename;
-        }
-        examDownloads[examLabel] = (examDownloads[examLabel] || 0) + count;
+        downloads++;
+        // Use metadata.filename since we no longer join exams table
+        const examLabel = event.metadata?.filename || event.metadata?.courseName || 'Άγνωστο Αρχείο';
+        examDownloads[examLabel] = (examDownloads[examLabel] || 0) + 1;
       } else if (type === 'download_all') {
         const count = event.metadata?.filesCount || 1;
         downloads += count;
-
-        const courseName = event.courses?.name || 'Bulk ZIP';
+        const courseName = event.metadata?.courseName || 'Bulk ZIP';
         examDownloads[`[ZIP] ${courseName}`] = (examDownloads[`[ZIP] ${courseName}`] || 0) + 1;
       } else if (type === 'upload') {
         uploads++;
@@ -270,12 +333,20 @@ const AdminAnalytics = () => {
     return { viewsLine, downloadsLine, viewsArea, downloadsArea, vCoords, dCoords };
   }, [chartData, maxChartVal]);
 
-  const recentEvents = useMemo(() => {
-    return events.slice(0, 10);
-  }, [events]);
+  // feedEvents is now driven by server-side pagination state (no client-side slice needed)
 
   const handleRefresh = () => {
+    setFeedPage(0);
     setRefreshKey(p => p + 1);
+  };
+
+  const handleFeedPageChange = (_e, newPage) => {
+    setFeedPage(newPage);
+  };
+
+  const handleFeedRowsPerPageChange = (e) => {
+    setFeedPageSize(parseInt(e.target.value, 10));
+    setFeedPage(0);
   };
 
   const getEventNameGreek = (type) => {
@@ -298,6 +369,41 @@ const AdminAnalytics = () => {
       upload: 'success'
     };
     return map[type] || 'default';
+  };
+
+  // Maps raw page paths to human-readable Greek labels
+  const getReadablePath = (path, metadata) => {
+    if (!path) return '-';
+    // If metadata has a courseName (set for course pages & viewer), use it
+    if (metadata?.courseName) return metadata.courseName;
+    // Admin routes
+    if (path.startsWith('/admin/analytics'))   return 'Στατιστικά (Admin)';
+    if (path.startsWith('/admin/users'))        return 'Χρήστες (Admin)';
+    if (path.startsWith('/admin/courses'))      return 'Μαθήματα (Admin)';
+    if (path.startsWith('/admin/files'))        return 'Αρχεία (Admin)';
+    if (path.startsWith('/admin/upload'))       return 'Ανέβασμα (Admin)';
+    if (path.startsWith('/admin/requests'))     return 'Αιτήματα (Admin)';
+    if (path.startsWith('/admin/applications')) return 'Αιτήσεις Admin';
+    if (path === '/admin')                      return 'Admin Dashboard';
+    // Public routes
+    if (path === '/')           return 'Αρχική';
+    if (path === '/courses')    return 'Μαθήματα';
+    if (path === '/upload')     return 'Ανέβασμα Αρχείου';
+    if (path === '/favorites')  return 'Αγαπημένα';
+    if (path === '/profile')    return 'Προφίλ';
+    if (path === '/login')      return 'Σύνδεση';
+    if (path === '/register')   return 'Εγγραφή';
+    if (path === '/contact')    return 'Επικοινωνία';
+    if (path === '/faq')        return 'Συχνές Ερωτήσεις';
+    if (path === '/students')   return 'Κατάλογος Φοιτητών';
+    if (path === '/requests')   return 'Αιτήματα';
+    if (path === '/viewer')     return `Προβολή: ${metadata?.fileName || 'Αρχείο'}`;
+    if (path === '/privacy')    return 'Πολιτική Απορρήτου';
+    if (path.startsWith('/admin-application')) return 'Αίτηση Admin';
+    // Course detail pages — courseId known but name not in metadata yet
+    const courseMatch = path.match(/^\/courses\/(.+)/);
+    if (courseMatch) return `Μάθημα #${courseMatch[1]}`;
+    return path;
   };
 
   return (
@@ -338,6 +444,12 @@ const AdminAnalytics = () => {
           <CircularProgress />
           <Typography variant="body2" color="text.secondary">Φόρτωση στατιστικών...</Typography>
         </Box>
+      ) : fetchError ? (
+        <Box sx={{ p: 4, textAlign: 'center' }}>
+          <Typography variant="h6" color="error" sx={{ fontWeight: 700, mb: 1 }}>Σφάλμα φόρτωσης</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2, fontFamily: 'monospace', bgcolor: 'action.hover', p: 2, borderRadius: 2 }}>{fetchError}</Typography>
+          <Button variant="outlined" startIcon={<RefreshIcon />} onClick={handleRefresh}>Επανάληψη</Button>
+        </Box>
       ) : (
         <>
           {/* ── Section: Website Traffic Frequencies (DAU / WAU / MAU) ── */}
@@ -346,11 +458,17 @@ const AdminAnalytics = () => {
             border: '1px solid', borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
             background: dark ? 'linear-gradient(135deg, #1e2025 0%, #17181c 100%)' : '#fff'
           }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2, mb: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2, mb: 3, flexWrap: 'wrap' }}>
               <PeopleIcon color="primary" />
               <Typography variant="h6" sx={{ fontWeight: 800, fontSize: '1.05rem' }}>
                 Κίνηση & Επισκεψιμότητα Ιστότοπου
               </Typography>
+              <Chip
+                size="small"
+                label={`${events.length} events`}
+                variant="outlined"
+                sx={{ fontWeight: 700, fontSize: '0.7rem', borderRadius: '8px', ml: 'auto', opacity: 0.65 }}
+              />
             </Box>
             <Grid container spacing={3}>
               {/* Daily segment */}
@@ -776,84 +894,120 @@ const AdminAnalytics = () => {
                 Πρόσφατη Δραστηριότητα (Live Feed)
               </Typography>
             </Box>
-            {recentEvents.length === 0 ? (
+            {feedLoading ? (
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 5 }}>
+                <CircularProgress size={28} />
+              </Box>
+            ) : feedEvents.length === 0 ? (
               <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
                 Δεν υπάρχουν πρόσφατα συμβάντα
               </Typography>
             ) : (
-              <TableContainer>
-                <Table size="medium">
-                  <TableHead>
-                    <TableRow>
-                      <TableCell sx={{ fontWeight: 700 }}>Ώρα</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Ενέργεια</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Σελίδα/Αρχείο</TableCell>
-                      <TableCell sx={{ fontWeight: 700 }}>Ταυτότητα</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {recentEvents.map((e) => {
-                      const dt = new Date(e.created_at);
-                      const timeStr = dt.toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                      const dateStr = dt.toLocaleDateString('el-GR', { day: 'numeric', month: 'short' });
+              <>
+                <TableContainer>
+                  <Table size="medium">
+                    <TableHead>
+                      <TableRow>
+                        <TableCell sx={{ fontWeight: 700 }}>Ώρα</TableCell>
+                        <TableCell sx={{ fontWeight: 700 }}>Ενέργεια</TableCell>
+                        <TableCell sx={{ fontWeight: 700 }}>Σελίδα/Αρχείο</TableCell>
+                        <TableCell sx={{ fontWeight: 700 }}>Ταυτότητα</TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {feedEvents.map((e) => {
+                        const dt = new Date(e.created_at);
+                        const timeStr = dt.toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                        const dateStr = dt.toLocaleDateString('el-GR', { day: 'numeric', month: 'short' });
 
-                      // Extract context
-                      let details = e.page_path;
-                      if (e.event_type === 'download' || e.event_type === 'preview') {
-                        if (e.exams) {
-                          details = `${e.exams.course} - ${e.exams.year} (${e.exams.period})`;
-                        } else if (e.metadata?.filename) {
-                          details = e.metadata.filename;
+                        // Extract context from metadata (no FK joins)
+                        let details;
+                        if (e.event_type === 'page_view') {
+                          details = getReadablePath(e.page_path, e.metadata);
+                        } else if (e.event_type === 'download' || e.event_type === 'preview') {
+                          details = e.metadata?.filename || e.metadata?.courseName || getReadablePath(e.page_path, e.metadata);
+                        } else if (e.event_type === 'upload') {
+                          const cn = e.metadata?.courseName || 'Μάθημα';
+                          const yr = e.metadata?.year ? ` ${e.metadata.year}` : '';
+                          const pr = e.metadata?.period ? ` (${e.metadata.period})` : '';
+                          details = `${cn}${yr}${pr}`;
+                        } else if (e.event_type === 'download_all') {
+                          details = `ZIP: ${e.metadata?.courseName || 'Όλα τα αρχεία'}`;
+                        } else {
+                          details = getReadablePath(e.page_path, e.metadata);
                         }
-                      } else if (e.event_type === 'upload') {
-                        details = `${e.metadata?.courseName || 'Μάθημα'} - ${e.metadata?.year || ''} (${e.metadata?.period || ''})`;
-                      } else if (e.event_type === 'download_all') {
-                        details = `ZIP: ${e.courses?.name || 'Όλα τα αρχεία'}`;
-                      }
 
-                      return (
-                        <TableRow key={e.id} hover>
-                          <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                            <Typography variant="body2" sx={{ fontWeight: 600 }}>{timeStr}</Typography>
-                            <Typography variant="caption" color="text.disabled">{dateStr}</Typography>
-                          </TableCell>
-                          <TableCell>
-                            <Chip
-                              size="small"
-                              label={getEventNameGreek(e.event_type)}
-                              color={getEventColor(e.event_type)}
-                              variant="outlined"
-                              sx={{ fontWeight: 700, fontSize: '0.75rem', borderRadius: '8px' }}
-                            />
-                          </TableCell>
-                          <TableCell sx={{ maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                            <Tooltip title={details} placement="top">
-                              <Typography variant="body2" sx={{ fontWeight: 500 }}>{details}</Typography>
-                            </Tooltip>
-                          </TableCell>
-                          <TableCell>
-                            {e.user_id ? (
+                        return (
+                          <TableRow key={e.id} hover>
+                            <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                              <Typography variant="body2" sx={{ fontWeight: 600 }}>{timeStr}</Typography>
+                              <Typography variant="caption" color="text.disabled">{dateStr}</Typography>
+                            </TableCell>
+                            <TableCell>
                               <Chip
                                 size="small"
-                                label="Admin/User"
-                                color="primary"
-                                sx={{ fontWeight: 600, fontSize: '0.7rem', borderRadius: '6px', height: 20 }}
-                              />
-                            ) : (
-                              <Chip
-                                size="small"
-                                label={`Επισκέπτης (${e.visitor_id.substring(0, 5)})`}
+                                label={getEventNameGreek(e.event_type)}
+                                color={getEventColor(e.event_type)}
                                 variant="outlined"
-                                sx={{ fontWeight: 600, fontSize: '0.7rem', borderRadius: '6px', height: 20, color: 'text.secondary' }}
+                                sx={{ fontWeight: 700, fontSize: '0.75rem', borderRadius: '8px' }}
                               />
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
+                            </TableCell>
+                            <TableCell sx={{ maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                              <Tooltip title={details} placement="top">
+                                <Typography variant="body2" sx={{ fontWeight: 500 }}>{details}</Typography>
+                              </Tooltip>
+                            </TableCell>
+                            <TableCell>
+                              {e.user_id && userProfiles[e.user_id] ? (
+                                <Tooltip title={`${userProfiles[e.user_id].name} • ${userProfiles[e.user_id].role || 'user'}`} placement="top">
+                                  <Chip
+                                    size="small"
+                                    label={userProfiles[e.user_id].name}
+                                    color="primary"
+                                    variant="outlined"
+                                    sx={{ fontWeight: 600, fontSize: '0.7rem', borderRadius: '6px', height: 22, maxWidth: 160 }}
+                                  />
+                                </Tooltip>
+                              ) : (
+                                <Tooltip title={e.visitor_id || 'anonymous'} placement="top">
+                                  <Chip
+                                    size="small"
+                                    label={`Ανώνυμος (${(e.visitor_id || 'anon').substring(0, 6)})`}
+                                    variant="outlined"
+                                    sx={{ fontWeight: 600, fontSize: '0.7rem', borderRadius: '6px', height: 22, color: 'text.secondary', maxWidth: 160 }}
+                                  />
+                                </Tooltip>
+                              )}
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                </TableContainer>
+                <TablePagination
+                  component="div"
+                  count={feedTotal}
+                  page={feedPage}
+                  onPageChange={handleFeedPageChange}
+                  rowsPerPage={feedPageSize}
+                  onRowsPerPageChange={handleFeedRowsPerPageChange}
+                  rowsPerPageOptions={[10, 25, 50, 100]}
+                  labelRowsPerPage="Γραμμές ανά σελίδα:"
+                  labelDisplayedRows={({ from, to, count }) =>
+                    `${from}–${to} από ${count !== -1 ? count : `πάνω από ${to}`}`
+                  }
+                  sx={{
+                    borderTop: '1px solid',
+                    borderColor: 'divider',
+                    mt: 1,
+                    '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
+                      fontWeight: 600,
+                      fontSize: '0.8rem'
+                    }
+                  }}
+                />
+              </>
             )}
           </Paper>
         </>

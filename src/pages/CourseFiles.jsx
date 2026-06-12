@@ -619,19 +619,21 @@ const CourseFiles = () => {
 function FileCard({ file, idx, semColor, isDark, isAdmin, user, course, onPreview, onDownload, onShare, onApprove, onDelete, toDisplayPeriod }) {
   const displayPeriod = toDisplayPeriod(file.period);
   const periodEmoji = PERIOD_ICONS[displayPeriod] || '📄';
+  const showAdminActions = isAdmin && user;
 
   return (
     <Box
       onClick={onPreview}
       sx={{
-        p: { xs: '14px 16px', sm: '16px 20px' },
+        p: { xs: '12px 14px', sm: '16px 20px' },
         borderRadius: '16px',
         bgcolor: isDark ? 'rgba(255,255,255,0.028)' : '#fff',
         border: '1px solid',
         borderColor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.06)',
         display: 'flex',
-        alignItems: 'center',
-        gap: 2,
+        flexDirection: { xs: 'column', sm: 'row' },
+        alignItems: { xs: 'stretch', sm: 'center' },
+        gap: { xs: 1, sm: 2 },
         transition: 'all 0.22s ease',
         position: 'relative',
         overflow: 'hidden',
@@ -658,83 +660,119 @@ function FileCard({ file, idx, semColor, isDark, isAdmin, user, course, onPrevie
         },
       }}
     >
-      {/* Icon */}
-      <Box sx={{
-        width: 44, height: 44, borderRadius: '12px', flexShrink: 0,
-        bgcolor: `${semColor}14`,
-        border: '1px solid', borderColor: `${semColor}20`,
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-      }}>
-        <DescriptionRoundedIcon sx={{ color: semColor, fontSize: 22 }} />
-      </Box>
-
-      {/* Info */}
-      <Box sx={{ flex: 1, minWidth: 0 }}>
-        {/* Year + period */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap', mb: 0.6 }}>
-          <Typography sx={{ fontWeight: 800, fontSize: '0.92rem', color: 'text.primary' }}>
-            {file.year}
-          </Typography>
-          <Box sx={{
-            display: 'inline-flex', alignItems: 'center', gap: 0.5,
-            px: 1, py: 0.2,
-            borderRadius: '8px',
-            bgcolor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)',
-          }}>
-            <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: 'text.secondary' }}>
-              {periodEmoji} {displayPeriod}
-            </Typography>
-          </Box>
+      {/* Top row: icon + info */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0 }}>
+        {/* Icon */}
+        <Box sx={{
+          width: 40, height: 40, borderRadius: '12px', flexShrink: 0,
+          bgcolor: `${semColor}14`,
+          border: '1px solid', borderColor: `${semColor}20`,
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+        }}>
+          <DescriptionRoundedIcon sx={{ color: semColor, fontSize: 20 }} />
         </Box>
 
-        {/* Status chip (only visible to admins or pending files) */}
-        {(isAdmin && user) && (
-          <Box sx={{
-            display: 'inline-flex', alignItems: 'center', gap: 0.5,
-            px: 1, py: 0.2, borderRadius: '8px',
-            bgcolor: file.approved
-              ? isDark ? 'rgba(15,157,88,0.15)' : 'rgba(30,142,62,0.08)'
-              : isDark ? 'rgba(227,116,0,0.15)' : 'rgba(227,116,0,0.1)',
-          }}>
-            <Typography sx={{
-              fontSize: '0.68rem', fontWeight: 700,
-              color: file.approved
-                ? isDark ? '#81c784' : '#1e8e3e'
-                : isDark ? '#ffb74d' : '#e37400',
-            }}>
-              {file.approved ? '✓ Εγκεκριμένο' : '⏳ Αναμονή'}
+        {/* Info */}
+        <Box sx={{ flex: 1, minWidth: 0 }}>
+          {/* Year + period */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'wrap', mb: 0.5 }}>
+            <Typography sx={{ fontWeight: 800, fontSize: '0.92rem', color: 'text.primary' }}>
+              {file.year}
             </Typography>
+            <Box sx={{
+              display: 'inline-flex', alignItems: 'center', gap: 0.5,
+              px: 1, py: 0.2,
+              borderRadius: '8px',
+              bgcolor: isDark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.05)',
+            }}>
+              <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: 'text.secondary' }}>
+                {periodEmoji} {displayPeriod}
+              </Typography>
+            </Box>
           </Box>
-        )}
+
+          {/* Status chip — admin only, only shown when pending */}
+          {showAdminActions && !file.approved && (
+            <Box sx={{
+              display: 'inline-flex', alignItems: 'center', gap: 0.5,
+              px: 1, py: 0.2, borderRadius: '8px',
+              bgcolor: isDark ? 'rgba(227,116,0,0.15)' : 'rgba(227,116,0,0.1)',
+            }}>
+              <Typography sx={{
+                fontSize: '0.68rem', fontWeight: 700,
+                color: isDark ? '#ffb74d' : '#e37400',
+              }}>
+                ⏳ Αναμονή
+              </Typography>
+            </Box>
+          )}
+        </Box>
+
+        {/* Desktop: all actions inline */}
+        <Box
+          onClick={e => e.stopPropagation()}
+          sx={{ display: { xs: 'none', sm: 'flex' }, alignItems: 'center', gap: 0.5, flexShrink: 0 }}
+        >
+          <ActionBtn title="Προβολή" onClick={onPreview} color={semColor} isDark={isDark}>
+            <VisibilityRoundedIcon sx={{ fontSize: 17 }} />
+          </ActionBtn>
+          <ActionBtn title="Λήψη" onClick={onDownload} color={semColor} isDark={isDark}>
+            <DownloadRoundedIcon sx={{ fontSize: 17 }} />
+          </ActionBtn>
+          <ActionBtn title="Κοινοποίηση" onClick={onShare} color={semColor} isDark={isDark}>
+            <ShareRoundedIcon sx={{ fontSize: 17 }} />
+          </ActionBtn>
+          {showAdminActions && !file.approved && (
+            <ActionBtn title="Έγκριση" onClick={onApprove} color="#0f9d58" isDark={isDark}>
+              <CheckRoundedIcon sx={{ fontSize: 17 }} />
+            </ActionBtn>
+          )}
+          {showAdminActions && (
+            <ActionBtn title="Διαγραφή" onClick={onDelete} color="#d93025" isDark={isDark}>
+              <DeleteRoundedIcon sx={{ fontSize: 17 }} />
+            </ActionBtn>
+          )}
+        </Box>
       </Box>
 
-      {/* Actions */}
-      <Box onClick={e => e.stopPropagation()} sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexShrink: 0 }}>
-        <ActionBtn title="Προβολή" onClick={onPreview} color={semColor} isDark={isDark}>
-          <VisibilityRoundedIcon sx={{ fontSize: 17 }} />
-        </ActionBtn>
-        <ActionBtn title="Λήψη" onClick={onDownload} color={semColor} isDark={isDark}>
-          <DownloadRoundedIcon sx={{ fontSize: 17 }} />
-        </ActionBtn>
-        <ActionBtn title="Κοινοποίηση" onClick={onShare} color={semColor} isDark={isDark}>
-          <ShareRoundedIcon sx={{ fontSize: 17 }} />
-        </ActionBtn>
-        {user && isAdmin && !file.approved && (
-          <ActionBtn title="Έγκριση" onClick={onApprove} color="#0f9d58" isDark={isDark}>
-            <CheckRoundedIcon sx={{ fontSize: 17 }} />
-          </ActionBtn>
+      {/* Bottom row: actions on mobile — full width, evenly spaced for all users */}
+      <Box
+        onClick={e => e.stopPropagation()}
+        sx={{
+          display: { xs: 'flex', sm: 'none' },
+          alignItems: 'center',
+          justifyContent: 'space-around',
+          gap: 0.5,
+          pt: 1,
+          borderTop: '1px solid',
+          borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+        }}
+      >
+        <ActionBtnWide title="Προβολή" onClick={onPreview} color={semColor} isDark={isDark}>
+          <VisibilityRoundedIcon sx={{ fontSize: 18 }} />
+        </ActionBtnWide>
+        <ActionBtnWide title="Λήψη" onClick={onDownload} color={semColor} isDark={isDark}>
+          <DownloadRoundedIcon sx={{ fontSize: 18 }} />
+        </ActionBtnWide>
+        <ActionBtnWide title="Κοινοποίηση" onClick={onShare} color={semColor} isDark={isDark}>
+          <ShareRoundedIcon sx={{ fontSize: 18 }} />
+        </ActionBtnWide>
+        {showAdminActions && !file.approved && (
+          <ActionBtnWide title="Έγκριση" onClick={onApprove} color="#0f9d58" isDark={isDark}>
+            <CheckRoundedIcon sx={{ fontSize: 18 }} />
+          </ActionBtnWide>
         )}
-        {user && isAdmin && (
-          <ActionBtn title="Διαγραφή" onClick={onDelete} color="#d93025" isDark={isDark}>
-            <DeleteRoundedIcon sx={{ fontSize: 17 }} />
-          </ActionBtn>
+        {showAdminActions && (
+          <ActionBtnWide title="Διαγραφή" onClick={onDelete} color="#d93025" isDark={isDark}>
+            <DeleteRoundedIcon sx={{ fontSize: 18 }} />
+          </ActionBtnWide>
         )}
       </Box>
     </Box>
   );
 }
 
-/* ── Tiny action icon button ── */
+/* ── Tiny action icon button (desktop) ── */
 function ActionBtn({ title, onClick, color, isDark, children }) {
   return (
     <Tooltip title={title} arrow>
@@ -753,6 +791,38 @@ function ActionBtn({ title, onClick, color, isDark, children }) {
             bgcolor: `${color}12`,
             borderColor: `${color}35`,
             transform: 'scale(1.1)',
+          },
+        }}
+      >
+        {children}
+      </IconButton>
+    </Tooltip>
+  );
+}
+
+/* ── Wide action button for mobile admin bottom bar ── */
+function ActionBtnWide({ title, onClick, color, isDark, children }) {
+  return (
+    <Tooltip title={title} arrow>
+      <IconButton
+        onClick={onClick}
+        sx={{
+          flex: 1,
+          height: 36,
+          color: 'text.disabled',
+          borderRadius: '10px',
+          border: '1px solid',
+          borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)',
+          transition: 'all 0.15s ease',
+          '&:hover': {
+            color,
+            bgcolor: `${color}12`,
+            borderColor: `${color}35`,
+          },
+          '&:active': {
+            color,
+            bgcolor: `${color}20`,
+            transform: 'scale(0.96)',
           },
         }}
       >
