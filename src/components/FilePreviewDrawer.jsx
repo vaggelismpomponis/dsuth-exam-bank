@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import {
   Drawer, Box, Typography, IconButton, Tooltip, Chip, Stack,
   useTheme, useMediaQuery, alpha, CircularProgress, Divider, Button,
-  Snackbar, Alert, Dialog,
+  Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import DownloadIcon from '@mui/icons-material/Download';
@@ -15,10 +15,14 @@ import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutl
 import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
 import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
 import DoneIcon from '@mui/icons-material/Done';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { Capacitor } from '@capacitor/core';
 import { downloadFile, shareFile } from '../utils/nativeDownload';
 import PdfPreview from './PdfPreview';
 import { trackEvent } from '../lib/analytics';
+import { clearCacheAndReload } from '../lib/cacheUtils';
+import { normalizeFileUrl } from '../lib/urlNormalizer';
 
 /* ─── helpers ─── */
 const getExt = (url = '') => url.split('/').pop().split('?')[0].split('.').pop().toLowerCase();
@@ -104,10 +108,22 @@ const FilePreviewDrawer = ({
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [dlLoading, setDlLoading] = useState(false);
   const [previewLoaded, setPreviewLoaded] = useState(false);
+  const [loadError, setLoadError] = useState(false);
 
   const notify = (message, severity = 'success') => setSnackbar({ open: true, message, severity });
 
-  const url = file?.file_url ? file.file_url.trim().replace(/\?$/, '') : '';
+  const handlePreviewError = useCallback(() => {
+    setLoadError(true);
+  }, []);
+
+  const url = normalizeFileUrl(file?.file_url);
+
+  React.useEffect(() => {
+    if (open) {
+      setPreviewLoaded(false);
+      setLoadError(false);
+    }
+  }, [open, url]);
   const ext = getExt(url);
   const filename = getFilename(url);
   const isImage = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'].includes(ext);
@@ -225,6 +241,7 @@ const FilePreviewDrawer = ({
               src={url}
               alt={filename}
               onLoad={() => setPreviewLoaded(true)}
+              onError={handlePreviewError}
               sx={{ maxWidth: '100%', height: 'auto', borderRadius: '12px', boxShadow: dark ? '0 8px 32px rgba(0,0,0,.6)' : '0 8px 32px rgba(0,0,0,.12)', display: previewLoaded ? 'block' : 'none' }}
             />
             {!previewLoaded && (
@@ -236,7 +253,7 @@ const FilePreviewDrawer = ({
         ) : isPdf ? (
           (isMobile || Capacitor.isNativePlatform()) ? (
             <Box sx={{ width: '100%', height: '100%' }}>
-              <PdfPreview fileUrl={url} showAllPages />
+              <PdfPreview fileUrl={url} showAllPages onLoadError={handlePreviewError} />
             </Box>
           ) : (
             <Box sx={{ position: 'relative', width: '100%', height: '100%' }}>
@@ -250,6 +267,7 @@ const FilePreviewDrawer = ({
                 component="iframe"
                 src={`${url}#toolbar=0&navpanes=0&zoom=page-fit`}
                 onLoad={() => setPreviewLoaded(true)}
+                onError={handlePreviewError}
                 sx={{ width: '100%', height: '100%', border: 'none', display: previewLoaded ? 'block' : 'none' }}
               />
             </Box>
@@ -412,6 +430,53 @@ const FilePreviewDrawer = ({
           {snackbar.message}
         </Alert>
       </Snackbar>
+
+      {/* Dialog for loading error */}
+      <Dialog
+        open={loadError}
+        onClose={() => setLoadError(false)}
+        PaperProps={{
+          sx: {
+            borderRadius: '20px',
+            p: 1.5,
+            maxWidth: '400px',
+            ...paperBg,
+          }
+        }}
+      >
+        <DialogTitle sx={{ fontWeight: 700, display: 'flex', alignItems: 'center', gap: 1.5, pb: 1, color: 'text.primary' }}>
+          <Box sx={{
+            width: 38, height: 38, borderRadius: '50%',
+            background: dark ? alpha('#d93025', 0.18) : alpha('#d93025', 0.1),
+            color: '#d93025', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
+          }}>
+            <ErrorOutlineIcon />
+          </Box>
+          Σφάλμα φόρτωσης
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ color: 'text.secondary', fontSize: '0.92rem', lineHeight: 1.4 }}>
+            Δεν ήταν δυνατή η φόρτωση του αρχείου. Παρακαλώ ανανεώστε τη σελίδα και δοκιμάστε ξανά.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+          <Button 
+            onClick={() => setLoadError(false)} 
+            variant="outlined" 
+            sx={{ borderRadius: 100, textTransform: 'none', px: 2.5 }}
+          >
+            Κλείσιμο
+          </Button>
+          <Button 
+            onClick={clearCacheAndReload} 
+            variant="contained" 
+            startIcon={<RefreshIcon />}
+            sx={{ borderRadius: 100, textTransform: 'none', px: 2.5 }}
+          >
+            Ανανέωση
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };

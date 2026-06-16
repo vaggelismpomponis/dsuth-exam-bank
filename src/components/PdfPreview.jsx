@@ -15,7 +15,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
     return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const PdfPreview = ({ fileUrl, showAllPages = false }) => {
+const PdfPreview = ({ fileUrl, showAllPages = false, onLoadError }) => {
     const theme = useTheme();
     const [numPages, setNumPages] = useState(null);
     const [zoom, setZoom] = useState(1.0);          // multiplier on top of fit-width
@@ -59,6 +59,7 @@ const PdfPreview = ({ fileUrl, showAllPages = false }) => {
             <Document
                 file={fileUrl}
                 onLoadSuccess={onDocumentLoadSuccess}
+                onLoadError={onLoadError}
                 loading={<CircularProgress sx={{ mt: 4 }} />}
             >
                 {showAllPages ? (

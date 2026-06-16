@@ -31,8 +31,8 @@ const SESSION_PREFIX = 'sqcache:';
 /** Months (0-indexed) that are considered exam-season peak periods. */
 const EXAM_SEASON_MONTHS = new Set([0, 1, 4, 5, 8]); // Jan, Feb, May, Jun, Sep
 
-/** How much to multiply TTLs by during exam season (6× = 5 min → 30 min, 10 min → 60 min) */
-const EXAM_SEASON_MULTIPLIER = 6;
+/** How much to multiply TTLs by during exam season (2× = 5 min → 10 min, 10 min → 20 min) */
+const EXAM_SEASON_MULTIPLIER = 2;
 
 /**
  * Returns true if today falls within a known exam-season peak window.

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { normalizeFileUrl } from '../lib/urlNormalizer';
 import {
   Container, Typography, Box, Button, Paper, Stack, Skeleton, IconButton, Chip
 } from '@mui/material';
@@ -461,7 +462,7 @@ const Home = () => {
 
                 <IconButton
                   onClick={() => {
-                    const url = exam.file_url?.trim().replace(/\?$/, '') || '';
+                    const url = normalizeFileUrl(exam.file_url) || '';
                     const filename = url.split('/').pop().split('?')[0];
                     const params = new URLSearchParams({
                       url,

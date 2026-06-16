@@ -29,7 +29,7 @@ import { isExamSeason } from './queryCache.js';
 
 /** Max age of static snapshots before falling back to live data. */
 const MAX_STATIC_AGE_MS_DEFAULT = 7 * 24 * 60 * 60 * 1000;   // 7 days
-const MAX_STATIC_AGE_MS_EXAM    = 14 * 24 * 60 * 60 * 1000;  // 14 days during exam season
+const MAX_STATIC_AGE_MS_EXAM    = 2 * 24 * 60 * 60 * 1000;   // 2 days during exam season (new files appear faster)
 
 function maxStaticAge() {
   return isExamSeason() ? MAX_STATIC_AGE_MS_EXAM : MAX_STATIC_AGE_MS_DEFAULT;

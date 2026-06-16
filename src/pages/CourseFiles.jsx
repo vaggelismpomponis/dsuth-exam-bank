@@ -28,6 +28,7 @@ import { saveAs } from 'file-saver';
 import { downloadFile, shareFile } from '../utils/nativeDownload';
 import FilePreviewDrawer from '../components/FilePreviewDrawer';
 import { trackEvent } from '../lib/analytics';
+import { normalizeFileUrl } from '../lib/urlNormalizer';
 
 /* ── Semester accent palette (mirrors Courses.jsx) ── */
 const SEMESTER_PALETTE = [
@@ -253,7 +254,7 @@ const CourseFiles = () => {
     trackEvent('download_all', { courseId: id, filesCount: files.length });
   };
 
-  const getCleanUrl = url => (url ? url.trim().replace(/\?$/, '') : '');
+  const getCleanUrl = url => normalizeFileUrl(url);
   const getFilenameFromUrl = (url) => url.split('/').pop().split('?')[0];
 
   const handleDownload = async (file) => {
