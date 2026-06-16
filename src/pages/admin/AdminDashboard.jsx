@@ -357,7 +357,7 @@ const AdminDashboard = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
   const dark = theme.palette.mode === "dark";
 
   const [drawerOpen, setDrawerOpen] = useState(true);
@@ -441,6 +441,7 @@ const AdminDashboard = () => {
                 boxShadow: "8px 0 32px rgba(0,0,0,.18)",
                 top: NAV_H_XS,
                 height: `calc(100vh - ${NAV_H_XS}px)`,
+                overflowX: 'hidden',
                 zIndex: 1300,
               },
             }}
@@ -457,6 +458,8 @@ const AdminDashboard = () => {
             ml: 0,
             transition: "margin-left 0.28s cubic-bezier(.4,0,.2,1)",
             minHeight: "100vh",
+            minWidth: 0,
+            overflow: "hidden",
             display: "flex", flexDirection: "column",
           }}
         >
@@ -573,6 +576,8 @@ const AdminDashboard = () => {
             maxWidth: 1380,
             width: "100%",
             mx: "auto",
+            overflowX: "hidden",
+            minWidth: 0,
           }}>
             {isRoot ? (
               /* ─── Dashboard home ─── */

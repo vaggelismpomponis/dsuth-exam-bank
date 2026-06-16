@@ -21,7 +21,7 @@ import { supabase } from '../../supabaseClient';
 const AdminAnalytics = () => {
   const theme = useTheme();
   const dark = theme.palette.mode === 'dark';
-  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
   const [timeframe, setTimeframe] = useState('24h'); // 24h, 7d, 30d, all
   const [events, setEvents] = useState([]);
@@ -300,8 +300,11 @@ const AdminAnalytics = () => {
 
   // SVG dimensions
   const svgW = 600;
-  const svgH = 200;
-  const svgPadding = 20;
+  const svgH = 220;
+  const svgPadL = 32;
+  const svgPadR = 20;
+  const svgPadT = 16;
+  const svgPadB = 28;
 
   const maxChartVal = useMemo(() => {
     const maxVal = Math.max(...chartData.map(d => Math.max(d.views, d.downloads)), 5);
@@ -314,11 +317,11 @@ const AdminAnalytics = () => {
 
     const getX = (index) => {
       const denom = chartData.length > 1 ? chartData.length - 1 : 1;
-      return svgPadding + (index / denom) * (svgW - 2 * svgPadding);
+      return svgPadL + (index / denom) * (svgW - svgPadL - svgPadR);
     };
 
     const getY = (val) => {
-      return svgH - svgPadding - (val / maxChartVal) * (svgH - 2 * svgPadding);
+      return svgH - svgPadB - (val / maxChartVal) * (svgH - svgPadT - svgPadB);
     };
 
     const vCoords = chartData.map((d, i) => [getX(i), getY(d.views)]);
@@ -327,7 +330,7 @@ const AdminAnalytics = () => {
     const viewsLine = vCoords.map((c, i) => `${i === 0 ? 'M' : 'L'} ${c[0]} ${c[1]}`).join(' ');
     const downloadsLine = dCoords.map((c, i) => `${i === 0 ? 'M' : 'L'} ${c[0]} ${c[1]}`).join(' ');
 
-    const bottomY = svgH - svgPadding;
+    const bottomY = svgH - svgPadB;
     const viewsArea = viewsLine ? `${viewsLine} L ${vCoords[vCoords.length - 1][0]} ${bottomY} L ${vCoords[0][0]} ${bottomY} Z` : '';
     const downloadsArea = downloadsLine ? `${downloadsLine} L ${dCoords[dCoords.length - 1][0]} ${bottomY} L ${dCoords[0][0]} ${bottomY} Z` : '';
 
@@ -407,47 +410,119 @@ const AdminAnalytics = () => {
     return path;
   };
 
-  return (
-    <Box sx={{ animation: 'fadeIn 0.3s ease' }}>
-      {/* ── Title & Filter Header ── */}
-      <Box sx={{ mb: { xs: 3, sm: 4 } }}>
+  // ── Section label component ──────────────────────────
+  const SectionLabel = ({ icon, title, subtitle, right, compact = false }) => (
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: { xs: compact ? 1.5 : 2, sm: 3 }, gap: 1, flexWrap: 'wrap' }}>
+      <Stack direction="row" spacing={{ xs: compact ? 1 : 1.5, sm: 1.5 }} alignItems="center" sx={{ minWidth: 0, flex: 1 }}>
         <Box sx={{
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          justifyContent: 'space-between',
-          alignItems: { xs: 'flex-start', sm: 'center' },
-          gap: { xs: 2, sm: 1.5 },
-          mb: { xs: 1.5, sm: 0 }
+          width: { xs: compact ? 28 : 36, sm: 36 },
+          height: { xs: compact ? 28 : 36, sm: 36 },
+          borderRadius: { xs: '8px', sm: '10px' },
+          background: dark
+            ? 'linear-gradient(135deg, rgba(26,115,232,0.25) 0%, rgba(26,115,232,0.1) 100%)'
+            : 'linear-gradient(135deg, rgba(26,115,232,0.15) 0%, rgba(26,115,232,0.05) 100%)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: 'primary.main', flexShrink: 0,
         }}>
-          <Box>
-            <Typography sx={{ fontWeight: 800, lineHeight: 1.1, fontSize: { xs: '1.4rem', sm: '1.6rem' } }}>
-              Αναλυτικά Στατιστικά
-            </Typography>
-            <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5, display: 'block' }}>
-              Παρακολούθηση επισκεψιμότητας, λήψεων και δραστηριότητας χρηστών
-            </Typography>
-          </Box>
-          {/* On mobile: controls stack nicely below the title */}
-          <Stack direction="row" spacing={1} alignItems="center" sx={{ width: { xs: '100%', sm: 'auto' }, justifyContent: { xs: 'space-between', sm: 'flex-end' } }}>
-            <IconButton onClick={handleRefresh} size="small" sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '10px', p: 0.75 }}>
+          {icon}
+        </Box>
+        <Box sx={{ minWidth: 0 }}>
+          <Typography sx={{
+            fontWeight: 800,
+            fontSize: { xs: compact ? '0.78rem' : '1rem', sm: '1rem' },
+            lineHeight: 1.2,
+            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: compact ? 'nowrap' : 'normal',
+          }}>{title}</Typography>
+          {subtitle && !compact && (
+            <Typography variant="caption" sx={{ color: 'text.secondary', lineHeight: 1.3, display: { xs: 'none', sm: 'block' } }}>{subtitle}</Typography>
+          )}
+        </Box>
+      </Stack>
+      {right && <Box sx={{ display: compact ? 'none' : 'block' }}>{right}</Box>}
+    </Box>
+  );
+
+  const trafficSegments = [
+    { label: '24 ώρες', shortLabel: '24ωρο', uv: trafficStats.day.uv, pv: trafficStats.day.pv, color: '#1a73e8', gradient: 'linear-gradient(135deg, #1a73e8, #0052cc)' },
+    { label: '7 ημέρες', shortLabel: '7 ημέρες', uv: trafficStats.week.uv, pv: trafficStats.week.pv, color: '#7b1fa2', gradient: 'linear-gradient(135deg, #7b1fa2, #6a1b9a)' },
+    { label: '30 ημέρες', shortLabel: '30 ημέρες', uv: trafficStats.month.uv, pv: trafficStats.month.pv, color: '#2e7d32', gradient: 'linear-gradient(135deg, #2e7d32, #1b5e20)' },
+  ];
+
+  const kpiCards = [{
+    icon: <VisibilityIcon />,
+    label: 'Προβολές',
+    value: stats.kpis.views,
+    color: theme.palette.primary.main,
+    bg: dark ? 'rgba(26,115,232,0.12)' : 'rgba(26,115,232,0.07)',
+  }, {
+    icon: <ArticleIcon />,
+    label: 'Προεπισκοπήσεις',
+    value: stats.kpis.previews,
+    color: theme.palette.info.main,
+    bg: dark ? 'rgba(26,115,232,0.1)' : 'rgba(26,115,232,0.05)',
+  }, {
+    icon: <DownloadIcon />,
+    label: 'Λήψεις',
+    value: stats.kpis.downloads,
+    color: '#5f6368',
+    bg: dark ? 'rgba(255,255,255,0.06)' : 'rgba(95,99,104,0.07)',
+  }, {
+    icon: <CloudUploadIcon />,
+    label: 'Μεταφορτώσεις',
+    value: stats.kpis.uploads,
+    color: theme.palette.success.main,
+    bg: dark ? 'rgba(30,142,62,0.12)' : 'rgba(30,142,62,0.07)',
+  }];
+
+  return (
+    <Box sx={{ animation: 'fadeIn 0.35s ease', overflowX: 'hidden', width: '100%', minWidth: 0 }}>
+
+      {/* ── Title & Filter Header ── */}
+      <Box sx={{
+        display: 'flex',
+        flexDirection: { xs: 'column', sm: 'row' },
+        justifyContent: 'space-between',
+        alignItems: { xs: 'flex-start', sm: 'center' },
+        gap: 2,
+        mb: { xs: 3, sm: 4 },
+      }}>
+        <Box>
+          <Typography sx={{ fontWeight: 800, lineHeight: 1.15, fontSize: { xs: '1.45rem', sm: '1.7rem' }, letterSpacing: '-0.02em' }}>
+            Αναλυτικά Στατιστικά
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+            Παρακολούθηση επισκεψιμότητας, λήψεων και δραστηριότητας χρηστών
+          </Typography>
+        </Box>
+        <Stack direction="row" spacing={1} alignItems="center" sx={{ flexShrink: 0 }}>
+          <Tooltip title="Ανανέωση">
+            <IconButton
+              onClick={handleRefresh}
+              size="small"
+              sx={{
+                border: '1px solid', borderColor: 'divider',
+                borderRadius: '10px', p: 0.9,
+                '&:hover': { bgcolor: dark ? alpha('#fff', 0.06) : alpha('#000', 0.04) },
+              }}
+            >
               <RefreshIcon fontSize="small" />
             </IconButton>
-            <FormControl size="small" sx={{ minWidth: { xs: 130, sm: 160 }, flexGrow: { xs: 1, sm: 0 } }}>
-              <InputLabel sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>Χρονικό Εύρος</InputLabel>
-              <Select
-                value={timeframe}
-                label="Χρονικό Εύρος"
-                onChange={(e) => setTimeframe(e.target.value)}
-                sx={{ borderRadius: '10px', fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
-              >
-                <MenuItem value="24h">Τελ. 24ωρο</MenuItem>
-                <MenuItem value="7d">Τελ. 7 ημέρες</MenuItem>
-                <MenuItem value="30d">Τελ. 30 ημέρες</MenuItem>
-                <MenuItem value="all">Όλα</MenuItem>
-              </Select>
-            </FormControl>
-          </Stack>
-        </Box>
+          </Tooltip>
+          <FormControl size="small" sx={{ minWidth: 150 }}>
+            <InputLabel sx={{ fontSize: '0.875rem' }}>Χρονικό Εύρος</InputLabel>
+            <Select
+              value={timeframe}
+              label="Χρονικό Εύρος"
+              onChange={(e) => setTimeframe(e.target.value)}
+              sx={{ borderRadius: '10px', fontSize: '0.875rem' }}
+            >
+              <MenuItem value="24h">Τελ. 24ωρο</MenuItem>
+              <MenuItem value="7d">Τελ. 7 ημέρες</MenuItem>
+              <MenuItem value="30d">Τελ. 30 ημέρες</MenuItem>
+              <MenuItem value="all">Όλα</MenuItem>
+            </Select>
+          </FormControl>
+        </Stack>
       </Box>
 
       {loading ? (
@@ -463,154 +538,242 @@ const AdminAnalytics = () => {
         </Box>
       ) : (
         <>
-          {/* ── Section: Website Traffic Frequencies (DAU / WAU / MAU) ── */}
+          {/* ── Section: Traffic (DAU / WAU / MAU) ── */}
           <Paper sx={{
-            p: { xs: 1.5, sm: 3 }, mb: { xs: 2, sm: 4 }, borderRadius: '16px',
+            p: { xs: 2.5, sm: 3.5 }, mb: { xs: 2.5, sm: 3.5 }, borderRadius: '20px',
             border: '1px solid', borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-            background: dark ? 'linear-gradient(135deg, #1e2025 0%, #17181c 100%)' : '#fff'
+            background: dark
+              ? 'linear-gradient(135deg, #1e2025 0%, #17181c 100%)'
+              : 'linear-gradient(135deg, #ffffff 0%, #f8fafb 100%)',
+            boxShadow: dark ? '0 4px 24px rgba(0,0,0,0.25)' : '0 4px 24px rgba(0,0,0,0.06)',
+            overflow: 'hidden',
+            position: 'relative',
           }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, overflow: 'hidden' }}>
-              <PeopleIcon color="primary" sx={{ fontSize: { xs: '1.1rem', sm: '1.5rem' }, flexShrink: 0 }} />
-              <Typography sx={{ fontWeight: 800, fontSize: { xs: '0.85rem', sm: '1.05rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                Κίνηση &amp; Επισκεψιμότητα
-              </Typography>
-              <Chip size="small" label={`${events.length}`} variant="outlined"
-                sx={{ fontWeight: 700, fontSize: '0.65rem', borderRadius: '8px', ml: 'auto', opacity: 0.65, flexShrink: 0 }} />
-            </Box>
-            <Grid container spacing={{ xs: 1.5, sm: 2 }}>
-              {[
-                { label: '24ωρο', uv: trafficStats.day.uv, pv: trafficStats.day.pv, color: '#1a73e8' },
-                { label: '7 ημέρες', uv: trafficStats.week.uv, pv: trafficStats.week.pv, color: '#7b1fa2' },
-                { label: '30 ημέρες', uv: trafficStats.month.uv, pv: trafficStats.month.pv, color: '#2e7d32' },
-              ].map((seg) => (
-                <Grid key={seg.label} item xs={12} sm={4}>
+            {/* Decorative blob */}
+            <Box sx={{
+              position: 'absolute', top: -60, right: -60,
+              width: 200, height: 200, borderRadius: '50%',
+              background: dark ? 'rgba(26,115,232,0.05)' : 'rgba(26,115,232,0.04)',
+              pointerEvents: 'none',
+            }} />
+            <SectionLabel
+              icon={<PeopleIcon sx={{ fontSize: 19 }} />}
+              title="Κίνηση & Επισκεψιμότητα"
+              subtitle="Μοναδικοί επισκέπτες (UV) & προβολές σελίδας (PV)"
+              right={
+                <Chip
+                  size="small"
+                  label={`${events.length} συμβάντα`}
+                  variant="outlined"
+                  sx={{ fontWeight: 700, fontSize: '0.7rem', borderRadius: '8px', opacity: 0.7 }}
+                />
+              }
+            />
+            {(() => {
+              // Pick the active segment based on the selected timeframe
+              const activeSeg =
+                timeframe === '24h' ? trafficSegments[0] :
+                timeframe === '7d'  ? trafficSegments[1] :
+                timeframe === '30d' ? trafficSegments[2] :
+                null; // 'all' → show all three
+
+              if (activeSeg) {
+                // Single focused stat for the selected timeframe
+                return (
                   <Box sx={{
-                    p: { xs: 1.5, sm: 2 }, borderRadius: '12px',
-                    bgcolor: dark ? alpha(seg.color, 0.05) : alpha(seg.color, 0.03),
-                    border: '1px solid', borderColor: dark ? alpha(seg.color, 0.15) : alpha(seg.color, 0.1),
+                    p: { xs: 2, sm: 3 },
+                    borderRadius: '16px',
+                    background: dark ? alpha(activeSeg.color, 0.08) : alpha(activeSeg.color, 0.05),
+                    border: '1px solid',
+                    borderColor: dark ? alpha(activeSeg.color, 0.2) : alpha(activeSeg.color, 0.15),
                     display: 'flex',
-                    flexDirection: { xs: 'row', sm: 'column' },
-                    alignItems: { xs: 'center', sm: 'flex-start' },
-                    justifyContent: { xs: 'space-between', sm: 'flex-start' },
-                    gap: { xs: 2, sm: 0.5 }
+                    alignItems: 'center',
+                    gap: { xs: 3, sm: 5 },
+                    flexWrap: 'wrap',
                   }}>
-                    <Typography sx={{ fontWeight: 700, color: 'text.secondary', fontSize: { xs: '0.7rem', sm: '0.65rem' }, textTransform: 'uppercase', flexShrink: 0 }}>
-                      {seg.label}
-                    </Typography>
-                    <Box sx={{ display: 'flex', gap: { xs: 2.5, sm: 1.5 }, alignItems: 'center', ml: { xs: 'auto', sm: 0 } }}>
-                      <Stack direction="row" spacing={0.5} alignItems="baseline">
-                        <Typography sx={{ fontWeight: 800, color: seg.color, fontSize: { xs: '1.15rem', sm: '1.8rem' }, lineHeight: 1 }}>{seg.uv}</Typography>
-                        <Typography sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem' }, color: 'text.secondary' }}>UV</Typography>
-                      </Stack>
-                      <Stack direction="row" spacing={0.5} alignItems="baseline">
-                        <Typography sx={{ fontWeight: 700, color: 'text.primary', fontSize: { xs: '1.15rem', sm: '1.1rem' }, lineHeight: 1 }}>{seg.pv}</Typography>
-                        <Typography sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem' }, color: 'text.secondary' }}>PV</Typography>
-                      </Stack>
+                    <Box>
+                      <Typography sx={{ fontWeight: 900, color: activeSeg.color, fontSize: { xs: '2.2rem', sm: '3rem' }, lineHeight: 1, letterSpacing: '-0.04em' }}>
+                        {activeSeg.uv}
+                      </Typography>
+                      <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', mt: 0.5 }}>
+                        Μοναδικοί Επισκέπτες
+                      </Typography>
+                    </Box>
+                    <Box sx={{ width: '1px', height: { xs: 48, sm: 60 }, bgcolor: dark ? alpha(activeSeg.color, 0.2) : alpha(activeSeg.color, 0.15), flexShrink: 0 }} />
+                    <Box>
+                      <Typography sx={{ fontWeight: 800, color: 'text.primary', fontSize: { xs: '2.2rem', sm: '3rem' }, lineHeight: 1, letterSpacing: '-0.04em' }}>
+                        {activeSeg.pv}
+                      </Typography>
+                      <Typography sx={{ fontSize: '0.75rem', color: 'text.secondary', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', mt: 0.5 }}>
+                        Προβολές Σελίδας
+                      </Typography>
                     </Box>
                   </Box>
+                );
+              }
+
+              // 'all' → show all three side-by-side
+              return (
+                <Grid container spacing={{ xs: 1.5, sm: 2.5 }}>
+                  {trafficSegments.map((seg) => (
+                    <Grid key={seg.label} item xs={4}>
+                      <Box sx={{
+                        p: { xs: 1.5, sm: 2.5 },
+                        borderRadius: '16px',
+                        background: dark ? alpha(seg.color, 0.08) : alpha(seg.color, 0.05),
+                        border: '1px solid',
+                        borderColor: dark ? alpha(seg.color, 0.2) : alpha(seg.color, 0.15),
+                        display: 'flex', flexDirection: 'column', gap: { xs: 0.75, sm: 1.5 },
+                        position: 'relative', overflow: 'hidden',
+                      }}>
+                        <Box sx={{
+                          display: 'inline-flex', alignItems: 'center', alignSelf: 'flex-start',
+                          px: 1, py: 0.3, borderRadius: '6px',
+                          background: seg.gradient,
+                        }}>
+                          <Typography sx={{ fontWeight: 700, color: '#fff', fontSize: { xs: '0.58rem', sm: '0.65rem' }, lineHeight: 1 }}>
+                            {seg.shortLabel}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ display: 'flex', gap: { xs: 1, sm: 2.5 }, alignItems: 'flex-end', flexWrap: 'wrap' }}>
+                          <Box>
+                            <Typography sx={{ fontWeight: 900, color: seg.color, fontSize: { xs: '1.35rem', sm: '2rem' }, lineHeight: 1, letterSpacing: '-0.03em' }}>
+                              {seg.uv}
+                            </Typography>
+                            <Typography sx={{ fontSize: { xs: '0.6rem', sm: '0.7rem' }, color: 'text.secondary', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                              UV
+                            </Typography>
+                          </Box>
+                          <Box sx={{ width: '1px', height: 28, bgcolor: dark ? alpha(seg.color, 0.2) : alpha(seg.color, 0.15), display: { xs: 'none', sm: 'block' } }} />
+                          <Box>
+                            <Typography sx={{ fontWeight: 800, color: 'text.primary', fontSize: { xs: '1.1rem', sm: '1.4rem' }, lineHeight: 1, letterSpacing: '-0.02em' }}>
+                              {seg.pv}
+                            </Typography>
+                            <Typography sx={{ fontSize: { xs: '0.6rem', sm: '0.7rem' }, color: 'text.secondary', fontWeight: 600, letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+                              PV
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </Box>
+                    </Grid>
+                  ))}
                 </Grid>
-              ))}
-            </Grid>
+              );
+            })()}
           </Paper>
 
           {/* ── KPI Overview Cards ── */}
-          <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ mb: { xs: 2, sm: 4 } }}>
-            {[{
-              icon: <VisibilityIcon fontSize="small" />,
-              label: 'Προβολές',
-              value: stats.kpis.views,
-              color: theme.palette.primary.main
-            }, {
-              icon: <ArticleIcon fontSize="small" />,
-              label: 'Προεπισκοπήσεις',
-              value: stats.kpis.previews,
-              color: theme.palette.info.main
-            }, {
-              icon: <DownloadIcon fontSize="small" />,
-              label: 'Λήψεις',
-              value: stats.kpis.downloads,
-              color: theme.palette.secondary.main
-            }, {
-              icon: <CloudUploadIcon fontSize="small" />,
-              label: 'Μεταφορτώσεις',
-              value: stats.kpis.uploads,
-              color: theme.palette.success.main
-            }].map((kpi, idx) => (
-              <Grid key={idx} item xs={6} md={3}>
-                <Card sx={{ border: '1px solid', borderColor: 'divider', bgcolor: dark ? 'rgba(255,255,255,0.01)' : '#fff', height: '100%' }}>
-                  <CardContent sx={{ p: { xs: 1.25, sm: 2.5 }, '&:last-child': { pb: { xs: 1.25, sm: 2.5 } } }}>
-                    <Stack direction="row" spacing={{ xs: 0.75, sm: 1.5 }} alignItems="center">
-                      <Avatar sx={{ bgcolor: alpha(kpi.color, 0.15), color: kpi.color, borderRadius: '8px', width: { xs: 28, sm: 40 }, height: { xs: 28, sm: 40 }, flexShrink: 0 }}>
-                        {kpi.icon}
-                      </Avatar>
-                      <Box sx={{ minWidth: 0 }}>
-                        <Typography sx={{ fontWeight: 600, color: 'text.secondary', display: 'block', fontSize: { xs: '0.62rem', sm: '0.75rem' }, lineHeight: 1.3 }}>{kpi.label}</Typography>
-                        <Typography sx={{ fontWeight: 800, fontSize: { xs: '1.2rem', sm: '1.5rem' }, lineHeight: 1.1, mt: 0.2 }}>{kpi.value}</Typography>
-                      </Box>
-                    </Stack>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-
-          {/* ── Section: Custom SVG Chart & Trends ── */}
-          <Paper sx={{
-            p: { xs: 1.5, sm: 3 }, mb: { xs: 2, sm: 4 }, borderRadius: '16px',
-            border: '1px solid', borderColor: 'divider',
-            bgcolor: dark ? 'rgba(255,255,255,0.01)' : '#fff',
-            position: 'relative'
+          <Box sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: 'repeat(2, 1fr)', sm: 'repeat(4, 1fr)' },
+            gap: { xs: 1.5, sm: 2 },
+            mb: { xs: 2.5, sm: 3.5 },
           }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 1 }}>
-              <Stack direction="row" spacing={1} alignItems="center">
-                <TimelineIcon color="primary" />
-                <Typography variant="h6" sx={{ fontWeight: 800, fontSize: '1.02rem' }}>
-                  Διάγραμμα Τάσεων
-                </Typography>
-              </Stack>
-              <Stack direction="row" spacing={2}>
-                <Stack direction="row" spacing={0.8} alignItems="center">
-                  <Box sx={{ width: 10, height: 10, borderRadius: '3px', bgcolor: 'primary.main', flexShrink: 0 }} />
-                  <Typography variant="caption" sx={{ fontWeight: 600 }}>Προβολές</Typography>
+            {kpiCards.map((kpi, idx) => (
+              <Box key={idx} sx={{
+                p: { xs: 2, sm: 2.5 },
+                borderRadius: '18px',
+                bgcolor: kpi.bg,
+                border: '1px solid',
+                borderColor: dark ? alpha(kpi.color, 0.18) : alpha(kpi.color, 0.15),
+                display: 'flex', flexDirection: 'column', gap: 1.5,
+                transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+                position: 'relative', overflow: 'hidden',
+                '&:hover': {
+                  transform: 'translateY(-3px)',
+                  boxShadow: `0 12px 32px ${alpha(kpi.color, 0.18)}`,
+                },
+              }}>
+                {/* Decorative circle */}
+                <Box sx={{
+                  position: 'absolute', top: -20, right: -20,
+                  width: 70, height: 70, borderRadius: '50%',
+                  bgcolor: alpha(kpi.color, 0.08), pointerEvents: 'none',
+                }} />
+                <Avatar sx={{
+                  bgcolor: alpha(kpi.color, 0.15), color: kpi.color,
+                  borderRadius: '11px', width: 40, height: 40,
+                  '& svg': { fontSize: 20 },
+                }}>
+                  {kpi.icon}
+                </Avatar>
+                <Box>
+                  <Typography sx={{
+                    fontWeight: 900, color: kpi.color,
+                    fontSize: { xs: '1.6rem', sm: '2rem' },
+                    lineHeight: 1, letterSpacing: '-0.03em',
+                  }}>
+                    {kpi.value}
+                  </Typography>
+                  <Typography sx={{
+                    fontWeight: 600, color: 'text.secondary',
+                    fontSize: { xs: '0.7rem', sm: '0.78rem' },
+                    mt: 0.4, lineHeight: 1.2,
+                  }}>
+                    {kpi.label}
+                  </Typography>
+                </Box>
+              </Box>
+            ))}
+          </Box>
+
+          {/* ── Section: SVG Chart & Trends ── */}
+          <Paper sx={{
+            p: { xs: 2, sm: 3.5 }, mb: { xs: 2.5, sm: 3.5 }, borderRadius: '20px',
+            border: '1px solid', borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+            bgcolor: dark ? '#1a1b1f' : '#fff',
+            boxShadow: dark ? '0 4px 24px rgba(0,0,0,0.2)' : '0 4px 24px rgba(0,0,0,0.05)',
+            overflow: 'hidden',
+          }}>
+            <SectionLabel
+              icon={<TimelineIcon sx={{ fontSize: 19 }} />}
+              title="Διάγραμμα Τάσεων"
+              subtitle={`Δεδομένα ανά ${timeframe === '24h' ? 'ώρα' : 'ημέρα'} για το επιλεγμένο εύρος`}
+              right={
+                <Stack direction="row" spacing={2}>
+                  {[
+                    { color: theme.palette.primary.main, label: 'Προβολές' },
+                    { color: '#5f6368', label: 'Λήψεις' },
+                  ].map(l => (
+                    <Stack key={l.label} direction="row" spacing={0.75} alignItems="center">
+                      <Box sx={{ width: 10, height: 10, borderRadius: '3px', bgcolor: l.color, flexShrink: 0 }} />
+                      <Typography variant="caption" sx={{ fontWeight: 600, fontSize: { xs: '0.68rem', sm: '0.75rem' }, color: 'text.secondary' }}>{l.label}</Typography>
+                    </Stack>
+                  ))}
                 </Stack>
-                <Stack direction="row" spacing={0.8} alignItems="center">
-                  <Box sx={{ width: 10, height: 10, borderRadius: '3px', bgcolor: 'secondary.main', flexShrink: 0 }} />
-                  <Typography variant="caption" sx={{ fontWeight: 600 }}>Λήψεις</Typography>
-                </Stack>
-              </Stack>
-            </Box>
+              }
+            />
 
             {/* Custom SVG Line Chart */}
             <Box sx={{ width: '100%', position: 'relative' }}>
               <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
                 <defs>
-                  {/* Gradients */}
                   <linearGradient id="viewsGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={theme.palette.primary.main} stopOpacity="0.25" />
+                    <stop offset="0%" stopColor={theme.palette.primary.main} stopOpacity="0.3" />
                     <stop offset="100%" stopColor={theme.palette.primary.main} stopOpacity="0" />
                   </linearGradient>
                   <linearGradient id="downloadsGrad" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor={theme.palette.secondary.main} stopOpacity="0.25" />
-                    <stop offset="100%" stopColor={theme.palette.secondary.main} stopOpacity="0" />
+                    <stop offset="0%" stopColor="#5f6368" stopOpacity="0.2" />
+                    <stop offset="100%" stopColor="#5f6368" stopOpacity="0" />
                   </linearGradient>
                 </defs>
 
                 {/* Horizontal gridlines */}
                 {[0, 0.25, 0.5, 0.75, 1].map((ratio, index) => {
-                  const y = svgPadding + ratio * (svgH - 2 * svgPadding);
+                  const y = svgPadT + ratio * (svgH - svgPadT - svgPadB);
                   const gridVal = Math.round(maxChartVal - ratio * maxChartVal);
                   return (
                     <g key={index}>
                       <line
-                        x1={svgPadding}
+                        x1={svgPadL}
                         y1={y}
-                        x2={svgW - svgPadding}
+                        x2={svgW - svgPadR}
                         y2={y}
                         stroke={dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)'}
                         strokeDasharray="4 4"
                       />
                       <text
-                        x={svgPadding - 5}
+                        x={svgPadL - 6}
                         y={y + 4}
                         textAnchor="end"
                         fill={theme.palette.text.disabled}
@@ -642,14 +805,14 @@ const AdminAnalytics = () => {
                   <path
                     d={points.downloadsLine}
                     fill="none"
-                    stroke={theme.palette.secondary.main}
+                    stroke="#5f6368"
                     strokeWidth="2.5"
                     strokeLinecap="round"
                     strokeLinejoin="round"
                   />
                 )}
 
-                {/* Interaction Dots / Indicators */}
+                {/* Interaction Dots */}
                 {chartData.length <= 30 && points.vCoords && points.vCoords.map((c, i) => {
                   const d = chartData[i];
                   const hasData = d.views > 0 || d.downloads > 0;
@@ -660,20 +823,20 @@ const AdminAnalytics = () => {
                         <circle
                           cx={c[0]}
                           cy={c[1]}
-                          r="3.5"
+                          r="4"
                           fill={theme.palette.primary.main}
-                          stroke={dark ? '#111214' : '#fff'}
-                          strokeWidth="1.5"
+                          stroke={dark ? '#1a1b1f' : '#fff'}
+                          strokeWidth="2"
                         />
                       )}
                       {d.downloads > 0 && (
                         <circle
                           cx={points.dCoords[i][0]}
                           cy={points.dCoords[i][1]}
-                          r="3.5"
-                          fill={theme.palette.secondary.main}
-                          stroke={dark ? '#111214' : '#fff'}
-                          strokeWidth="1.5"
+                          r="4"
+                          fill="#5f6368"
+                          stroke={dark ? '#1a1b1f' : '#fff'}
+                          strokeWidth="2"
                         />
                       )}
                     </g>
@@ -682,7 +845,6 @@ const AdminAnalytics = () => {
 
                 {/* X Axis Labels */}
                 {chartData.map((d, i) => {
-                  // Show fewer labels on longer ranges to prevent overlap
                   const showLabel =
                     timeframe === '24h' ? i % 4 === 0 :
                     timeframe === '7d' ? true :
@@ -691,12 +853,12 @@ const AdminAnalytics = () => {
                   if (!showLabel) return null;
 
                   const denom = chartData.length > 1 ? chartData.length - 1 : 1;
-                  const x = svgPadding + (i / denom) * (svgW - 2 * svgPadding);
+                  const x = svgPadL + (i / denom) * (svgW - svgPadL - svgPadR);
                   return (
                     <text
                       key={i}
                       x={x}
-                      y={svgH - 2}
+                      y={svgH - 4}
                       textAnchor="middle"
                       fill={theme.palette.text.secondary}
                       fontSize="9px"
@@ -711,129 +873,177 @@ const AdminAnalytics = () => {
           </Paper>
 
           {/* ── Rankings lists ── */}
-          <Grid container spacing={{ xs: 2, md: 4 }} sx={{ mb: 4 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: { xs: 2, md: 3 }, mb: { xs: 2.5, sm: 3.5 } }}>
             {/* Top Courses */}
-            <Grid item xs={12} md={6} sx={{ width: '100%' }}>
-              <Paper sx={{
-                width: '100%',
-                p: { xs: 1.5, sm: 3 }, borderRadius: '20px', border: '1px solid', borderColor: 'divider',
-                bgcolor: dark ? 'rgba(255,255,255,0.01)' : '#fff', height: '100%'
-              }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                  <TrendingUpIcon color="primary" />
-                  <Typography variant="h6" sx={{ fontWeight: 800, fontSize: '0.98rem' }}>
-                    Δημοφιλή Μαθήματα (Προβολές)
-                  </Typography>
+            <Paper sx={{
+              p: { xs: 2, sm: 3 }, borderRadius: { xs: '16px', sm: '20px' },
+              border: '1px solid', borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+              bgcolor: dark ? '#1a1b1f' : '#fff',
+              boxShadow: dark ? '0 4px 24px rgba(0,0,0,0.2)' : '0 4px 24px rgba(0,0,0,0.05)',
+              overflow: 'hidden',
+            }}>
+              <SectionLabel
+                icon={<TrendingUpIcon sx={{ fontSize: { xs: 16, sm: 19 } }} />}
+                title="Δημοφιλή Μαθήματα"
+                subtitle="Κατάταξη κατά αριθμό προβολών"
+                compact
+              />
+              {stats.topCourses.length === 0 ? (
+                <Box sx={{ py: 3, textAlign: 'center' }}>
+                  <Typography variant="body2" color="text.secondary">Δεν υπάρχουν δεδομένα προβολών</Typography>
                 </Box>
-                {stats.topCourses.length === 0 ? (
-                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
-                    Δεν υπάρχουν δεδομένα προβολών
-                  </Typography>
-                ) : (
-                  <Stack spacing={2.5}>
-                    {stats.topCourses.map((c, i) => {
-                      const maxCount = stats.topCourses[0].count || 1;
-                      const pct = (c.count / maxCount) * 100;
-                      return (
-                        <Box key={i}>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.8, gap: 1.5 }}>
-                            <Typography variant="body2" sx={{ fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
-                              {i + 1}. {c.name}
-                            </Typography>
-                            <Typography variant="body2" sx={{ fontWeight: 800, color: 'primary.main', flexShrink: 0 }}>
-                              {c.count} {c.count === 1 ? 'επίσκεψη' : 'επισκέψεις'}
+              ) : (
+                <Stack spacing={{ xs: 1.5, sm: 2 }}>
+                  {stats.topCourses.map((c, i) => {
+                    const maxCount = stats.topCourses[0].count || 1;
+                    const pct = (c.count / maxCount) * 100;
+                    return (
+                      <Box key={i}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.75, gap: 1, minWidth: 0 }}>
+                          {/* Rank badge */}
+                          <Box sx={{
+                            width: 22, height: 22, borderRadius: '6px', flexShrink: 0,
+                            background: i === 0
+                              ? 'linear-gradient(135deg, #f9ab00, #f57c00)'
+                              : i === 1
+                              ? 'linear-gradient(135deg, #9aa0a6, #757575)'
+                              : i === 2
+                              ? 'linear-gradient(135deg, #c8a870, #a07850)'
+                              : dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}>
+                            <Typography sx={{ fontSize: '0.6rem', fontWeight: 800, color: i < 3 ? '#fff' : 'text.secondary' }}>
+                              {i + 1}
                             </Typography>
                           </Box>
-                          <LinearProgress
-                            variant="determinate"
-                            value={pct}
-                            sx={{
-                              height: 8,
-                              borderRadius: 4,
-                              bgcolor: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
-                              '& .MuiLinearProgress-bar': { borderRadius: 4 }
-                            }}
-                          />
+                          {/* Name */}
+                          <Typography sx={{
+                            fontWeight: 700, fontSize: '0.875rem',
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                            flex: 1, minWidth: 0,
+                          }}>
+                            {c.name}
+                          </Typography>
+                          {/* Count */}
+                          <Typography sx={{ fontWeight: 800, color: 'primary.main', flexShrink: 0, fontSize: '0.85rem', pl: 0.5 }}>
+                            {c.count}
+                          </Typography>
                         </Box>
-                      );
-                    })}
-                  </Stack>
-                )}
-              </Paper>
-            </Grid>
+                        <LinearProgress
+                          variant="determinate"
+                          value={pct}
+                          sx={{
+                            height: { xs: 5, sm: 6 },
+                            borderRadius: 100,
+                            bgcolor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+                            '& .MuiLinearProgress-bar': { borderRadius: 100 }
+                          }}
+                        />
+                      </Box>
+                    );
+                  })}
+                </Stack>
+              )}
+            </Paper>
 
             {/* Top Downloaded Files */}
-            <Grid item xs={12} md={6} sx={{ width: '100%' }}>
-              <Paper sx={{
-                width: '100%',
-                p: { xs: 1.5, sm: 3 }, borderRadius: '20px', border: '1px solid', borderColor: 'divider',
-                bgcolor: dark ? 'rgba(255,255,255,0.01)' : '#fff', height: '100%'
-              }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                  <DownloadIcon color="secondary" />
-                  <Typography variant="h6" sx={{ fontWeight: 800, fontSize: '0.98rem' }}>
-                    Δημοφιλή Αρχεία (Λήψεις)
-                  </Typography>
+            <Paper sx={{
+              p: { xs: 2, sm: 3 }, borderRadius: { xs: '16px', sm: '20px' },
+              border: '1px solid', borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+              bgcolor: dark ? '#1a1b1f' : '#fff',
+              boxShadow: dark ? '0 4px 24px rgba(0,0,0,0.2)' : '0 4px 24px rgba(0,0,0,0.05)',
+              overflow: 'hidden',
+            }}>
+              <SectionLabel
+                icon={<DownloadIcon sx={{ fontSize: { xs: 16, sm: 19 } }} />}
+                title="Δημοφιλή Αρχεία"
+                subtitle="Κατάταξη κατά αριθμό λήψεων"
+                compact
+              />
+              {stats.topExams.length === 0 ? (
+                <Box sx={{ py: 3, textAlign: 'center' }}>
+                  <Typography variant="body2" color="text.secondary">Δεν υπάρχουν δεδομένα λήψεων</Typography>
                 </Box>
-                {stats.topExams.length === 0 ? (
-                  <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
-                    Δεν υπάρχουν δεδομένα λήψεων
-                  </Typography>
-                ) : (
-                  <Stack spacing={2.5}>
-                    {stats.topExams.map((exam, i) => {
-                      const maxCount = stats.topExams[0].count || 1;
-                      const pct = (exam.count / maxCount) * 100;
-                      return (
-                        <Box key={i}>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.8, gap: 1.5 }}>
-                            <Typography variant="body2" sx={{ fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
-                              {i + 1}. {exam.name}
-                            </Typography>
-                            <Typography variant="body2" sx={{ fontWeight: 800, color: 'secondary.main', flexShrink: 0 }}>
-                              {exam.count} {exam.count === 1 ? 'λήψη' : 'λήψεις'}
+              ) : (
+                <Stack spacing={{ xs: 1.5, sm: 2 }}>
+                  {stats.topExams.map((exam, i) => {
+                    const maxCount = stats.topExams[0].count || 1;
+                    const pct = (exam.count / maxCount) * 100;
+                    return (
+                      <Box key={i}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', mb: 0.75, gap: 1, minWidth: 0 }}>
+                          {/* Rank badge */}
+                          <Box sx={{
+                            width: 22, height: 22, borderRadius: '6px', flexShrink: 0,
+                            background: i === 0
+                              ? 'linear-gradient(135deg, #f9ab00, #f57c00)'
+                              : i === 1
+                              ? 'linear-gradient(135deg, #9aa0a6, #757575)'
+                              : i === 2
+                              ? 'linear-gradient(135deg, #c8a870, #a07850)'
+                              : dark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                          }}>
+                            <Typography sx={{ fontSize: '0.6rem', fontWeight: 800, color: i < 3 ? '#fff' : 'text.secondary' }}>
+                              {i + 1}
                             </Typography>
                           </Box>
-                          <LinearProgress
-                            variant="determinate"
-                            value={pct}
-                            color="secondary"
-                            sx={{
-                              height: 8,
-                              borderRadius: 4,
-                              bgcolor: dark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
-                              '& .MuiLinearProgress-bar': { borderRadius: 4 }
-                            }}
-                          />
+                          {/* Name */}
+                          <Typography sx={{
+                            fontWeight: 700, fontSize: '0.875rem',
+                            overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+                            flex: 1, minWidth: 0,
+                          }}>
+                            {exam.name}
+                          </Typography>
+                          {/* Count */}
+                          <Typography sx={{ fontWeight: 800, color: 'text.secondary', flexShrink: 0, fontSize: '0.85rem', pl: 0.5 }}>
+                            {exam.count}
+                          </Typography>
                         </Box>
-                      );
-                    })}
-                  </Stack>
-                )}
-              </Paper>
-            </Grid>
-          </Grid>
+                        <LinearProgress
+                          variant="determinate"
+                          value={pct}
+                          color="inherit"
+                          sx={{
+                            height: { xs: 5, sm: 6 },
+                            borderRadius: 100,
+                            bgcolor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+                            '& .MuiLinearProgress-bar': {
+                              borderRadius: 100,
+                              bgcolor: dark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.3)',
+                            }
+                          }}
+                        />
+                      </Box>
+                    );
+                  })}
+                </Stack>
+              )}
+            </Paper>
+          </Box>
 
           {/* ── Section: Live Real-time Activity Feed ── */}
           <Paper sx={{
-            width: '100%',
-            p: { xs: 1.5, sm: 3 }, borderRadius: '20px', border: '1px solid', borderColor: 'divider',
-            bgcolor: dark ? 'rgba(255,255,255,0.01)' : '#fff'
+            p: { xs: 2, sm: 3.5 }, borderRadius: '20px',
+            border: '1px solid', borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+            bgcolor: dark ? '#1a1b1f' : '#fff',
+            boxShadow: dark ? '0 4px 24px rgba(0,0,0,0.2)' : '0 4px 24px rgba(0,0,0,0.05)',
+            overflow: 'hidden',
           }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-              <NavigationIcon color="primary" sx={{ transform: 'rotate(90deg)' }} />
-              <Typography variant="h6" sx={{ fontWeight: 800, fontSize: '0.98rem' }}>
-                Πρόσφατη Δραστηριότητα (Live Feed)
-              </Typography>
-            </Box>
+            <SectionLabel
+              icon={<NavigationIcon sx={{ fontSize: 19, transform: 'rotate(90deg)' }} />}
+              title="Πρόσφατη Δραστηριότητα"
+              subtitle="Live Feed — τελευταία συμβάντα χρηστών"
+            />
             {feedLoading ? (
-              <Box sx={{ display: 'flex', justifyContent: 'center', py: 5 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
                 <CircularProgress size={28} />
               </Box>
             ) : feedEvents.length === 0 ? (
-              <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>
-                Δεν υπάρχουν πρόσφατα συμβάντα
-              </Typography>
+              <Box sx={{ py: 6, textAlign: 'center' }}>
+                <Typography variant="body2" color="text.secondary">Δεν υπάρχουν πρόσφατα συμβάντα</Typography>
+              </Box>
             ) : (
               <>
                 {isMobile ? (
@@ -855,11 +1065,13 @@ const AdminAnalytics = () => {
 
                       return (
                         <Box key={e.id} sx={{
-                          p: 1.75,
-                          borderRadius: '12px',
+                          p: 2,
+                          borderRadius: '14px',
                           bgcolor: dark ? alpha('#fff', 0.03) : alpha('#000', 0.015),
                           border: '1px solid',
-                          borderColor: dark ? alpha('#fff', 0.06) : alpha('#000', 0.06),
+                          borderColor: dark ? alpha('#fff', 0.07) : alpha('#000', 0.06),
+                          transition: 'border-color 0.15s',
+                          '&:hover': { borderColor: dark ? alpha('#fff', 0.12) : alpha('#000', 0.12) },
                         }}>
                           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.25 }}>
                             <Chip
@@ -902,14 +1114,14 @@ const AdminAnalytics = () => {
                     })}
                   </Stack>
                 ) : (
-                  <TableContainer sx={{ overflowX: 'auto' }}>
-                    <Table size="small" sx={{ minWidth: { xs: 320, sm: 600 } }}>
+                  <TableContainer sx={{ overflowX: 'auto', borderRadius: '12px', border: '1px solid', borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' }}>
+                    <Table size="small" sx={{ minWidth: 600 }}>
                       <TableHead>
-                        <TableRow>
-                          <TableCell sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}>Ώρα</TableCell>
-                          <TableCell sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}>Ενέργεια</TableCell>
-                          <TableCell sx={{ fontWeight: 700, whiteSpace: 'nowrap', display: { xs: 'none', sm: 'table-cell' } }}>Σελίδα/Αρχείο</TableCell>
-                          <TableCell sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}>Ταυτότητα</TableCell>
+                        <TableRow sx={{ bgcolor: dark ? 'rgba(255,255,255,0.03)' : 'rgba(0,0,0,0.025)' }}>
+                          <TableCell sx={{ fontWeight: 700, whiteSpace: 'nowrap', fontSize: '0.78rem', py: 1.5 }}>Ώρα</TableCell>
+                          <TableCell sx={{ fontWeight: 700, whiteSpace: 'nowrap', fontSize: '0.78rem', py: 1.5 }}>Ενέργεια</TableCell>
+                          <TableCell sx={{ fontWeight: 700, whiteSpace: 'nowrap', fontSize: '0.78rem', py: 1.5, display: { xs: 'none', sm: 'table-cell' } }}>Σελίδα / Αρχείο</TableCell>
+                          <TableCell sx={{ fontWeight: 700, whiteSpace: 'nowrap', fontSize: '0.78rem', py: 1.5 }}>Ταυτότητα</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -929,26 +1141,33 @@ const AdminAnalytics = () => {
                                   : getReadablePath(e.page_path, e.metadata);
 
                           return (
-                            <TableRow key={e.id} hover>
-                              <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                                <Typography variant="body2" sx={{ fontWeight: 600, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{timeStr}</Typography>
-                                <Typography variant="caption" color="text.disabled">{dateStr}</Typography>
+                            <TableRow
+                              key={e.id}
+                              hover
+                              sx={{
+                                '&:last-child td': { border: 0 },
+                                transition: 'background 0.15s',
+                              }}
+                            >
+                              <TableCell sx={{ whiteSpace: 'nowrap', py: 1.5 }}>
+                                <Typography variant="body2" sx={{ fontWeight: 700, fontSize: '0.82rem' }}>{timeStr}</Typography>
+                                <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.72rem' }}>{dateStr}</Typography>
                               </TableCell>
-                              <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                              <TableCell sx={{ whiteSpace: 'nowrap', py: 1.5 }}>
                                 <Chip
                                   size="small"
                                   label={getEventNameGreek(e.event_type)}
                                   color={getEventColor(e.event_type)}
                                   variant="outlined"
-                                  sx={{ fontWeight: 700, fontSize: { xs: '0.68rem', sm: '0.75rem' }, borderRadius: '8px' }}
+                                  sx={{ fontWeight: 700, fontSize: '0.72rem', borderRadius: '8px' }}
                                 />
                               </TableCell>
-                              <TableCell sx={{ maxWidth: { sm: 260, md: 320 }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: { xs: 'none', sm: 'table-cell' } }}>
+                              <TableCell sx={{ maxWidth: { sm: 260, md: 320 }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: { xs: 'none', sm: 'table-cell' }, py: 1.5 }}>
                                 <Tooltip title={details} placement="top">
-                                  <Typography variant="body2" sx={{ fontWeight: 500 }}>{details}</Typography>
+                                  <Typography variant="body2" sx={{ fontWeight: 500, fontSize: '0.82rem' }}>{details}</Typography>
                                 </Tooltip>
                               </TableCell>
-                              <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                              <TableCell sx={{ whiteSpace: 'nowrap', py: 1.5 }}>
                                 {e.user_id && userProfiles[e.user_id] ? (
                                   <Tooltip title={`${userProfiles[e.user_id].name} • ${userProfiles[e.user_id].role || 'user'}`} placement="top">
                                     <Chip

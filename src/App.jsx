@@ -444,7 +444,7 @@ function App() {
           <CssBaseline />
           <Box sx={{
             overflowX: 'hidden',
-            maxWidth: '100vw',
+            maxWidth: '100%',
             pt: { xs: 'calc(56px + env(safe-area-inset-top, 0px))', md: 'calc(64px + env(safe-area-inset-top, 0px))' },
           }}>
 

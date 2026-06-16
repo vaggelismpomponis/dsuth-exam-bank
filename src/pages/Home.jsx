@@ -179,7 +179,7 @@ const Home = () => {
   return (
     <Box
       sx={{
-        width: '100vw',
+        width: '100%',
         minHeight: '100vh',
         bgcolor: 'background.default',
         overflowX: 'hidden',

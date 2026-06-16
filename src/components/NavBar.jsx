@@ -144,7 +144,7 @@ const NavBar = () => {
         >
           {/* Left: Admin toggle + Brand */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            {isAdminRoute && adminSidebar.onToggle && (
+            {isAdminRoute && adminSidebar.onToggle && !isMobile && (
               <IconButton
                 edge="start"
                 onClick={adminSidebar.onToggle}
