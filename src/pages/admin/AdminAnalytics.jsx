@@ -3,7 +3,7 @@ import {
   Box, Typography, Grid, Paper, Select, MenuItem, FormControl, InputLabel,
   CircularProgress, Table, TableBody, TableCell, TableContainer, TableHead,
   TableRow, TablePagination, Chip, LinearProgress, Avatar, Stack, Card, CardContent,
-  useTheme, alpha, Button, IconButton, Tooltip
+  useTheme, alpha, Button, IconButton, Tooltip, useMediaQuery
 } from '@mui/material';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -21,6 +21,7 @@ import { supabase } from '../../supabaseClient';
 const AdminAnalytics = () => {
   const theme = useTheme();
   const dark = theme.palette.mode === 'dark';
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [timeframe, setTimeframe] = useState('24h'); // 24h, 7d, 30d, all
   const [events, setEvents] = useState([]);
@@ -409,34 +410,44 @@ const AdminAnalytics = () => {
   return (
     <Box sx={{ animation: 'fadeIn 0.3s ease' }}>
       {/* ── Title & Filter Header ── */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 2, mb: 4 }}>
-        <Box>
-          <Typography variant="h4" sx={{ fontWeight: 800, lineHeight: 1.1, mb: 0.5 }}>
-            Αναλυτικά Στατιστικά
-          </Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-            Παρακολούθηση επισκεψιμότητας, λήψεων και δραστηριότητας χρηστών
-          </Typography>
+      <Box sx={{ mb: { xs: 3, sm: 4 } }}>
+        <Box sx={{
+          display: 'flex',
+          flexDirection: { xs: 'column', sm: 'row' },
+          justifyContent: 'space-between',
+          alignItems: { xs: 'flex-start', sm: 'center' },
+          gap: { xs: 2, sm: 1.5 },
+          mb: { xs: 1.5, sm: 0 }
+        }}>
+          <Box>
+            <Typography sx={{ fontWeight: 800, lineHeight: 1.1, fontSize: { xs: '1.4rem', sm: '1.6rem' } }}>
+              Αναλυτικά Στατιστικά
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5, display: 'block' }}>
+              Παρακολούθηση επισκεψιμότητας, λήψεων και δραστηριότητας χρηστών
+            </Typography>
+          </Box>
+          {/* On mobile: controls stack nicely below the title */}
+          <Stack direction="row" spacing={1} alignItems="center" sx={{ width: { xs: '100%', sm: 'auto' }, justifyContent: { xs: 'space-between', sm: 'flex-end' } }}>
+            <IconButton onClick={handleRefresh} size="small" sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '10px', p: 0.75 }}>
+              <RefreshIcon fontSize="small" />
+            </IconButton>
+            <FormControl size="small" sx={{ minWidth: { xs: 130, sm: 160 }, flexGrow: { xs: 1, sm: 0 } }}>
+              <InputLabel sx={{ fontSize: { xs: '0.8rem', sm: '0.875rem' } }}>Χρονικό Εύρος</InputLabel>
+              <Select
+                value={timeframe}
+                label="Χρονικό Εύρος"
+                onChange={(e) => setTimeframe(e.target.value)}
+                sx={{ borderRadius: '10px', fontSize: { xs: '0.8rem', sm: '0.875rem' } }}
+              >
+                <MenuItem value="24h">Τελ. 24ωρο</MenuItem>
+                <MenuItem value="7d">Τελ. 7 ημέρες</MenuItem>
+                <MenuItem value="30d">Τελ. 30 ημέρες</MenuItem>
+                <MenuItem value="all">Όλα</MenuItem>
+              </Select>
+            </FormControl>
+          </Stack>
         </Box>
-        <Stack direction="row" spacing={1.5} alignItems="center">
-          <IconButton onClick={handleRefresh} size="small" sx={{ border: '1px solid', borderColor: 'divider', borderRadius: '10px', p: 1 }}>
-            <RefreshIcon fontSize="small" />
-          </IconButton>
-          <FormControl size="small" sx={{ minWidth: 150 }}>
-            <InputLabel>Χρονικό Εύρος</InputLabel>
-            <Select
-              value={timeframe}
-              label="Χρονικό Εύρος"
-              onChange={(e) => setTimeframe(e.target.value)}
-              sx={{ borderRadius: '10px' }}
-            >
-              <MenuItem value="24h">Τελευταίο 24ωρο</MenuItem>
-              <MenuItem value="7d">Τελευταίες 7 ημέρες</MenuItem>
-              <MenuItem value="30d">Τελευταίες 30 ημέρες</MenuItem>
-              <MenuItem value="all">Όλα τα δεδομένα</MenuItem>
-            </Select>
-          </FormControl>
-        </Stack>
       </Box>
 
       {loading ? (
@@ -454,203 +465,124 @@ const AdminAnalytics = () => {
         <>
           {/* ── Section: Website Traffic Frequencies (DAU / WAU / MAU) ── */}
           <Paper sx={{
-            p: 3, mb: 4, borderRadius: '20px',
+            p: { xs: 1.5, sm: 3 }, mb: { xs: 2, sm: 4 }, borderRadius: '16px',
             border: '1px solid', borderColor: dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
             background: dark ? 'linear-gradient(135deg, #1e2025 0%, #17181c 100%)' : '#fff'
           }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2, mb: 3, flexWrap: 'wrap' }}>
-              <PeopleIcon color="primary" />
-              <Typography variant="h6" sx={{ fontWeight: 800, fontSize: '1.05rem' }}>
-                Κίνηση & Επισκεψιμότητα Ιστότοπου
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, overflow: 'hidden' }}>
+              <PeopleIcon color="primary" sx={{ fontSize: { xs: '1.1rem', sm: '1.5rem' }, flexShrink: 0 }} />
+              <Typography sx={{ fontWeight: 800, fontSize: { xs: '0.85rem', sm: '1.05rem' }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                Κίνηση &amp; Επισκεψιμότητα
               </Typography>
-              <Chip
-                size="small"
-                label={`${events.length} events`}
-                variant="outlined"
-                sx={{ fontWeight: 700, fontSize: '0.7rem', borderRadius: '8px', ml: 'auto', opacity: 0.65 }}
-              />
+              <Chip size="small" label={`${events.length}`} variant="outlined"
+                sx={{ fontWeight: 700, fontSize: '0.65rem', borderRadius: '8px', ml: 'auto', opacity: 0.65, flexShrink: 0 }} />
             </Box>
-            <Grid container spacing={3}>
-              {/* Daily segment */}
-              <Grid item xs={12} sm={4} md={4}>
-                <Box sx={{
-                  p: 2.5, borderRadius: '14px', bgcolor: dark ? alpha('#1a73e8', 0.04) : alpha('#1a73e8', 0.02),
-                  border: '1px solid', borderColor: dark ? alpha('#1a73e8', 0.12) : alpha('#1a73e8', 0.08)
-                }}>
-                  <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                    Τελευταίο 24ωρο (Ημερήσια)
-                  </Typography>
-                  <Stack direction="row" spacing={3} alignItems="baseline" sx={{ mt: 1.5 }}>
-                    <Box>
-                      <Typography variant="h4" sx={{ fontWeight: 800, color: 'primary.main', lineHeight: 1 }}>
-                        {trafficStats.day.uv}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">Μοναδικοί (UV)</Typography>
+            <Grid container spacing={{ xs: 1.5, sm: 2 }}>
+              {[
+                { label: '24ωρο', uv: trafficStats.day.uv, pv: trafficStats.day.pv, color: '#1a73e8' },
+                { label: '7 ημέρες', uv: trafficStats.week.uv, pv: trafficStats.week.pv, color: '#7b1fa2' },
+                { label: '30 ημέρες', uv: trafficStats.month.uv, pv: trafficStats.month.pv, color: '#2e7d32' },
+              ].map((seg) => (
+                <Grid key={seg.label} item xs={12} sm={4}>
+                  <Box sx={{
+                    p: { xs: 1.5, sm: 2 }, borderRadius: '12px',
+                    bgcolor: dark ? alpha(seg.color, 0.05) : alpha(seg.color, 0.03),
+                    border: '1px solid', borderColor: dark ? alpha(seg.color, 0.15) : alpha(seg.color, 0.1),
+                    display: 'flex',
+                    flexDirection: { xs: 'row', sm: 'column' },
+                    alignItems: { xs: 'center', sm: 'flex-start' },
+                    justifyContent: { xs: 'space-between', sm: 'flex-start' },
+                    gap: { xs: 2, sm: 0.5 }
+                  }}>
+                    <Typography sx={{ fontWeight: 700, color: 'text.secondary', fontSize: { xs: '0.7rem', sm: '0.65rem' }, textTransform: 'uppercase', flexShrink: 0 }}>
+                      {seg.label}
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: { xs: 2.5, sm: 1.5 }, alignItems: 'center', ml: { xs: 'auto', sm: 0 } }}>
+                      <Stack direction="row" spacing={0.5} alignItems="baseline">
+                        <Typography sx={{ fontWeight: 800, color: seg.color, fontSize: { xs: '1.15rem', sm: '1.8rem' }, lineHeight: 1 }}>{seg.uv}</Typography>
+                        <Typography sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem' }, color: 'text.secondary' }}>UV</Typography>
+                      </Stack>
+                      <Stack direction="row" spacing={0.5} alignItems="baseline">
+                        <Typography sx={{ fontWeight: 700, color: 'text.primary', fontSize: { xs: '1.15rem', sm: '1.1rem' }, lineHeight: 1 }}>{seg.pv}</Typography>
+                        <Typography sx={{ fontSize: { xs: '0.65rem', sm: '0.7rem' }, color: 'text.secondary' }}>PV</Typography>
+                      </Stack>
                     </Box>
-                    <Box>
-                      <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary', lineHeight: 1 }}>
-                        {trafficStats.day.pv}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">Σελίδες (PV)</Typography>
-                    </Box>
-                  </Stack>
-                </Box>
-              </Grid>
-
-              {/* Weekly segment */}
-              <Grid item xs={12} sm={4} md={4}>
-                <Box sx={{
-                  p: 2.5, borderRadius: '14px', bgcolor: dark ? alpha('#7b1fa2', 0.04) : alpha('#7b1fa2', 0.02),
-                  border: '1px solid', borderColor: dark ? alpha('#7b1fa2', 0.12) : alpha('#7b1fa2', 0.08)
-                }}>
-                  <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                    Τελευταίες 7 Ημέρες (Εβδομαδιαία)
-                  </Typography>
-                  <Stack direction="row" spacing={3} alignItems="baseline" sx={{ mt: 1.5 }}>
-                    <Box>
-                      <Typography variant="h4" sx={{ fontWeight: 800, color: '#7b1fa2', lineHeight: 1 }}>
-                        {trafficStats.week.uv}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">Μοναδικοί (UV)</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary', lineHeight: 1 }}>
-                        {trafficStats.week.pv}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">Σελίδες (PV)</Typography>
-                    </Box>
-                  </Stack>
-                </Box>
-              </Grid>
-
-              {/* Monthly segment */}
-              <Grid item xs={12} sm={4} md={4}>
-                <Box sx={{
-                  p: 2.5, borderRadius: '14px', bgcolor: dark ? alpha('#2e7d32', 0.04) : alpha('#2e7d32', 0.02),
-                  border: '1px solid', borderColor: dark ? alpha('#2e7d32', 0.12) : alpha('#2e7d32', 0.08)
-                }}>
-                  <Typography variant="caption" sx={{ fontWeight: 700, color: 'text.secondary', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
-                    Τελευταίες 30 Ημέρες (Μηνιαία)
-                  </Typography>
-                  <Stack direction="row" spacing={3} alignItems="baseline" sx={{ mt: 1.5 }}>
-                    <Box>
-                      <Typography variant="h4" sx={{ fontWeight: 800, color: '#2e7d32', lineHeight: 1 }}>
-                        {trafficStats.month.uv}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">Μοναδικοί (UV)</Typography>
-                    </Box>
-                    <Box>
-                      <Typography variant="h5" sx={{ fontWeight: 700, color: 'text.primary', lineHeight: 1 }}>
-                        {trafficStats.month.pv}
-                      </Typography>
-                      <Typography variant="caption" color="text.secondary">Σελίδες (PV)</Typography>
-                    </Box>
-                  </Stack>
-                </Box>
-              </Grid>
+                  </Box>
+                </Grid>
+              ))}
             </Grid>
           </Paper>
 
           {/* ── KPI Overview Cards ── */}
-          <Grid container spacing={3} sx={{ mb: 4 }}>
-            {/* Pageviews */}
-            <Grid item xs={12} sm={6} md={3} sx={{ width: '100%' }}>
-              <Card sx={{ width: '100%', border: '1px solid', borderColor: 'divider', bgcolor: dark ? 'rgba(255,255,255,0.01)' : '#fff' }}>
-                <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Avatar sx={{ bgcolor: alpha(theme.palette.primary.main, 0.15), color: theme.palette.primary.main, borderRadius: '10px' }}>
-                      <VisibilityIcon fontSize="small" />
-                    </Avatar>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>Προβολές Σελίδων</Typography>
-                      <Typography variant="h5" sx={{ fontWeight: 800, mt: 0.2 }}>{stats.kpis.views}</Typography>
-                    </Box>
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            {/* Previews */}
-            <Grid item xs={12} sm={6} md={3} sx={{ width: '100%' }}>
-              <Card sx={{ width: '100%', border: '1px solid', borderColor: 'divider', bgcolor: dark ? 'rgba(255,255,255,0.01)' : '#fff' }}>
-                <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Avatar sx={{ bgcolor: alpha(theme.palette.info.main, 0.15), color: theme.palette.info.main, borderRadius: '10px' }}>
-                      <ArticleIcon fontSize="small" />
-                    </Avatar>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>Προεπισκοπήσεις</Typography>
-                      <Typography variant="h5" sx={{ fontWeight: 800, mt: 0.2 }}>{stats.kpis.previews}</Typography>
-                    </Box>
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            {/* Downloads */}
-            <Grid item xs={12} sm={6} md={3} sx={{ width: '100%' }}>
-              <Card sx={{ width: '100%', border: '1px solid', borderColor: 'divider', bgcolor: dark ? 'rgba(255,255,255,0.01)' : '#fff' }}>
-                <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Avatar sx={{ bgcolor: alpha(theme.palette.secondary.main, 0.15), color: theme.palette.secondary.main, borderRadius: '10px' }}>
-                      <DownloadIcon fontSize="small" />
-                    </Avatar>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>Λήψεις Θεμάτων</Typography>
-                      <Typography variant="h5" sx={{ fontWeight: 800, mt: 0.2 }}>{stats.kpis.downloads}</Typography>
-                    </Box>
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Grid>
-
-            {/* Uploads */}
-            <Grid item xs={12} sm={6} md={3} sx={{ width: '100%' }}>
-              <Card sx={{ width: '100%', border: '1px solid', borderColor: 'divider', bgcolor: dark ? 'rgba(255,255,255,0.01)' : '#fff' }}>
-                <CardContent sx={{ p: 2.5, '&:last-child': { pb: 2.5 } }}>
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Avatar sx={{ bgcolor: alpha(theme.palette.success.main, 0.15), color: theme.palette.success.main, borderRadius: '10px' }}>
-                      <CloudUploadIcon fontSize="small" />
-                    </Avatar>
-                    <Box>
-                      <Typography variant="caption" color="text.secondary" sx={{ fontWeight: 600 }}>Μεταφορτώσεις</Typography>
-                      <Typography variant="h5" sx={{ fontWeight: 800, mt: 0.2 }}>{stats.kpis.uploads}</Typography>
-                    </Box>
-                  </Stack>
-                </CardContent>
-              </Card>
-            </Grid>
+          <Grid container spacing={{ xs: 1, sm: 2 }} sx={{ mb: { xs: 2, sm: 4 } }}>
+            {[{
+              icon: <VisibilityIcon fontSize="small" />,
+              label: 'Προβολές',
+              value: stats.kpis.views,
+              color: theme.palette.primary.main
+            }, {
+              icon: <ArticleIcon fontSize="small" />,
+              label: 'Προεπισκοπήσεις',
+              value: stats.kpis.previews,
+              color: theme.palette.info.main
+            }, {
+              icon: <DownloadIcon fontSize="small" />,
+              label: 'Λήψεις',
+              value: stats.kpis.downloads,
+              color: theme.palette.secondary.main
+            }, {
+              icon: <CloudUploadIcon fontSize="small" />,
+              label: 'Μεταφορτώσεις',
+              value: stats.kpis.uploads,
+              color: theme.palette.success.main
+            }].map((kpi, idx) => (
+              <Grid key={idx} item xs={6} md={3}>
+                <Card sx={{ border: '1px solid', borderColor: 'divider', bgcolor: dark ? 'rgba(255,255,255,0.01)' : '#fff', height: '100%' }}>
+                  <CardContent sx={{ p: { xs: 1.25, sm: 2.5 }, '&:last-child': { pb: { xs: 1.25, sm: 2.5 } } }}>
+                    <Stack direction="row" spacing={{ xs: 0.75, sm: 1.5 }} alignItems="center">
+                      <Avatar sx={{ bgcolor: alpha(kpi.color, 0.15), color: kpi.color, borderRadius: '8px', width: { xs: 28, sm: 40 }, height: { xs: 28, sm: 40 }, flexShrink: 0 }}>
+                        {kpi.icon}
+                      </Avatar>
+                      <Box sx={{ minWidth: 0 }}>
+                        <Typography sx={{ fontWeight: 600, color: 'text.secondary', display: 'block', fontSize: { xs: '0.62rem', sm: '0.75rem' }, lineHeight: 1.3 }}>{kpi.label}</Typography>
+                        <Typography sx={{ fontWeight: 800, fontSize: { xs: '1.2rem', sm: '1.5rem' }, lineHeight: 1.1, mt: 0.2 }}>{kpi.value}</Typography>
+                      </Box>
+                    </Stack>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
           </Grid>
 
           {/* ── Section: Custom SVG Chart & Trends ── */}
           <Paper sx={{
-            p: 3, mb: 4, borderRadius: '20px',
+            p: { xs: 1.5, sm: 3 }, mb: { xs: 2, sm: 4 }, borderRadius: '16px',
             border: '1px solid', borderColor: 'divider',
             bgcolor: dark ? 'rgba(255,255,255,0.01)' : '#fff',
             position: 'relative'
           }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, flexWrap: 'wrap', gap: 1 }}>
               <Stack direction="row" spacing={1} alignItems="center">
                 <TimelineIcon color="primary" />
                 <Typography variant="h6" sx={{ fontWeight: 800, fontSize: '1.02rem' }}>
                   Διάγραμμα Τάσεων
                 </Typography>
               </Stack>
-              <Stack direction="row" spacing={2.5}>
+              <Stack direction="row" spacing={2}>
                 <Stack direction="row" spacing={0.8} alignItems="center">
-                  <Box sx={{ width: 12, height: 12, borderRadius: '4px', bgcolor: 'primary.main' }} />
+                  <Box sx={{ width: 10, height: 10, borderRadius: '3px', bgcolor: 'primary.main', flexShrink: 0 }} />
                   <Typography variant="caption" sx={{ fontWeight: 600 }}>Προβολές</Typography>
                 </Stack>
                 <Stack direction="row" spacing={0.8} alignItems="center">
-                  <Box sx={{ width: 12, height: 12, borderRadius: '4px', bgcolor: 'secondary.main' }} />
+                  <Box sx={{ width: 10, height: 10, borderRadius: '3px', bgcolor: 'secondary.main', flexShrink: 0 }} />
                   <Typography variant="caption" sx={{ fontWeight: 600 }}>Λήψεις</Typography>
                 </Stack>
               </Stack>
             </Box>
 
             {/* Custom SVG Line Chart */}
-            <Box sx={{ width: '100%', position: 'relative', overflowX: 'auto' }}>
-              <svg viewBox={`0 0 ${svgW} ${svgH}`} width="100%" height={svgH} style={{ overflow: 'visible' }}>
+            <Box sx={{ width: '100%', position: 'relative' }}>
+              <svg viewBox={`0 0 ${svgW} ${svgH}`} style={{ width: '100%', height: 'auto', display: 'block', overflow: 'visible' }}>
                 <defs>
                   {/* Gradients */}
                   <linearGradient id="viewsGrad" x1="0" y1="0" x2="0" y2="1">
@@ -779,12 +711,12 @@ const AdminAnalytics = () => {
           </Paper>
 
           {/* ── Rankings lists ── */}
-          <Grid container spacing={4} sx={{ mb: 4 }}>
+          <Grid container spacing={{ xs: 2, md: 4 }} sx={{ mb: 4 }}>
             {/* Top Courses */}
             <Grid item xs={12} md={6} sx={{ width: '100%' }}>
               <Paper sx={{
                 width: '100%',
-                p: 3, borderRadius: '20px', border: '1px solid', borderColor: 'divider',
+                p: { xs: 1.5, sm: 3 }, borderRadius: '20px', border: '1px solid', borderColor: 'divider',
                 bgcolor: dark ? 'rgba(255,255,255,0.01)' : '#fff', height: '100%'
               }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
@@ -804,11 +736,11 @@ const AdminAnalytics = () => {
                       const pct = (c.count / maxCount) * 100;
                       return (
                         <Box key={i}>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.8 }}>
-                            <Typography variant="body2" sx={{ fontWeight: 700 }}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.8, gap: 1.5 }}>
+                            <Typography variant="body2" sx={{ fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
                               {i + 1}. {c.name}
                             </Typography>
-                            <Typography variant="body2" sx={{ fontWeight: 800, color: 'primary.main' }}>
+                            <Typography variant="body2" sx={{ fontWeight: 800, color: 'primary.main', flexShrink: 0 }}>
                               {c.count} {c.count === 1 ? 'επίσκεψη' : 'επισκέψεις'}
                             </Typography>
                           </Box>
@@ -834,7 +766,7 @@ const AdminAnalytics = () => {
             <Grid item xs={12} md={6} sx={{ width: '100%' }}>
               <Paper sx={{
                 width: '100%',
-                p: 3, borderRadius: '20px', border: '1px solid', borderColor: 'divider',
+                p: { xs: 1.5, sm: 3 }, borderRadius: '20px', border: '1px solid', borderColor: 'divider',
                 bgcolor: dark ? 'rgba(255,255,255,0.01)' : '#fff', height: '100%'
               }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
@@ -854,11 +786,11 @@ const AdminAnalytics = () => {
                       const pct = (exam.count / maxCount) * 100;
                       return (
                         <Box key={i}>
-                          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.8 }}>
-                            <Typography variant="body2" sx={{ fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '75%' }}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 0.8, gap: 1.5 }}>
+                            <Typography variant="body2" sx={{ fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', flex: 1, minWidth: 0 }}>
                               {i + 1}. {exam.name}
                             </Typography>
-                            <Typography variant="body2" sx={{ fontWeight: 800, color: 'secondary.main' }}>
+                            <Typography variant="body2" sx={{ fontWeight: 800, color: 'secondary.main', flexShrink: 0 }}>
                               {exam.count} {exam.count === 1 ? 'λήψη' : 'λήψεις'}
                             </Typography>
                           </Box>
@@ -885,7 +817,7 @@ const AdminAnalytics = () => {
           {/* ── Section: Live Real-time Activity Feed ── */}
           <Paper sx={{
             width: '100%',
-            p: 3, borderRadius: '20px', border: '1px solid', borderColor: 'divider',
+            p: { xs: 1.5, sm: 3 }, borderRadius: '20px', border: '1px solid', borderColor: 'divider',
             bgcolor: dark ? 'rgba(255,255,255,0.01)' : '#fff'
           }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
@@ -904,87 +836,147 @@ const AdminAnalytics = () => {
               </Typography>
             ) : (
               <>
-                <TableContainer>
-                  <Table size="medium">
-                    <TableHead>
-                      <TableRow>
-                        <TableCell sx={{ fontWeight: 700 }}>Ώρα</TableCell>
-                        <TableCell sx={{ fontWeight: 700 }}>Ενέργεια</TableCell>
-                        <TableCell sx={{ fontWeight: 700 }}>Σελίδα/Αρχείο</TableCell>
-                        <TableCell sx={{ fontWeight: 700 }}>Ταυτότητα</TableCell>
-                      </TableRow>
-                    </TableHead>
-                    <TableBody>
-                      {feedEvents.map((e) => {
-                        const dt = new Date(e.created_at);
-                        const timeStr = dt.toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                        const dateStr = dt.toLocaleDateString('el-GR', { day: 'numeric', month: 'short' });
+                {isMobile ? (
+                  <Stack spacing={1.5} sx={{ mb: 2 }}>
+                    {feedEvents.map((e) => {
+                      const dt = new Date(e.created_at);
+                      const timeStr = dt.toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                      const dateStr = dt.toLocaleDateString('el-GR', { day: 'numeric', month: 'short' });
 
-                        // Extract context from metadata (no FK joins)
-                        let details;
-                        if (e.event_type === 'page_view') {
-                          details = getReadablePath(e.page_path, e.metadata);
-                        } else if (e.event_type === 'download' || e.event_type === 'preview') {
-                          details = e.metadata?.filename || e.metadata?.courseName || getReadablePath(e.page_path, e.metadata);
-                        } else if (e.event_type === 'upload') {
-                          const cn = e.metadata?.courseName || 'Μάθημα';
-                          const yr = e.metadata?.year ? ` ${e.metadata.year}` : '';
-                          const pr = e.metadata?.period ? ` (${e.metadata.period})` : '';
-                          details = `${cn}${yr}${pr}`;
-                        } else if (e.event_type === 'download_all') {
-                          details = `ZIP: ${e.metadata?.courseName || 'Όλα τα αρχεία'}`;
-                        } else {
-                          details = getReadablePath(e.page_path, e.metadata);
-                        }
+                      let details = e.event_type === 'page_view'
+                        ? getReadablePath(e.page_path, e.metadata)
+                        : (e.event_type === 'download' || e.event_type === 'preview')
+                          ? e.metadata?.filename || e.metadata?.courseName || getReadablePath(e.page_path, e.metadata)
+                          : e.event_type === 'upload'
+                            ? `${e.metadata?.courseName || 'Μάθημα'}${e.metadata?.year ? ` ${e.metadata.year}` : ''}${e.metadata?.period ? ` (${e.metadata.period})` : ''}`
+                            : e.event_type === 'download_all'
+                              ? `ZIP: ${e.metadata?.courseName || 'Όλα τα αρχεία'}`
+                              : getReadablePath(e.page_path, e.metadata);
 
-                        return (
-                          <TableRow key={e.id} hover>
-                            <TableCell sx={{ whiteSpace: 'nowrap' }}>
-                              <Typography variant="body2" sx={{ fontWeight: 600 }}>{timeStr}</Typography>
-                              <Typography variant="caption" color="text.disabled">{dateStr}</Typography>
-                            </TableCell>
-                            <TableCell>
+                      return (
+                        <Box key={e.id} sx={{
+                          p: 1.75,
+                          borderRadius: '12px',
+                          bgcolor: dark ? alpha('#fff', 0.03) : alpha('#000', 0.015),
+                          border: '1px solid',
+                          borderColor: dark ? alpha('#fff', 0.06) : alpha('#000', 0.06),
+                        }}>
+                          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.25 }}>
+                            <Chip
+                              size="small"
+                              label={getEventNameGreek(e.event_type)}
+                              color={getEventColor(e.event_type)}
+                              variant="outlined"
+                              sx={{ fontWeight: 700, fontSize: '0.68rem', borderRadius: '8px' }}
+                            />
+                            <Box sx={{ textAlign: 'right' }}>
+                              <Typography variant="caption" sx={{ fontWeight: 600, display: 'block', fontSize: '0.72rem' }}>{timeStr}</Typography>
+                              <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.65rem' }}>{dateStr}</Typography>
+                            </Box>
+                          </Box>
+
+                          <Typography variant="body2" sx={{ fontWeight: 600, mb: 1.25, wordBreak: 'break-word' }}>
+                            {details}
+                          </Typography>
+
+                          <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                            {e.user_id && userProfiles[e.user_id] ? (
                               <Chip
                                 size="small"
-                                label={getEventNameGreek(e.event_type)}
-                                color={getEventColor(e.event_type)}
+                                label={userProfiles[e.user_id].name}
+                                color="primary"
                                 variant="outlined"
-                                sx={{ fontWeight: 700, fontSize: '0.75rem', borderRadius: '8px' }}
+                                sx={{ fontWeight: 600, fontSize: '0.68rem', borderRadius: '6px', height: 22, maxWidth: 180 }}
                               />
-                            </TableCell>
-                            <TableCell sx={{ maxWidth: 300, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                              <Tooltip title={details} placement="top">
-                                <Typography variant="body2" sx={{ fontWeight: 500 }}>{details}</Typography>
-                              </Tooltip>
-                            </TableCell>
-                            <TableCell>
-                              {e.user_id && userProfiles[e.user_id] ? (
-                                <Tooltip title={`${userProfiles[e.user_id].name} • ${userProfiles[e.user_id].role || 'user'}`} placement="top">
-                                  <Chip
-                                    size="small"
-                                    label={userProfiles[e.user_id].name}
-                                    color="primary"
-                                    variant="outlined"
-                                    sx={{ fontWeight: 600, fontSize: '0.7rem', borderRadius: '6px', height: 22, maxWidth: 160 }}
-                                  />
+                            ) : (
+                              <Chip
+                                size="small"
+                                label={`Ανών. (${(e.visitor_id || 'anon').substring(0, 6)})`}
+                                variant="outlined"
+                                sx={{ fontWeight: 600, fontSize: '0.68rem', borderRadius: '6px', height: 22, color: 'text.secondary', maxWidth: 180 }}
+                              />
+                            )}
+                          </Box>
+                        </Box>
+                      );
+                    })}
+                  </Stack>
+                ) : (
+                  <TableContainer sx={{ overflowX: 'auto' }}>
+                    <Table size="small" sx={{ minWidth: { xs: 320, sm: 600 } }}>
+                      <TableHead>
+                        <TableRow>
+                          <TableCell sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}>Ώρα</TableCell>
+                          <TableCell sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}>Ενέργεια</TableCell>
+                          <TableCell sx={{ fontWeight: 700, whiteSpace: 'nowrap', display: { xs: 'none', sm: 'table-cell' } }}>Σελίδα/Αρχείο</TableCell>
+                          <TableCell sx={{ fontWeight: 700, whiteSpace: 'nowrap' }}>Ταυτότητα</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {feedEvents.map((e) => {
+                          const dt = new Date(e.created_at);
+                          const timeStr = dt.toLocaleTimeString('el-GR', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                          const dateStr = dt.toLocaleDateString('el-GR', { day: 'numeric', month: 'short' });
+
+                          let details = e.event_type === 'page_view'
+                            ? getReadablePath(e.page_path, e.metadata)
+                            : (e.event_type === 'download' || e.event_type === 'preview')
+                              ? e.metadata?.filename || e.metadata?.courseName || getReadablePath(e.page_path, e.metadata)
+                              : e.event_type === 'upload'
+                                ? `${e.metadata?.courseName || 'Μάθημα'}${e.metadata?.year ? ` ${e.metadata.year}` : ''}${e.metadata?.period ? ` (${e.metadata.period})` : ''}`
+                                : e.event_type === 'download_all'
+                                  ? `ZIP: ${e.metadata?.courseName || 'Όλα τα αρχεία'}`
+                                  : getReadablePath(e.page_path, e.metadata);
+
+                          return (
+                            <TableRow key={e.id} hover>
+                              <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                <Typography variant="body2" sx={{ fontWeight: 600, fontSize: { xs: '0.75rem', sm: '0.875rem' } }}>{timeStr}</Typography>
+                                <Typography variant="caption" color="text.disabled">{dateStr}</Typography>
+                              </TableCell>
+                              <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                <Chip
+                                  size="small"
+                                  label={getEventNameGreek(e.event_type)}
+                                  color={getEventColor(e.event_type)}
+                                  variant="outlined"
+                                  sx={{ fontWeight: 700, fontSize: { xs: '0.68rem', sm: '0.75rem' }, borderRadius: '8px' }}
+                                />
+                              </TableCell>
+                              <TableCell sx={{ maxWidth: { sm: 260, md: 320 }, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: { xs: 'none', sm: 'table-cell' } }}>
+                                <Tooltip title={details} placement="top">
+                                  <Typography variant="body2" sx={{ fontWeight: 500 }}>{details}</Typography>
                                 </Tooltip>
-                              ) : (
-                                <Tooltip title={e.visitor_id || 'anonymous'} placement="top">
-                                  <Chip
-                                    size="small"
-                                    label={`Ανώνυμος (${(e.visitor_id || 'anon').substring(0, 6)})`}
-                                    variant="outlined"
-                                    sx={{ fontWeight: 600, fontSize: '0.7rem', borderRadius: '6px', height: 22, color: 'text.secondary', maxWidth: 160 }}
-                                  />
-                                </Tooltip>
-                              )}
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                    </TableBody>
-                  </Table>
-                </TableContainer>
+                              </TableCell>
+                              <TableCell sx={{ whiteSpace: 'nowrap' }}>
+                                {e.user_id && userProfiles[e.user_id] ? (
+                                  <Tooltip title={`${userProfiles[e.user_id].name} • ${userProfiles[e.user_id].role || 'user'}`} placement="top">
+                                    <Chip
+                                      size="small"
+                                      label={userProfiles[e.user_id].name}
+                                      color="primary"
+                                      variant="outlined"
+                                      sx={{ fontWeight: 600, fontSize: '0.7rem', borderRadius: '6px', height: 22, maxWidth: { xs: 100, sm: 160 } }}
+                                    />
+                                  </Tooltip>
+                                ) : (
+                                  <Tooltip title={e.visitor_id || 'anonymous'} placement="top">
+                                    <Chip
+                                      size="small"
+                                      label={`Ανών. (${(e.visitor_id || 'anon').substring(0, 6)})`}
+                                      variant="outlined"
+                                      sx={{ fontWeight: 600, fontSize: '0.68rem', borderRadius: '6px', height: 22, color: 'text.secondary', maxWidth: { xs: 100, sm: 160 } }}
+                                    />
+                                  </Tooltip>
+                                )}
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                )}
                 <TablePagination
                   component="div"
                   count={feedTotal}
@@ -993,15 +985,23 @@ const AdminAnalytics = () => {
                   rowsPerPage={feedPageSize}
                   onRowsPerPageChange={handleFeedRowsPerPageChange}
                   rowsPerPageOptions={[10, 25, 50, 100]}
-                  labelRowsPerPage="Γραμμές ανά σελίδα:"
+                  labelRowsPerPage="Γραμμές:"
                   labelDisplayedRows={({ from, to, count }) =>
-                    `${from}–${to} από ${count !== -1 ? count : `πάνω από ${to}`}`
+                    `${from}–${to} / ${count !== -1 ? count : `>${to}`}`
                   }
                   sx={{
                     borderTop: '1px solid',
                     borderColor: 'divider',
                     mt: 1,
-                    '.MuiTablePagination-selectLabel, .MuiTablePagination-displayedRows': {
+                    '.MuiTablePagination-selectLabel': {
+                      fontWeight: 600,
+                      fontSize: '0.8rem',
+                      display: { xs: 'none', sm: 'block' }
+                    },
+                    '.MuiTablePagination-select, .MuiTablePagination-selectIcon': {
+                      display: { xs: 'none', sm: 'inline-flex' }
+                    },
+                    '.MuiTablePagination-displayedRows': {
                       fontWeight: 600,
                       fontSize: '0.8rem'
                     }

@@ -112,53 +112,51 @@ const Upload = () => {
       setError('Συμπλήρωσε όλα τα πεδία και επίλεξε αρχείο.');
       return;
     }
-    setLoading(true);
-    const fileExt = file.name.split('.').pop();
-    const courseLatin = greekToLatin(course);
-    const periodLatin = greekToLatin(period);
-    let baseFileName = `${courseLatin}_${year}_${periodLatin}_Themata`;
-    let fileName = `${baseFileName}.${fileExt}`;
-    let counter = 1;
-    while (true) {
-      const { data: existsData, error: existsError } = await supabase.storage.from('exams').list('', { search: fileName });
-      if (existsError || !existsData || existsData.length === 0) break;
-      fileName = `${baseFileName}_${counter}.${fileExt}`;
-      counter++;
-    }
-    let renamedFile;
-    try {
-      renamedFile = new File([file], fileName, { type: file.type });
-    } catch (err) {
-      renamedFile = file;
-    }
-    // cacheControl: 7 days — Supabase CDN will serve repeat downloads from edge cache
-    // instead of re-fetching from storage disk on every request. This directly reduces Cached Egress.
-    const { data: storageData, error: storageError } = await supabase.storage
-      .from('exams')
-      .upload(fileName, renamedFile, { cacheControl: '604800' });
-    if (storageError) {
-      setError('Σφάλμα στο ανέβασμα: ' + storageError.message);
-      setLoading(false);
-      return;
-    }
-    const { data: publicUrlData } = supabase.storage.from('exams').getPublicUrl(fileName);
-    const { error: dbError } = await supabase.from('exams').insert([
-      { course, year: parseInt(year), period, uploader: user.id, file_url: publicUrlData.publicUrl, approved: false },
-    ]);
-    if (dbError) {
-      setError('Σφάλμα στη βάση: ' + dbError.message);
-      setLoading(false);
-      return;
-    }
-    
-    // Log the upload event with resolved course ID
-    const courseObj = courses.find(c => c.name === course);
-    trackEvent('upload', { courseId: courseObj?.id, courseName: course, year: parseInt(year), period });
 
-    setSuccess('Το αρχείο ανέβηκε με επιτυχία!');
-    enqueueSnackbar('Το αρχείο ανέβηκε με επιτυχία!', { variant: 'success' });
-    setCourse(''); setYear(''); setPeriod(''); setFile(null);
-    setLoading(false);
+    setLoading(true);
+    try {
+      // Build a clean filename
+      const fileExt = file.name.split('.').pop();
+      const courseLatin = greekToLatin(course);
+      const periodLatin = greekToLatin(period);
+      const fileName = `${courseLatin}_${year}_${periodLatin}_Themata.${fileExt}`;
+
+      // ── Upload file to R2 via Vercel API route (secret keys stay server-side) ──
+      const formData = new FormData();
+      formData.append('file', file, fileName);
+      formData.append('filename', fileName);
+
+      const uploadRes = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!uploadRes.ok) {
+        const err = await uploadRes.json().catch(() => ({ error: 'Upload failed' }));
+        throw new Error(err.error || 'Σφάλμα στο ανέβασμα.');
+      }
+
+      const { url: fileUrl } = await uploadRes.json();
+
+      // ── Save metadata to Supabase DB with the R2 public URL ──
+      const { error: dbError } = await supabase.from('exams').insert([
+        { course, year: parseInt(year), period, uploader: user.id, file_url: fileUrl, approved: false },
+      ]);
+      if (dbError) throw new Error('Σφάλμα στη βάση: ' + dbError.message);
+
+      // Log the upload event with resolved course ID
+      const courseObj = courses.find(c => c.name === course);
+      trackEvent('upload', { courseId: courseObj?.id, courseName: course, year: parseInt(year), period });
+
+      setSuccess('Το αρχείο ανέβηκε με επιτυχία!');
+      enqueueSnackbar('Το αρχείο ανέβηκε με επιτυχία!', { variant: 'success' });
+      setCourse(''); setYear(''); setPeriod(''); setFile(null);
+    } catch (err) {
+      setError(err.message || 'Σφάλμα στο ανέβασμα.');
+      enqueueSnackbar(err.message || 'Σφάλμα στο ανέβασμα.', { variant: 'error' });
+    } finally {
+      setLoading(false);
+    }
   };
 
   const filteredCourses = semester
