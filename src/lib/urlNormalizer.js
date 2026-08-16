@@ -16,7 +16,7 @@
 
 const SUPABASE_STORAGE_PATTERN = /^https?:\/\/[^/]+\.supabase\.co\/storage\/v1\/object\/public\/[^/]+\//;
 
-const R2_BASE_URL = import.meta.env.VITE_R2_PUBLIC_URL || 'https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev';
+const R2_BASE_URL = import.meta.env.VITE_R2_PUBLIC_URL || 'https://dsuth-exam-bank-files.dsuth-exams-uth.workers.dev';
 
 /**
  * Rewrites a legacy Supabase Storage URL to the R2 CDN URL.
