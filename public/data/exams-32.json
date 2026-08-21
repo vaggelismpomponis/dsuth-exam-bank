@@ -1,110 +1,132 @@
 [
   {
+    "id": "086e430a-2761-4b6b-847d-966e9cffcb51",
+    "course": "Τεχνολογία Λογισμικού",
+    "year": 2026,
+    "period": "Ιανουάριος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TechnologiaLogismikoy_2026_Ianoyarios_Themata.pdf",
+    "created_at": "2026-07-31T17:40:27.939519+00:00",
+    "approved": true
+  },
+  {
     "id": "a6147e44-863f-47b1-958d-a1077634a80e",
     "course": "Τεχνολογία Λογισμικού",
     "year": 2024,
     "period": "Ιανουάριος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TechnologiaLogismikoy_2024_Ianoyarios_Themata.pdf",
     "created_at": "2026-01-29T17:27:16.189987+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/TechnologiaLogismikoy_2024_Ianoyarios_Themata.pdf",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "approved": true
   },
   {
     "id": "f1e40108-8a26-4e4c-ab43-b32f6ef4f6bf",
     "course": "Τεχνολογία Λογισμικού",
     "year": 2025,
     "period": "Ιανουάριος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TechnologiaLogismikoy_2025_Ianoyarios_Themata_1.pdf",
     "created_at": "2026-01-29T17:23:12.624344+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/TechnologiaLogismikoy_2025_Ianoyarios_Themata_1.pdf",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "approved": true
   },
   {
     "id": "eab55b25-2e5b-49b4-8606-0060efbf2795",
     "course": "Τεχνολογία Λογισμικού",
     "year": 2025,
     "period": "Σεπτέμβριος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TechnologiaLogismikoy_2025_Septemvrios_Themata.pdf",
     "created_at": "2026-01-29T17:12:15.746214+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/TechnologiaLogismikoy_2025_Septemvrios_Themata.pdf",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "approved": true
   },
   {
     "id": "eab2f2ca-0544-42c5-a724-1a62315ce921",
     "course": "Τεχνολογία Λογισμικού",
     "year": 2025,
     "period": "Ιανουάριος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TechnologiaLogismikoy_2025_Ianoyarios_Themata.pdf",
     "created_at": "2026-01-29T17:11:50.582457+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/TechnologiaLogismikoy_2025_Ianoyarios_Themata.pdf",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "approved": true
   },
   {
     "id": "8f9ec2d7-c858-4d36-9a78-710834b40260",
     "course": "Τεχνολογία Λογισμικού",
     "year": 2025,
     "period": "Σεπτέμβριος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TechnologiaLogismikoy_2025_Septemvrios_Themata.jpg",
     "created_at": "2025-09-16T22:07:40.950888+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/TechnologiaLogismikoy_2025_Septemvrios_Themata.jpg",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "approved": true
   },
   {
     "id": "5729dc0d-3775-4182-a733-d99318c624a7",
     "course": "Τεχνολογία Λογισμικού",
     "year": 2024,
     "period": "Xeimerino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TexnologiaLogismikou_2024_Xeimerino_Themata.pdf",
     "created_at": "2025-07-03T14:30:26.719768+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/TexnologiaLogismikou_2024_Xeimerino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "91b10c70-9326-4775-ba6a-5d9b6ff1c837",
     "course": "Τεχνολογία Λογισμικού",
     "year": 2023,
     "period": "Xeimerino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TexnologiaLogismikou_2023_Xeimerino_Themata.pdf",
     "created_at": "2025-07-03T14:30:25.474731+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/TexnologiaLogismikou_2023_Xeimerino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "349a8418-bcb0-4bc7-9c57-d97afa953a79",
     "course": "Τεχνολογία Λογισμικού",
     "year": 2022,
     "period": "Xeimerino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TexnologiaLogismikou_2022_Xeimerino_Themata.pdf",
     "created_at": "2025-07-03T14:30:24.809525+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/TexnologiaLogismikou_2022_Xeimerino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "247004b4-433e-40af-aba4-148add91b97e",
     "course": "Τεχνολογία Λογισμικού",
     "year": 2022,
     "period": "Epanaliptiki",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TexnologiaLogismikou_2022_Epanaliptiki_Themata.pdf",
     "created_at": "2025-07-03T14:30:24.307118+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/TexnologiaLogismikou_2022_Epanaliptiki_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "3a8d254e-f998-4c14-9629-43f509885880",
     "course": "Τεχνολογία Λογισμικού",
     "year": 2021,
     "period": "Xeimerino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TexnologiaLogismikou_2021_Xeimerino_Themata.pdf",
     "created_at": "2025-07-03T14:30:23.589707+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/TexnologiaLogismikou_2021_Xeimerino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "ddca67bf-742f-43c9-84cd-e0e9f1a8c1f5",
     "course": "Τεχνολογία Λογισμικού",
     "year": 2020,
     "period": "Xeimerino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TexnologiaLogismikou_2020_Xeimerino_Themata.pdf",
     "created_at": "2025-07-03T14:30:22.729353+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/TexnologiaLogismikou_2020_Xeimerino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "8417f5eb-85bf-4637-bc73-446637bb52bf",
     "course": "Τεχνολογία Λογισμικού",
     "year": 2020,
     "period": "Epanaliptiki",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TexnologiaLogismikou_2020_Epanaliptiki_Themata.pdf",
     "created_at": "2025-07-03T14:30:22.059716+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/TexnologiaLogismikou_2020_Epanaliptiki_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   }
 ]

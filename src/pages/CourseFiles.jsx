@@ -241,9 +241,10 @@ const CourseFiles = () => {
     const zip = new JSZip();
     await Promise.all(files.map(async (file) => {
       try {
-        const response = await fetch(file.file_url);
+        const url = getCleanUrl(file.file_url);
+        const response = await fetch(url);
         const blob = await response.blob();
-        zip.file(getFilenameFromUrl(file.file_url), blob);
+        zip.file(getFilenameFromUrl(url), blob);
       } catch (e) { }
     }));
     const content = await zip.generateAsync({ type: 'blob' });

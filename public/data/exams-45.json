@@ -1,83 +1,102 @@
 [
   {
+    "id": "eefa6e7d-1dac-4525-8b70-d6a19fec4142",
+    "course": "Λειτουργικά Συστήματα",
+    "year": 2026,
+    "period": "Ιούνιος",
+    "uploader": "5f586b88-1cbd-4105-9842-5bd993644c80",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/LeitoyrgikaSystimata_2026_Ioynios_Themata.pdf",
+    "created_at": "2026-06-17T12:41:27.591863+00:00",
+    "approved": true
+  },
+  {
     "id": "1b23d3a9-c779-4248-b25f-af6c7bdb9c3d",
     "course": "Λειτουργικά Συστήματα",
     "year": 2026,
     "period": "Ιανουάριος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/LeitoyrgikaSystimata_2026_Ianoyarios_1_1778777581059.pdf",
     "created_at": "2026-05-14T16:52:58.904899+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/LeitoyrgikaSystimata_2026_Ianoyarios_1_1778777581059.pdf",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "approved": true
   },
   {
     "id": "22d119e4-e293-4ca9-8489-a0c93763835e",
     "course": "Λειτουργικά Συστήματα",
     "year": 2026,
     "period": "Επαναληπτική",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/LeitoyrgikaSystimata_2026_Epanaliptiki_Themata.jpg",
     "created_at": "2026-01-27T15:26:49.004831+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/LeitoyrgikaSystimata_2026_Epanaliptiki_Themata.jpg",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "approved": true
   },
   {
     "id": "5afe6a16-f86d-49a5-95e3-17695f11f941",
     "course": "Λειτουργικά Συστήματα",
     "year": 2025,
     "period": "Σεπτέμβριος",
+    "uploader": "b00d65b4-3d92-4c47-952f-c3775be0cb75",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/LeitoyrgikaSystimata_2025_Septemvrios_Themata.jpeg",
     "created_at": "2026-01-24T07:35:04.728336+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/LeitoyrgikaSystimata_2025_Septemvrios_Themata.jpeg",
-    "uploader": "b00d65b4-3d92-4c47-952f-c3775be0cb75"
+    "approved": true
   },
   {
     "id": "d44d124f-26e4-4bcd-8eba-fd74148c7ac9",
     "course": "Λειτουργικά Συστήματα",
     "year": 2025,
     "period": "Ιούνιος",
+    "uploader": "eef66c37-7bd6-45b6-9343-82d4a1cd8e57",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/LeitoyrgikaSystimata_2025_Ioynios_Themata.jpeg",
     "created_at": "2025-08-18T20:13:17.850893+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/LeitoyrgikaSystimata_2025_Ioynios_Themata.jpeg",
-    "uploader": "eef66c37-7bd6-45b6-9343-82d4a1cd8e57"
+    "approved": true
   },
   {
     "id": "94347eb9-997f-46fd-b3a3-017e9d1df787",
     "course": "Λειτουργικά Συστήματα",
     "year": 2024,
     "period": "Proodos",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/LeitourgikaSystimata_2024_Proodos_Themata.pdf",
     "created_at": "2025-07-03T14:29:13.97412+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/LeitourgikaSystimata_2024_Proodos_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "49a1b708-797c-4d9e-891e-3354941c67d9",
     "course": "Λειτουργικά Συστήματα",
     "year": 2024,
     "period": "Epanaliptiki",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/LeitourgikaSystimata_2024_Epanaliptiki_Themata.pdf",
     "created_at": "2025-07-03T14:29:12.57222+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/LeitourgikaSystimata_2024_Epanaliptiki_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "c55a530c-6dd6-49ba-a1d2-ab801f79e27b",
     "course": "Λειτουργικά Συστήματα",
     "year": 2024,
     "period": "Earino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/LeitourgikaSystimata_2024_Earino_Themata.pdf",
     "created_at": "2025-07-03T14:29:08.511374+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/LeitourgikaSystimata_2024_Earino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "a17f223b-e7db-46e5-93fd-8ff72a266d29",
     "course": "Λειτουργικά Συστήματα",
     "year": 2023,
     "period": "Earino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/LeitourgikaSystimata_2023_Earino_Themata.pdf",
     "created_at": "2025-07-03T14:29:07.109587+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/LeitourgikaSystimata_2023_Earino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "273fc352-994c-4bd4-8c84-6bd1dc0740d1",
     "course": "Λειτουργικά Συστήματα",
     "year": 2022,
     "period": "Earino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/LeitourgikaSystimata_2022_Earino_Themata.pdf",
     "created_at": "2025-07-03T14:29:06.388956+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/LeitourgikaSystimata_2022_Earino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   }
 ]

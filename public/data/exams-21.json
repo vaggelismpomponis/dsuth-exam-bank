@@ -4,35 +4,39 @@
     "course": "Προχωρημένος Προγραμματισμός",
     "year": 2026,
     "period": "Ιανουάριος",
+    "uploader": "7bf2e7aa-b3c5-4831-bedf-100363b71498",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/ProchorimenosProgrammatismos_2026_Ianoyarios_Themata.pdf",
     "created_at": "2026-02-04T20:09:07.081364+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/ProchorimenosProgrammatismos_2026_Ianoyarios_Themata.pdf",
-    "uploader": "7bf2e7aa-b3c5-4831-bedf-100363b71498"
+    "approved": true
   },
   {
     "id": "4f87f81c-e41f-44f4-a402-940e912df7e7",
     "course": "Προχωρημένος Προγραμματισμός",
     "year": 2025,
     "period": "Σεπτέμβριος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/ProchorimenosProgrammatismos_2025_Septemvrios_Themata.pdf",
     "created_at": "2025-09-08T12:52:06.311975+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/ProchorimenosProgrammatismos_2025_Septemvrios_Themata.pdf",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "approved": true
   },
   {
     "id": "b218bdf5-f1f7-495b-bd63-d059cd2541e2",
     "course": "Προχωρημένος Προγραμματισμός",
     "year": 2024,
     "period": "Xeimerino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/ProxorimenosProgramatismos_2024_Xeimerino_Themata_B.pdf",
     "created_at": "2025-07-03T14:29:39.218803+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/ProxorimenosProgramatismos_2024_Xeimerino_Themata_B.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "006a13fd-f567-4f63-bfa4-4116ceb7f50f",
     "course": "Προχωρημένος Προγραμματισμός",
     "year": 2023,
     "period": "Xeimerino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/ProxorimenosProgramatismos_2023_Xeimerino_Themata.pdf",
     "created_at": "2025-07-03T14:29:38.619436+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/ProxorimenosProgramatismos_2023_Xeimerino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   }
 ]

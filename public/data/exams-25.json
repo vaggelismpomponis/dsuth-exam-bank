@@ -4,71 +4,79 @@
     "course": "Γραμμική Άλγεβρα",
     "year": 2026,
     "period": "Ιανουάριος",
+    "uploader": "7106ee55-d9d1-466c-865c-d0627cc3dbde",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/GrammikiAlgevra_2026_Ianoyarios_Themata.jpg",
     "created_at": "2026-02-05T12:39:49.085314+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/GrammikiAlgevra_2026_Ianoyarios_Themata.jpg",
-    "uploader": "7106ee55-d9d1-466c-865c-d0627cc3dbde"
+    "approved": true
   },
   {
     "id": "24311646-fcdc-45cf-bf61-16c0e0a60a60",
     "course": "Γραμμική Άλγεβρα",
     "year": 2025,
     "period": "Proodos",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/GrammikiAlgebra_2025_Proodos_Themata.pdf",
     "created_at": "2025-07-03T14:28:44.618604+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/GrammikiAlgebra_2025_Proodos_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "a795fad2-b82c-41c7-b032-87d012252e14",
     "course": "Γραμμική Άλγεβρα",
     "year": 2024,
     "period": "Xeimerino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/GrammikiAlgebra_2024_Xeimerino_Themata.pdf",
     "created_at": "2025-07-03T14:28:38.63582+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/GrammikiAlgebra_2024_Xeimerino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "14e9e9f2-2a8c-48f3-8ae6-c77c76a4190d",
     "course": "Γραμμική Άλγεβρα",
     "year": 2024,
     "period": "Proodos",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/GrammikiAlgebra_2024_Proodos_Themata.pdf",
     "created_at": "2025-07-03T14:28:37.636535+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/GrammikiAlgebra_2024_Proodos_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "545c8883-ecbf-469f-a230-bc88989ecced",
     "course": "Γραμμική Άλγεβρα",
     "year": 2024,
     "period": "Epanaliptiki",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/GrammikiAlgebra_2024_Epanaliptiki_Themata.pdf",
     "created_at": "2025-07-03T14:28:37.010289+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/GrammikiAlgebra_2024_Epanaliptiki_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "c6422a0c-7f0e-4e56-b161-160ee45c5966",
     "course": "Γραμμική Άλγεβρα",
     "year": 2024,
     "period": "Earino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/GrammikiAlgebra_2024_Earino_Themata.pdf",
     "created_at": "2025-07-03T14:28:34.571509+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/GrammikiAlgebra_2024_Earino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "82e621cd-9b09-41b1-ad6d-48441c05c80d",
     "course": "Γραμμική Άλγεβρα",
     "year": 2022,
     "period": "Xeimerino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/GrammikiAlgebra_2022_Xeimerino_Themata.pdf",
     "created_at": "2025-07-03T14:28:33.265543+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/GrammikiAlgebra_2022_Xeimerino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "a19dfd4b-7994-4d06-b1fc-aafe8c76583e",
     "course": "Γραμμική Άλγεβρα",
     "year": 2022,
     "period": "Epanaliptiki",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/GrammikiAlgebra_2022_Epanaliptiki_Themata.pdf",
     "created_at": "2025-07-03T14:28:32.432578+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/GrammikiAlgebra_2022_Epanaliptiki_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   }
 ]

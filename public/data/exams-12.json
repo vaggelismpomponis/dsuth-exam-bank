@@ -4,62 +4,69 @@
     "course": "Ψηφιακή Σχεδίαση",
     "year": 2024,
     "period": "Ιανουάριος",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/PsifiakiSchediasi_2024_Ianoyarios_Themata_1.pdf",
     "created_at": "2025-08-12T09:32:23.185505+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakiSchediasi_2024_Ianoyarios_Themata_1.pdf",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "94f7c076-2baa-43ac-84d0-c8c53a1ac442",
     "course": "Ψηφιακή Σχεδίαση",
     "year": 2023,
     "period": "Επαναληπτική",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/PsifiakiSchediasi_2023_Epanaliptiki_Themata_1.pdf",
     "created_at": "2025-08-12T09:30:25.402189+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakiSchediasi_2023_Epanaliptiki_Themata_1.pdf",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "c9ca6757-af96-43b1-aa9b-235d36b8dbf3",
     "course": "Ψηφιακή Σχεδίαση",
     "year": 2022,
     "period": "Επαναληπτική",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/PsifiakiSchediasi_2022_Epanaliptiki_Themata_1.pdf",
     "created_at": "2025-08-12T09:30:09.596979+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakiSchediasi_2022_Epanaliptiki_Themata_1.pdf",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "c5b9be0c-4346-494f-9f94-940a0c61446a",
     "course": "Ψηφιακή Σχεδίαση",
     "year": 2020,
     "period": "Ιανουάριος",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/PsifiakiSchediasi_2020_Ianoyarios_Themata_1.pdf",
     "created_at": "2025-08-12T09:29:24.902916+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakiSchediasi_2020_Ianoyarios_Themata_1.pdf",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "b97d6945-ac83-4094-a666-8a98d91db997",
     "course": "Ψηφιακή Σχεδίαση",
     "year": 2019,
     "period": "Ιανουάριος",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/PsifiakiSchediasi_2019_Ianoyarios_Themata_1.pdf",
     "created_at": "2025-08-12T09:28:58.047585+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakiSchediasi_2019_Ianoyarios_Themata_1.pdf",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "18e9f787-08ae-4137-b6dc-a2b01be49f9c",
     "course": "Ψηφιακή Σχεδίαση",
     "year": 2019,
     "period": "Επαναληπτική",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/PsifiakiSchediasi_2019_Epanaliptiki_Themata_1.pdf",
     "created_at": "2025-08-12T09:27:39.140875+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakiSchediasi_2019_Epanaliptiki_Themata_1.pdf",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "0bf72fb9-fe50-499b-80a5-7ed21a948dc2",
     "course": "Ψηφιακή Σχεδίαση",
     "year": 2017,
     "period": "Ιανουάριος",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/PsifiakiSchediasi_2017_Ianoyarios_Themata_1.pdf",
     "created_at": "2025-08-12T09:27:02.523797+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/PsifiakiSchediasi_2017_Ianoyarios_Themata_1.pdf",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   }
 ]

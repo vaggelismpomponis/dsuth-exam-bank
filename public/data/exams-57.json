@@ -1,1 +1,22 @@
-[]
+[
+  {
+    "id": "9dd0aec7-7b60-4d7b-a2d6-b7e8d721e71d",
+    "course": "Διδακτική της Τεχνολογίας",
+    "year": 2026,
+    "period": "Ιούνιος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://dsuth-exam-bank-files.dsuth-exams-uth.workers.dev/DidaktikitisTechnologias_2026_Ioynios_1_1781610539923.pdf",
+    "created_at": "2026-06-16T11:49:00.72555+00:00",
+    "approved": true
+  },
+  {
+    "id": "9dcf3024-e764-457e-a48c-df47442221a0",
+    "course": "Διδακτική της Τεχνολογίας",
+    "year": 2026,
+    "period": "Ιούνιος",
+    "uploader": "f838f748-f5c0-4700-b5a9-3a296c182b01",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/DidaktikitisTechnologias_2026_Ioynios_Themata.pdf",
+    "created_at": "2026-06-16T11:20:54.348302+00:00",
+    "approved": true
+  }
+]

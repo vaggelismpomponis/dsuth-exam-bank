@@ -4,17 +4,19 @@
     "course": "Εισαγωγή στον Προγραμματισμό",
     "year": 2024,
     "period": "Ιανουάριος",
+    "uploader": "677b685b-b6a0-422c-b2da-eb0d8f6a126b",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/EisagogistonProgrammatismo_2024_Ianoyarios_Themata_2.pdf",
     "created_at": "2025-09-15T18:01:43.733733+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/EisagogistonProgrammatismo_2024_Ianoyarios_Themata_2.pdf",
-    "uploader": "677b685b-b6a0-422c-b2da-eb0d8f6a126b"
+    "approved": true
   },
   {
     "id": "cb3be935-791f-4caa-8316-bcce9b3dba88",
     "course": "Εισαγωγή στον Προγραμματισμό",
     "year": 2024,
     "period": "Ιανουάριος",
+    "uploader": "677b685b-b6a0-422c-b2da-eb0d8f6a126b",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/EisagogistonProgrammatismo_2024_Ianoyarios_Themata.pdf",
     "created_at": "2025-09-15T18:00:20.186303+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/EisagogistonProgrammatismo_2024_Ianoyarios_Themata.pdf",
-    "uploader": "677b685b-b6a0-422c-b2da-eb0d8f6a126b"
+    "approved": true
   }
 ]

@@ -4,17 +4,19 @@
     "course": "Δίκτυα Υπολογιστών I",
     "year": 2023,
     "period": "Xeimerino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/Diktya1_2023_Xeimerino_Themata.pdf",
     "created_at": "2025-07-03T14:28:01.951612+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/Diktya1_2023_Xeimerino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "9f309fb4-3d40-43eb-bd1c-5694fae0875e",
     "course": "Δίκτυα Υπολογιστών I",
     "year": 2022,
     "period": "Xeimerino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/Diktya1_2022_Xeimerino_Themata.pdf",
     "created_at": "2025-07-03T14:28:00.763235+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/Diktya1_2022_Xeimerino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   }
 ]

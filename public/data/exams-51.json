@@ -1,11 +1,22 @@
 [
   {
+    "id": "7a05dbf9-f66c-46b3-8fa4-4a7cad2eb8fa",
+    "course": "Θεωρία Γραφημάτων",
+    "year": 2026,
+    "period": "Ιούνιος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TheoriaGrafimaton_2026_Ioynios_Themata_1.pdf",
+    "created_at": "2026-06-23T07:37:47.515966+00:00",
+    "approved": true
+  },
+  {
     "id": "af0d8162-f37c-4df7-8321-3b925dc4e8df",
     "course": "Θεωρία Γραφημάτων",
     "year": 2025,
     "period": "Ιούνιος",
+    "uploader": "eef66c37-7bd6-45b6-9343-82d4a1cd8e57",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TheoriaGrafimaton_2025_Ioynios_Themata.jpeg",
     "created_at": "2025-08-18T20:11:46.296163+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/TheoriaGrafimaton_2025_Ioynios_Themata.jpeg",
-    "uploader": "eef66c37-7bd6-45b6-9343-82d4a1cd8e57"
+    "approved": true
   }
 ]

@@ -1,47 +1,72 @@
 [
   {
+    "id": "d3b05a6a-51db-4740-b251-eb50098c6cf2",
+    "course": "Κινητός και Διάχυτος Υπολογισμός",
+    "year": 2026,
+    "period": "Ιούνιος",
+    "uploader": "07f80b4a-69e9-40f6-bcec-ab7c74a59daa",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/KinitoskaiDiachytosYpologismos_2026_Ioynios_Themata.pdf",
+    "created_at": "2026-06-16T13:44:01.301707+00:00",
+    "approved": true
+  },
+  {
+    "id": "e7cd37f1-560c-44cc-8880-75f036b27be4",
+    "course": "Κινητός και Διάχυτος Υπολογισμός",
+    "year": 2026,
+    "period": "Ιούνιος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://dsuth-exam-bank-files.dsuth-exams-uth.workers.dev/KinitoskaiDiachytosYpologismos_2026_Ioynios_1_1781609581571.pdf",
+    "created_at": "2026-06-16T11:32:59.090128+00:00",
+    "approved": true
+  },
+  {
     "id": "1c221fbe-e6c6-4a86-adbd-27b2df12db99",
     "course": "Κινητός και Διάχυτος Υπολογισμός",
     "year": 2025,
     "period": "Σεπτέμβριος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/KinitoskaiDiachytosYpologismos_2025_Septemvrios_Themata.jpg",
     "created_at": "2025-09-16T12:15:18.667092+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/KinitoskaiDiachytosYpologismos_2025_Septemvrios_Themata.jpg",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "approved": true
   },
   {
     "id": "5f6f4ea7-f695-4cc7-af8c-e714f2df39bb",
     "course": "Κινητός και Διάχυτος Υπολογισμός",
     "year": 2025,
     "period": "Ιούνιος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/KinitoskaiDiachytosYpologismos_2025_Ioynios_Themata_1.pdf",
     "created_at": "2025-08-22T14:50:01.819597+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/KinitoskaiDiachytosYpologismos_2025_Ioynios_Themata_1.pdf",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "approved": true
   },
   {
     "id": "e5b0a4c3-65b8-424a-885a-9a8d91b0bc8f",
     "course": "Κινητός και Διάχυτος Υπολογισμός",
     "year": 2025,
     "period": "Ιούνιος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/KinitoskaiDiachytosYpologismos_2025_Ioynios_Themata.pdf",
     "created_at": "2025-08-22T14:49:13.590421+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/KinitoskaiDiachytosYpologismos_2025_Ioynios_Themata.pdf",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "approved": true
   },
   {
     "id": "ae19385f-4e0b-433b-a275-df41346a7ee9",
     "course": "Κινητός και Διάχυτος Υπολογισμός",
     "year": 2024,
     "period": "Earino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/KinitosDiaxitosYpologismos_2024_Earino_Themata.pdf",
     "created_at": "2025-07-03T14:29:04.522051+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/KinitosDiaxitosYpologismos_2024_Earino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "d31618e2-c6d0-4797-bcc3-17004d227819",
     "course": "Κινητός και Διάχυτος Υπολογισμός",
     "year": 2022,
     "period": "Xeimerino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/KinitosDiaxitosYpologismos_2022_Xeimerino_Themata.pdf",
     "created_at": "2025-07-03T14:28:55.848799+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/KinitosDiaxitosYpologismos_2022_Xeimerino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   }
 ]

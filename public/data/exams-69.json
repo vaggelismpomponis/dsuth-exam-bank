@@ -4,26 +4,29 @@
     "course": "Διοίκηση Έργων Λογισμικού",
     "year": 2026,
     "period": "Ιούνιος",
+    "uploader": "fd716eba-64e4-47fa-a87d-95c54ebebb64",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/DioikisiErgonLogismikoy_2026_Ioynios_Themata_1.pdf",
     "created_at": "2026-06-10T18:46:33.706232+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DioikisiErgonLogismikoy_2026_Ioynios_Themata_1.pdf",
-    "uploader": "fd716eba-64e4-47fa-a87d-95c54ebebb64"
+    "approved": true
   },
   {
     "id": "07aa5a6e-92b5-4434-9458-59b713ea2e45",
     "course": "Διοίκηση Έργων Λογισμικού",
     "year": 2026,
     "period": "Ιούνιος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/DioikisiErgonLogismikoy_2026_Ioynios_1_1781084989934.pdf",
     "created_at": "2026-06-10T09:49:52.383337+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DioikisiErgonLogismikoy_2026_Ioynios_1_1781084989934.pdf",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "approved": true
   },
   {
     "id": "a5c6bc5d-ada4-4dc0-b567-e52920a67cf6",
     "course": "Διοίκηση Έργων Λογισμικού",
     "year": 2025,
     "period": "Ιούνιος",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/DioikisiErgonLogismikoy_2025_Ioynios_Themata.pdf",
     "created_at": "2025-11-11T17:05:25.673999+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DioikisiErgonLogismikoy_2025_Ioynios_Themata.pdf",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   }
 ]

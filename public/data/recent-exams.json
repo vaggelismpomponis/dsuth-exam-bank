@@ -1,56 +1,62 @@
 [
   {
-    "id": "e87f17a7-e21c-49bc-81e3-aaf872402653",
+    "id": "086e430a-2761-4b6b-847d-966e9cffcb51",
+    "course": "Τεχνολογία Λογισμικού",
+    "year": 2026,
+    "period": "Ιανουάριος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TechnologiaLogismikoy_2026_Ianoyarios_Themata.pdf",
+    "created_at": "2026-07-31T17:40:27.939519+00:00",
+    "approved": true
+  },
+  {
+    "id": "9b66c71c-bae7-4493-a025-eaff531067f7",
+    "course": "Τεχνητή Νοημοσύνη",
+    "year": 2026,
+    "period": "Ιούνιος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TechnitiNoimosyni_2026_Ioynios_Themata.pdf",
+    "created_at": "2026-06-25T11:45:40.553155+00:00",
+    "approved": true
+  },
+  {
+    "id": "131159f7-90de-4d0d-918d-bc66c0d1744c",
+    "course": "Επιχειρησιακή Έρευνα",
+    "year": 2026,
+    "period": "Ιούνιος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://dsuth-exam-bank-files.dsuth-exams-uth.workers.dev/EpicheirisiakiEreyna_2026_Ioynios_1_1782219825706.pdf",
+    "created_at": "2026-06-23T13:03:45.274651+00:00",
+    "approved": true
+  },
+  {
+    "id": "7a05dbf9-f66c-46b3-8fa4-4a7cad2eb8fa",
+    "course": "Θεωρία Γραφημάτων",
+    "year": 2026,
+    "period": "Ιούνιος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TheoriaGrafimaton_2026_Ioynios_Themata_1.pdf",
+    "created_at": "2026-06-23T07:37:47.515966+00:00",
+    "approved": true
+  },
+  {
+    "id": "2aa7634a-9148-4cb0-8b57-c5225dcd9758",
     "course": "Ηλεκτρονική",
-    "year": 2024,
-    "period": "Ιούνιος",
-    "created_at": "2026-06-11T13:30:08.699919+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/Ilektroniki_2024_Ioynios_Themata.pdf",
-    "uploader": "fd716eba-64e4-47fa-a87d-95c54ebebb64"
-  },
-  {
-    "id": "2fa59af7-683e-4ce2-beb4-4075dd86b032",
-    "course": "Συστήματα Βάσεων Δεδομένων",
     "year": 2026,
     "period": "Ιούνιος",
-    "created_at": "2026-06-11T08:15:54.032242+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/SystimataVaseonDedomenon_2026_Ioynios_1_1781165752845.pdf",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "uploader": "5f586b88-1cbd-4105-9842-5bd993644c80",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/Ilektroniki_2026_Ioynios_Themata.pdf",
+    "created_at": "2026-06-22T13:26:39.472463+00:00",
+    "approved": true
   },
   {
-    "id": "85ca35d5-7a1b-46dd-953b-4637632926f7",
-    "course": "Διοίκηση Έργων Λογισμικού",
+    "id": "c4d2bf26-a0fb-4cb2-b2e4-66b7675deece",
+    "course": "Θεωρία Υπολογισμού",
     "year": 2026,
     "period": "Ιούνιος",
-    "created_at": "2026-06-10T18:46:33.706232+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DioikisiErgonLogismikoy_2026_Ioynios_Themata_1.pdf",
-    "uploader": "fd716eba-64e4-47fa-a87d-95c54ebebb64"
-  },
-  {
-    "id": "07aa5a6e-92b5-4434-9458-59b713ea2e45",
-    "course": "Διοίκηση Έργων Λογισμικού",
-    "year": 2026,
-    "period": "Ιούνιος",
-    "created_at": "2026-06-10T09:49:52.383337+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/DioikisiErgonLogismikoy_2026_Ioynios_1_1781084989934.pdf",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
-  },
-  {
-    "id": "2839e031-0067-45b1-ba94-e3714f224672",
-    "course": "Ασφάλεια Ψηφιακών Συστημάτων",
-    "year": 2026,
-    "period": "Ιούνιος",
-    "created_at": "2026-06-09T14:07:22.505379+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/AsfaleiaPsifiakonSystimaton_2026_Ioynios_1_1781014046237.pdf",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
-  },
-  {
-    "id": "669d1a3d-2019-485a-aa3e-64e804310678",
-    "course": "Ανάλυση και Σχεδίαση Συστημάτων",
-    "year": 2026,
-    "period": "Ιούνιος",
-    "created_at": "2026-06-09T14:06:59.416754+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/AnalysikaiSchediasiSystimaton_2026_Ioynios_1_1781014023022.pdf",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "uploader": "fd716eba-64e4-47fa-a87d-95c54ebebb64",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/TheoriaYpologismoy_2026_Ioynios_Themata.pdf",
+    "created_at": "2026-06-19T12:58:28.674337+00:00",
+    "approved": true
   }
 ]

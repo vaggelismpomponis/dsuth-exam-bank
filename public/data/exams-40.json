@@ -4,53 +4,39 @@
     "course": "Ενσωματωμένα Συστήματα",
     "year": 2026,
     "period": "Ιανουάριος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/EnsomatomenaSystimata_2026_Ianoyarios_Themata.jpg",
     "created_at": "2026-01-26T08:32:28.923025+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/EnsomatomenaSystimata_2026_Ianoyarios_Themata.jpg",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "approved": true
   },
   {
     "id": "b0d10db1-a3fd-4c52-b1ef-ccae1064ff26",
     "course": "Ενσωματωμένα Συστήματα",
     "year": 2025,
     "period": "Ιανουάριος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/EnsomatomenaSystimata_2025_Ianoyarios_Themata_1.png",
     "created_at": "2025-12-14T20:34:06.940884+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/EnsomatomenaSystimata_2025_Ianoyarios_Themata_1.png",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
-  },
-  {
-    "id": "f1d50000-7961-4c2c-9bb5-f1720f912bd8",
-    "course": "Ενσωματωμένα Συστήματα",
-    "year": 2025,
-    "period": "Ιανουάριος",
-    "created_at": "2025-12-14T20:31:08.200162+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/EnsomatomenaSystimata_2025_Ianoyarios_Themata.png",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
-  },
-  {
-    "id": "9463ffc6-5ac1-4be0-8d1e-dcc6a04699ab",
-    "course": "Ενσωματωμένα Συστήματα",
-    "year": 2025,
-    "period": "Ιανουάριος",
-    "created_at": "2025-12-10T12:31:53.392536+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/EnsomatomenaSystimata_2025_Ianoyarios_Themata.jpg",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "approved": true
   },
   {
     "id": "0bce8e63-2f6b-492c-92f6-e1a065d71d4a",
     "course": "Ενσωματωμένα Συστήματα",
     "year": 2025,
     "period": "Xeimerino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/EnsomatomenaSystimata_2025_Xeimerino_Themata.pdf",
     "created_at": "2025-07-03T14:28:27.476699+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/EnsomatomenaSystimata_2025_Xeimerino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "61f88edd-b726-4311-a62a-93eb2e3a7bd2",
     "course": "Ενσωματωμένα Συστήματα",
     "year": 2022,
     "period": "Xeimerino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/EnsomatomenaSystimata_2022_Xeimerino_Themata.pdf",
     "created_at": "2025-07-03T14:28:26.368896+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/EnsomatomenaSystimata_2022_Xeimerino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   }
 ]

@@ -1,29 +1,42 @@
 [
   {
+    "id": "50496e64-af9a-4374-b5fc-ef355ea55c66",
+    "course": "Συστήματα Βάσεων Δεδομένων",
+    "year": 2026,
+    "period": "Ιούνιος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/SystimataVaseonDedomenon_2026_Ioynios_1_1781218498441.pdf",
+    "created_at": "2026-06-11T22:54:59.767434+00:00",
+    "approved": true
+  },
+  {
     "id": "2fa59af7-683e-4ce2-beb4-4075dd86b032",
     "course": "Συστήματα Βάσεων Δεδομένων",
     "year": 2026,
     "period": "Ιούνιος",
+    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/SystimataVaseonDedomenon_2026_Ioynios_1_1781165752845.pdf",
     "created_at": "2026-06-11T08:15:54.032242+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/SystimataVaseonDedomenon_2026_Ioynios_1_1781165752845.pdf",
-    "uploader": "86684325-f32d-4c0c-990a-d7f46ce91d21"
+    "approved": true
   },
   {
     "id": "6d4f8b7f-8c73-4bf2-b745-0d8ef7b6d656",
     "course": "Συστήματα Βάσεων Δεδομένων",
     "year": 2024,
     "period": "Earino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/BaseisDedomenon_2024_Earino_Themata.pdf",
     "created_at": "2025-07-03T14:27:43.00962+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/BaseisDedomenon_2024_Earino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   },
   {
     "id": "78fb8ce9-5fdd-4bbb-aed2-bfe968cd2673",
     "course": "Συστήματα Βάσεων Δεδομένων",
     "year": 2023,
     "period": "Earino",
+    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c",
+    "file_url": "https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/BaseisDedomenon_2023_Earino_Themata.pdf",
     "created_at": "2025-07-03T14:27:41.103488+00:00",
-    "file_url": "https://uyliukldtnwxurrpeoit.supabase.co/storage/v1/object/public/exams/BaseisDedomenon_2023_Earino_Themata.pdf?",
-    "uploader": "ae26da15-7102-4647-8cbb-8f045491433c"
+    "approved": true
   }
 ]
