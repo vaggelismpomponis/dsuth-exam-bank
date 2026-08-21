@@ -13,7 +13,7 @@
 
 import { S3Client, PutObjectCommand, ListObjectsV2Command } from '@aws-sdk/client-s3';
 
-export const config = { api: { bodyParser: false } };
+export const config = { api: { bodyParser: false, responseLimit: false, sizeLimit: '20mb' } };
 
 const r2 = new S3Client({
   region: 'auto',

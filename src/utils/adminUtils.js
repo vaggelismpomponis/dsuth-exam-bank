@@ -9,22 +9,20 @@ export const isUserAdmin = async (userId) => {
   if (!userId) return false;
   
   try {
-    // Add cache busting for production
+    // maybeSingle() returns null (not an error) when no row is found,
+    // avoiding the 406 PGRST116 error that single() throws for missing profiles.
     const { data, error } = await supabase
       .from('profiles')
       .select('role')
       .eq('id', userId)
-      .single()
-      .abortSignal(new AbortController().signal); // Force fresh request
+      .maybeSingle();
     
     if (error) {
       console.error('Error checking admin status:', error);
       return false;
     }
     
-    const isAdmin = data?.role === 'admin';
-    console.log(`Admin check for user ${userId}: role=${data?.role}, isAdmin=${isAdmin}`);
-    return isAdmin;
+    return data?.role === 'admin';
   } catch (error) {
     console.error('Error checking admin status:', error);
     return false;

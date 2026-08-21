@@ -10,5 +10,11 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/$1" },
     { "source": "/((?!api/).*)", "destination": "/" }
-  ]
-}
+  ],
+  "functions": {
+    "api/upload.js": {
+      "maxDuration": 30,
+      "memory": 512
+    }
+  }
+}
