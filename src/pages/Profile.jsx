@@ -72,7 +72,30 @@ const Profile = () => {
       if (!data.session) { navigate('/login'); }
       else {
         setUser(data.session.user);
-        const { data: prof, error: profErr } = await supabase.from('profiles').select('*').eq('id', data.session.user.id).single();
+        let { data: prof, error: profErr } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.session.user.id)
+          .maybeSingle();
+
+        // If no profile row exists yet, create one automatically
+        if (!profErr && !prof) {
+          const newProfile = {
+            id: data.session.user.id,
+            first_name: data.session.user.user_metadata?.first_name ?? '',
+            last_name: data.session.user.user_metadata?.last_name ?? '',
+            show_in_directory: true,
+            updated_at: new Date().toISOString(),
+          };
+          const { data: created, error: createErr } = await supabase
+            .from('profiles')
+            .insert(newProfile)
+            .select()
+            .single();
+          if (!createErr) prof = created;
+          else profErr = createErr;
+        }
+
         if (!ignore) {
           if (profErr) setError('Σφάλμα ανάκτησης προφίλ.');
           else setProfile(prof);

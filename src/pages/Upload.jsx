@@ -121,24 +121,34 @@ const Upload = () => {
       const periodLatin = greekToLatin(period);
       const fileName = `${courseLatin}_${year}_${periodLatin}_Themata.${fileExt}`;
 
-      // ── Upload file to R2 via Vercel API route (secret keys stay server-side) ──
-      const formData = new FormData();
-      formData.append('file', file, fileName);
-      formData.append('filename', fileName);
-
-      const uploadRes = await fetch('/api/upload', {
+      // ── Step 1: Get a presigned PUT URL from our Vercel function ──
+      // Only the filename + contentType travel through Vercel — NOT the file body.
+      // This sidesteps Vercel's 4.5 MB body limit entirely.
+      const presignRes = await fetch('/api/presign', {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ filename: fileName, contentType: file.type || 'application/octet-stream' }),
       });
 
-      if (!uploadRes.ok) {
-        const err = await uploadRes.json().catch(() => ({ error: 'Upload failed' }));
-        throw new Error(err.error || 'Σφάλμα στο ανέβασμα.');
+      if (!presignRes.ok) {
+        const err = await presignRes.json().catch(() => ({ error: 'Presign failed' }));
+        throw new Error(err.error || 'Σφάλμα προετοιμασίας ανεβάσματος.');
       }
 
-      const { url: fileUrl } = await uploadRes.json();
+      const { presignedUrl, publicUrl: fileUrl } = await presignRes.json();
 
-      // ── Save metadata to Supabase DB with the R2 public URL ──
+      // ── Step 2: PUT the file directly to R2 (browser → R2, no Vercel involved) ──
+      const putRes = await fetch(presignedUrl, {
+        method: 'PUT',
+        headers: { 'Content-Type': file.type || 'application/octet-stream' },
+        body: file,
+      });
+
+      if (!putRes.ok) {
+        throw new Error('Σφάλμα στο ανέβασμα στο R2.');
+      }
+
+      // ── Step 3: Save metadata to Supabase DB with the R2 public URL ──
       const { error: dbError } = await supabase.from('exams').insert([
         { course, year: parseInt(year), period, uploader: user.id, file_url: fileUrl, approved: false },
       ]);

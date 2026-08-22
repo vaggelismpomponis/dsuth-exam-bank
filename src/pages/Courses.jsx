@@ -87,14 +87,17 @@ const Courses = () => {
 
       setCourses(coursesData);
 
-      // exams-counts.json is already a { courseName: count } map from the prebuild script.
-      // The live Supabase fallback returns an array of { course, id } rows — re-aggregate those.
+      // exams-counts.json is a { courseId: count } map keyed by numeric course ID (as string).
+      // The live Supabase fallback returns an array of { course_id, id } rows — re-aggregate those.
       let counts;
       if (Array.isArray(examsRaw)) {
         counts = {};
-        examsRaw.forEach(e => { counts[e.course] = (counts[e.course] || 0) + 1; });
+        examsRaw.forEach(e => {
+          const key = String(e.course_id ?? e.course);
+          counts[key] = (counts[key] || 0) + 1;
+        });
       } else {
-        counts = examsRaw; // already a map from static JSON
+        counts = examsRaw; // already a { courseId: count } map from static JSON
       }
       setExamCounts(counts);
 
@@ -413,7 +416,7 @@ const Courses = () => {
                     gap: 1.5,
                   }}>
                     {grouped[sem].map((course, idx) => {
-                      const count = examCounts[course.name] || 0;
+                      const count = examCounts[String(course.id)] || 0;
                       const isFav = favorites.includes(course.id);
                       return (
                         <CourseCard
