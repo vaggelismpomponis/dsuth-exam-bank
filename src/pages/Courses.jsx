@@ -88,13 +88,18 @@ const Courses = () => {
       setCourses(coursesData);
 
       // exams-counts.json is a { courseId: count } map keyed by numeric course ID (as string).
-      // The live Supabase fallback returns an array of { course_id, id } rows — re-aggregate those.
+      // The live Supabase fallback returns an array of { course: "name", id: "uuid" } rows
+      // where `course` is the course NAME (not an ID). Build a name→id lookup from coursesData
+      // to convert those to numeric IDs before aggregating.
       let counts;
       if (Array.isArray(examsRaw)) {
+        const nameToId = {};
+        coursesData.forEach(c => { nameToId[c.name] = String(c.id); });
         counts = {};
         examsRaw.forEach(e => {
-          const key = String(e.course_id ?? e.course);
-          counts[key] = (counts[key] || 0) + 1;
+          // `e.course` is the course name from the live query
+          const key = nameToId[e.course] ?? String(e.course_id ?? e.course);
+          if (key) counts[key] = (counts[key] || 0) + 1;
         });
       } else {
         counts = examsRaw; // already a { courseId: count } map from static JSON
