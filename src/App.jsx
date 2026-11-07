@@ -21,6 +21,7 @@ import Favorites from './pages/Favorites';
 import FileViewer from './pages/FileViewer';
 import { SnackbarProvider } from 'notistack';
 import { AppToast } from './components/common/AppToast';
+import { CompleteProfileModal } from './components/common/CompleteProfileModal';
 import AdminUpload from './pages/admin/AdminUpload';
 import RequireAdmin from './components/RequireAdmin';
 import { trackEvent } from './lib/analytics';
@@ -507,6 +508,7 @@ function App() {
               <Route path="/viewer" element={<FileViewer />} />
             </Routes>
           </Box>
+          <CompleteProfileModal />
           {isMobile && !isAdminRoute && !isAuthRoute && <BottomNav />}
           {!isAdminRoute && !isAuthRoute && !isFooterlessRoute && <Footer />}
         </SnackbarProvider>

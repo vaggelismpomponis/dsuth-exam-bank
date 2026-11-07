@@ -31,6 +31,8 @@ const GoogleIcon = () => (
 
 const Register = () => {
   const theme = useTheme();
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -42,6 +44,11 @@ const Register = () => {
 
   const handleSignUp = async (e) => {
     e.preventDefault();
+    if (!firstName.trim() || !lastName.trim()) {
+      setError('Παρακαλώ συμπληρώστε το όνομα και το επώνυμό σας.');
+      return;
+    }
+
     if (!turnstileToken) {
       setError('Παρακαλώ ολοκληρώστε την επαλήθευση.');
       return;
@@ -64,17 +71,34 @@ const Register = () => {
     }
 
     const redirectTo = `${window.location.origin}/login`;
-    const { error: signUpErr } = await supabase.auth.signUp({
+    const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
       email: email.trim(),
       password,
       options: {
         emailRedirectTo: redirectTo,
+        data: {
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          full_name: `${firstName.trim()} ${lastName.trim()}`,
+        },
       },
     });
 
     if (signUpErr) {
       setError(getGreekAuthError(signUpErr.message));
     } else {
+      if (signUpData?.user?.id) {
+        try {
+          await supabase.from('profiles').upsert({
+            id: signUpData.user.id,
+            email: email.trim(),
+            first_name: firstName.trim(),
+            last_name: lastName.trim(),
+          }, { onConflict: 'id' });
+        } catch (e) {
+          console.warn('Profile upsert notice:', e);
+        }
+      }
       navigate('/login', { state: { registered: true, email: email.trim() } });
       return;
     }
@@ -173,10 +197,29 @@ const Register = () => {
 
           <Box component="form" onSubmit={handleSignUp}>
             <Stack spacing={2}>
-              <TextField label="Email" type="email" inputMode="email" fullWidth value={email} onChange={(e) => setEmail(e.target.value)} />
+              <Stack direction={{ xs: 'column', sm: 'row' }} spacing={1.5}>
+                <TextField
+                  label="Όνομα"
+                  required
+                  fullWidth
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  autoComplete="given-name"
+                />
+                <TextField
+                  label="Επώνυμο"
+                  required
+                  fullWidth
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  autoComplete="family-name"
+                />
+              </Stack>
+              <TextField label="Email" type="email" inputMode="email" required fullWidth value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" />
               <TextField
                 label="Κωδικός πρόσβασης"
                 type={showPassword ? 'text' : 'password'}
+                required
                 fullWidth
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
