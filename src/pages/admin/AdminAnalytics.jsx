@@ -415,14 +415,9 @@ const AdminAnalytics = () => {
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: { xs: compact ? 1.5 : 2, sm: 3 }, gap: 1, flexWrap: 'wrap' }}>
       <Stack direction="row" spacing={{ xs: compact ? 1 : 1.5, sm: 1.5 }} alignItems="center" sx={{ minWidth: 0, flex: 1 }}>
         <Box sx={{
-          width: { xs: compact ? 28 : 36, sm: 36 },
-          height: { xs: compact ? 28 : 36, sm: 36 },
-          borderRadius: { xs: '8px', sm: '10px' },
-          background: dark
-            ? 'linear-gradient(135deg, rgba(26,115,232,0.25) 0%, rgba(26,115,232,0.1) 100%)'
-            : 'linear-gradient(135deg, rgba(26,115,232,0.15) 0%, rgba(26,115,232,0.05) 100%)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
           color: 'primary.main', flexShrink: 0,
+          display: 'flex', alignItems: 'center',
+          '& svg': { fontSize: { xs: 20, sm: 22 } },
         }}>
           {icon}
         </Box>
@@ -443,9 +438,9 @@ const AdminAnalytics = () => {
   );
 
   const trafficSegments = [
-    { label: '24 ώρες', shortLabel: '24ωρο', uv: trafficStats.day.uv, pv: trafficStats.day.pv, color: '#1a73e8', gradient: 'linear-gradient(135deg, #1a73e8, #0052cc)' },
-    { label: '7 ημέρες', shortLabel: '7 ημέρες', uv: trafficStats.week.uv, pv: trafficStats.week.pv, color: '#7b1fa2', gradient: 'linear-gradient(135deg, #7b1fa2, #6a1b9a)' },
-    { label: '30 ημέρες', shortLabel: '30 ημέρες', uv: trafficStats.month.uv, pv: trafficStats.month.pv, color: '#2e7d32', gradient: 'linear-gradient(135deg, #2e7d32, #1b5e20)' },
+    { label: '24 ώρες', shortLabel: '24ωρο', uv: trafficStats.day.uv, pv: trafficStats.day.pv, color: '#1a73e8' },
+    { label: '7 ημέρες', shortLabel: '7 ημέρες', uv: trafficStats.week.uv, pv: trafficStats.week.pv, color: '#1557b0' },
+    { label: '30 ημέρες', shortLabel: '30 ημέρες', uv: trafficStats.month.uv, pv: trafficStats.month.pv, color: '#0d47a1' },
   ];
 
   const kpiCards = [{
@@ -629,7 +624,7 @@ const AdminAnalytics = () => {
                         <Box sx={{
                           display: 'inline-flex', alignItems: 'center', alignSelf: 'flex-start',
                           px: 1, py: 0.3, borderRadius: '6px',
-                          background: seg.gradient,
+                          bgcolor: seg.color,
                         }}>
                           <Typography sx={{ fontWeight: 700, color: '#fff', fontSize: { xs: '0.58rem', sm: '0.65rem' }, lineHeight: 1 }}>
                             {seg.shortLabel}

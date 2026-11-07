@@ -1,18 +1,15 @@
 import React from 'react';
-import { Box, useTheme } from '@mui/material';
-import HomeIcon from '@mui/icons-material/Home';
-import SearchIcon from '@mui/icons-material/Search';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import AddIcon from '@mui/icons-material/Add';
-import GroupIcon from '@mui/icons-material/Group';
+import Box from '@mui/material/Box';
+import { useTheme } from '@mui/material/styles';
+import { Home, BookOpen, Plus, Heart, MessageSquare } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-const navItems = [
-  { label: 'Αρχική', icon: HomeIcon, path: '/' },
-  { label: 'Μαθήματα', icon: SearchIcon, path: '/courses' },
+const NAV_ITEMS = [
+  { label: 'Αρχική', icon: Home, path: '/' },
+  { label: 'Μαθήματα', icon: BookOpen, path: '/courses' },
   { label: null, icon: null, path: null }, // FAB spacer
-  { label: 'Αγαπημένα', icon: FavoriteIcon, path: '/favorites' },
-  { label: 'Φοιτητές', icon: GroupIcon, path: '/students' },
+  { label: 'Αγαπημένα', icon: Heart, path: '/favorites' },
+  { label: 'Αιτήματα', icon: MessageSquare, path: '/requests' },
 ];
 
 const BottomNav = () => {
@@ -29,23 +26,27 @@ const BottomNav = () => {
 
   return (
     <Box
+      component="nav"
+      aria-label="Κινητή πλοήγηση"
       sx={{
+        display: { xs: 'block', md: 'none' },
         position: 'fixed',
         bottom: 0,
         left: 0,
         right: 0,
         zIndex: 1200,
-        bgcolor: isDark ? 'rgba(18,18,20,0.92)' : 'rgba(255,255,255,0.92)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
+        bgcolor: isDark ? 'rgba(18, 18, 20, 0.94)' : 'rgba(255, 255, 255, 0.94)',
+        backdropFilter: 'blur(16px)',
+        WebkitBackdropFilter: 'blur(16px)',
         borderTop: '1px solid',
-        borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
+        borderColor: 'divider',
+        borderRadius: 0,
         paddingBottom: 'env(safe-area-inset-bottom, 0px)',
       }}
     >
       <Box
         sx={{
-          height: 64,
+          height: 60,
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-around',
@@ -55,34 +56,34 @@ const BottomNav = () => {
           mx: 'auto',
         }}
       >
-        {navItems.map((item, idx) => {
+        {NAV_ITEMS.map((item, idx) => {
           if (!item.path) {
             return (
               <Box key={idx} sx={{ width: 64, display: 'flex', justifyContent: 'center', position: 'relative' }}>
-                {/* FAB */}
                 <Box
                   onClick={() => navigate('/upload')}
+                  aria-label="Ανέβασμα θεμάτων"
                   sx={{
                     position: 'absolute',
-                    top: -28,
-                    width: 52,
-                    height: 52,
-                    borderRadius: '16px',
-                    background: 'linear-gradient(135deg, #1a73e8, #0052cc)',
+                    top: -24,
+                    width: 48,
+                    height: 48,
+                    borderRadius: '12px',
+                    bgcolor: 'primary.main',
+                    border: '1px solid',
+                    borderColor: 'divider',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     cursor: 'pointer',
-                    boxShadow: '0 6px 20px rgba(26,115,232,0.4)',
-                    transition: 'all 0.15s ease',
+                    transition: 'transform 0.15s ease',
                     WebkitTapHighlightColor: 'transparent',
                     '&:active': {
                       transform: 'scale(0.94)',
-                      boxShadow: '0 3px 12px rgba(26,115,232,0.35)',
                     },
                   }}
                 >
-                  <AddIcon sx={{ color: '#fff', fontSize: 24 }} />
+                  <Plus size={22} color="#ffffff" strokeWidth={2.5} />
                 </Box>
               </Box>
             );
@@ -111,15 +112,15 @@ const BottomNav = () => {
                 cursor: 'pointer',
                 WebkitTapHighlightColor: 'transparent',
                 position: 'relative',
-                gap: 0.4,
+                gap: 0.3,
+                color: active ? 'primary.main' : 'text.secondary',
               }}
             >
-              {/* Active indicator dot */}
               {active && (
                 <Box
                   sx={{
                     position: 'absolute',
-                    top: 8,
+                    top: 6,
                     width: 4,
                     height: 4,
                     borderRadius: '50%',
@@ -131,33 +132,24 @@ const BottomNav = () => {
               <Box
                 sx={{
                   width: 36,
-                  height: 32,
-                  borderRadius: '10px',
+                  height: 30,
+                  borderRadius: '8px',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  bgcolor: active
-                    ? isDark ? 'rgba(26,115,232,0.2)' : 'rgba(26,115,232,0.1)'
-                    : 'transparent',
+                  bgcolor: active ? 'action.selected' : 'transparent',
                   transition: 'all 0.15s ease',
-                  '&:active': { transform: 'scale(0.9)' },
+                  '&:active': { transform: 'scale(0.92)' },
                 }}
               >
-                <Icon
-                  sx={{
-                    fontSize: 21,
-                    color: active ? 'primary.main' : isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.38)',
-                    transition: 'color 0.15s',
-                  }}
-                />
+                <Icon size={19} strokeWidth={active ? 2.2 : 1.8} />
               </Box>
               <Box
                 component="span"
                 sx={{
-                  fontSize: '0.65rem',
-                  fontWeight: active ? 700 : 400,
-                  color: active ? 'primary.main' : isDark ? 'rgba(255,255,255,0.4)' : 'rgba(0,0,0,0.38)',
-                  fontFamily: "'Inter', sans-serif",
+                  fontSize: '0.675rem',
+                  fontWeight: active ? 700 : 500,
+                  color: active ? 'primary.main' : 'text.secondary',
                   letterSpacing: '0.01em',
                   transition: 'color 0.15s',
                 }}

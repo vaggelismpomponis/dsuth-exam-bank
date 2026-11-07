@@ -2,16 +2,14 @@
  * urlNormalizer.js
  *
  * Transparently rewrites legacy Supabase storage URLs and direct R2 public
- * bucket URLs to the current Cloudflare Worker proxy URL.
+ * bucket URLs to the reliable Cloudflare Worker CDN domain.
  *
- * Legacy format 1 (Supabase Storage):
- *   https://<project>.supabase.co/storage/v1/object/public/exams/<filename>
+ * Legacy formats:
+ *   - Supabase Storage: https://<project>.supabase.co/storage/v1/object/public/exams/<filename>
+ *   - Direct R2 pub dev: https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/<filename>
  *
- * Legacy format 2 (direct R2 public bucket – disabled):
- *   https://pub-4362ca1444014ebdbcbe319423b57914.r2.dev/<filename>
- *
- * Current format (Cloudflare Worker proxy):
- *   https://dsuth-exam-bank-files.dsuth-exams-uth.workers.dev/<filename>
+ * Current format (Cloudflare Worker Proxy):
+ *   - https://dsuth-exam-bank-files.dsuth-exams-uth.workers.dev/<filename>
  *
  * This normalizer is applied to every file_url read from the database, cache,
  * or static JSON files, so even users with stale cached data automatically
@@ -19,11 +17,9 @@
  */
 
 const SUPABASE_STORAGE_PATTERN = /^https?:\/\/[^/]+\.supabase\.co\/storage\/v1\/object\/public\/[^/]+\//;
-
-// Matches the direct R2 public bucket URL (r2.dev subdomain – public access disabled)
 const R2_DIRECT_PATTERN = /^https?:\/\/[^/]+\.r2\.dev\//;
 
-const R2_BASE_URL = import.meta.env.VITE_R2_PUBLIC_URL || 'https://dsuth-exam-bank-files.dsuth-exams-uth.workers.dev';
+const R2_BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_R2_PUBLIC_URL) || 'https://dsuth-exam-bank-files.dsuth-exams-uth.workers.dev';
 
 /**
  * Rewrites legacy Supabase Storage URLs and direct R2 public-bucket URLs

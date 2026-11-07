@@ -118,15 +118,8 @@ const AdminUsers = () => {
     <Box>
       {/* Header */}
       <Box sx={{ mb: 4, display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.75 }}>
-          <Box sx={{
-            width: 44, height: 44, borderRadius: '13px',
-            background: 'linear-gradient(135deg,#1a73e8,#0052cc)',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            boxShadow: '0 4px 14px rgba(26,115,232,.35)',
-          }}>
-            <PeopleAltIcon sx={{ color: '#fff', fontSize: 22 }} />
-          </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <PeopleAltIcon sx={{ color: 'primary.main', fontSize: 28 }} />
           <Box>
             <Typography variant="h4" sx={{ fontWeight: 800, lineHeight: 1.15, fontSize: { xs: '1.35rem', sm: '1.7rem' } }}>
               Διαχείριση Χρηστών
@@ -179,7 +172,6 @@ const AdminUsers = () => {
           {[...Array(6)].map((_, i) => (
             <Box key={i} sx={{ ...cb, p: 2 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Skeleton variant="circular" width={42} height={42} />
                 <Box sx={{ flex: 1 }}>
                   <Skeleton width="38%" height={18} />
                   <Skeleton width="56%" height={14} sx={{ mt: 0.5 }} />
@@ -215,19 +207,6 @@ const AdminUsers = () => {
                   }}>
                     {idx + 1}.
                   </Typography>
-
-                  <Avatar sx={{
-                    width: { xs: 34, sm: 42 }, height: { xs: 34, sm: 42 }, flexShrink: 0,
-                    background: u.role === 'admin'
-                      ? 'linear-gradient(135deg,#7b1fa2,#4a148c)'
-                      : 'linear-gradient(135deg,#1a73e8,#0052cc)',
-                    fontSize: '0.85rem', fontWeight: 700,
-                    boxShadow: u.role === 'admin'
-                      ? '0 2px 8px rgba(123,31,162,.28)'
-                      : '0 2px 8px rgba(26,115,232,.22)',
-                  }}>
-                    {initials}
-                  </Avatar>
 
                   <Box sx={{ flex: 1, minWidth: 0 }}>
                     {name && (

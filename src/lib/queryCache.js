@@ -73,8 +73,9 @@ export async function cachedQuery(key, queryFn, ttlMs = 5 * 60 * 1000) {
   // ── Layer 1: memory cache (fastest, zero serialization cost) ──
   if (memCache.has(key)) {
     const { data, ts } = memCache.get(key);
-    if (now - ts < ttl) return data;
-    memCache.delete(key); // expired
+    const isEmptyCourses = key === 'courses:list' && Array.isArray(data) && data.length === 0;
+    if (now - ts < ttl && !isEmptyCourses) return data;
+    memCache.delete(key); // expired or empty
   }
 
   // ── Layer 2: sessionStorage (survives SPA navigation within the tab) ──
@@ -82,11 +83,12 @@ export async function cachedQuery(key, queryFn, ttlMs = 5 * 60 * 1000) {
     const raw = sessionStorage.getItem(SESSION_PREFIX + key);
     if (raw) {
       const { data, ts } = JSON.parse(raw);
-      if (now - ts < ttl) {
+      const isEmptyCourses = key === 'courses:list' && Array.isArray(data) && data.length === 0;
+      if (now - ts < ttl && !isEmptyCourses) {
         memCache.set(key, { data, ts }); // warm the memory layer
         return data;
       }
-      sessionStorage.removeItem(SESSION_PREFIX + key); // expired
+      sessionStorage.removeItem(SESSION_PREFIX + key); // expired or empty
     }
   } catch (_) {
     // sessionStorage may be unavailable in private browsing on some browsers — silently ignore
@@ -95,12 +97,15 @@ export async function cachedQuery(key, queryFn, ttlMs = 5 * 60 * 1000) {
   // ── Cache miss: run the real query ──
   const data = await queryFn();
 
-  // Store in both layers
-  memCache.set(key, { data, ts: now });
-  try {
-    sessionStorage.setItem(SESSION_PREFIX + key, JSON.stringify({ data, ts: now }));
-  } catch (_) {
-    // Quota exceeded or unavailable — memory cache still works
+  // Store in both layers only if valid and not empty course list
+  const shouldCache = data !== null && data !== undefined && !(key === 'courses:list' && Array.isArray(data) && data.length === 0);
+  if (shouldCache) {
+    memCache.set(key, { data, ts: now });
+    try {
+      sessionStorage.setItem(SESSION_PREFIX + key, JSON.stringify({ data, ts: now }));
+    } catch (_) {
+      // Quota exceeded or unavailable — memory cache still works
+    }
   }
 
   return data;

@@ -4,24 +4,25 @@ import {
   Box, Drawer, ListItemButton, Divider, Typography, Avatar,
   Tooltip, Chip, IconButton, Button, useTheme, useMediaQuery, alpha,
 } from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import CloseIcon from "@mui/icons-material/Close";
-import FolderOpenIcon from "@mui/icons-material/FolderOpen";
-import PeopleAltIcon from "@mui/icons-material/PeopleAlt";
-import HomeIcon from "@mui/icons-material/Home";
-import MenuBookIcon from "@mui/icons-material/MenuBook";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
-import AssignmentIndIcon from "@mui/icons-material/AssignmentInd";
-import DashboardIcon from "@mui/icons-material/Dashboard";
-import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import PeopleIcon from "@mui/icons-material/People";
-import HourglassTopIcon from "@mui/icons-material/HourglassTop";
-import MarkEmailUnreadIcon from "@mui/icons-material/MarkEmailUnread";
-import AdminPanelSettingsIcon from "@mui/icons-material/AdminPanelSettings";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import BarChartIcon from "@mui/icons-material/BarChart";
+import {
+  Menu as MenuIcon,
+  X as CloseIcon,
+  FolderOpen as FolderOpenIcon,
+  Users as PeopleAltIcon,
+  Home as HomeIcon,
+  BookOpen as MenuBookIcon,
+  UploadCloud as CloudUploadIcon,
+  HelpCircle as HelpOutlineIcon,
+  UserCheck as AssignmentIndIcon,
+  LayoutDashboard as DashboardIcon,
+  Users as PeopleIcon,
+  Clock as HourglassTopIcon,
+  Mail as MarkEmailUnreadIcon,
+  ShieldCheck as AdminPanelSettingsIcon,
+  ChevronRight as ChevronRightIcon,
+  ChevronLeft as ChevronLeftIcon,
+  BarChart2 as BarChartIcon,
+} from "lucide-react";
 
 import { supabase } from "../../supabaseClient";
 import { AdminSidebarContext } from "../../context/AdminSidebarContext";
@@ -34,21 +35,21 @@ const NAV_H_XS = 56;
 
 /* ─── Navigation menu ───────────────────────────── */
 const adminMenu = [
-  { text: "Στατιστικά", sub: "Στατιστικά & Analytics", icon: <BarChartIcon />, path: "/admin/analytics" },
-  { text: "Αρχεία", sub: "Αρχεία & εξετάσεις", icon: <FolderOpenIcon />, path: "/admin/files" },
-  { text: "Χρήστες", sub: "Χρήστες & ρόλοι", icon: <PeopleAltIcon />, path: "/admin/users" },
-  { text: "Μαθήματα", sub: "Μαθήματα & εξάμηνα", icon: <MenuBookIcon />, path: "/admin/courses" },
-  { text: "Ανέβασμα Αρχείων", sub: "Μαζική μεταφόρτωση", icon: <CloudUploadIcon />, path: "/admin/upload" },
-  { text: "Αιτήματα", sub: "Αιτήματα χρηστών", icon: <HelpOutlineIcon />, path: "/admin/requests" },
-  { text: "Αιτήσεις για admin", sub: "Αιτήσεις για admin", icon: <AssignmentIndIcon />, path: "/admin/applications" },
+  { text: "Στατιστικά", sub: "Στατιστικά & Analytics", icon: <BarChartIcon size={20} />, path: "/admin/analytics" },
+  { text: "Αρχεία", sub: "Αρχεία & εξετάσεις", icon: <FolderOpenIcon size={20} />, path: "/admin/files" },
+  { text: "Χρήστες", sub: "Χρήστες & ρόλοι", icon: <PeopleAltIcon size={20} />, path: "/admin/users" },
+  { text: "Μαθήματα", sub: "Μαθήματα & εξάμηνα", icon: <MenuBookIcon size={20} />, path: "/admin/courses" },
+  { text: "Ανέβασμα Αρχείων", sub: "Μαζική μεταφόρτωση", icon: <CloudUploadIcon size={20} />, path: "/admin/upload" },
+  { text: "Αιτήματα", sub: "Αιτήματα χρηστών", icon: <HelpOutlineIcon size={20} />, path: "/admin/requests" },
+  { text: "Αιτήσεις για admin", sub: "Αιτήσεις για admin", icon: <AssignmentIndIcon size={20} />, path: "/admin/applications" },
 ];
 
 /* ─── Metric card definitions ───────────────────── */
 const METRICS = [
-  { key: "users", label: "Χρήστες", icon: <PeopleIcon />, color: "#1a73e8", path: "/admin/users" },
-  { key: "pendingFiles", label: "Εκκρεμή Αρχεία", icon: <HourglassTopIcon />, color: "#f57c00", path: "/admin/files" },
-  { key: "openRequests", label: "Ανοιχτά Αιτήματα", icon: <MarkEmailUnreadIcon />, color: "#d32f2f", path: "/admin/requests" },
-  { key: "adminApps", label: "Αιτήσεις Admin", icon: <AdminPanelSettingsIcon />, color: "#7b1fa2", path: "/admin/applications" },
+  { key: "users", label: "Χρήστες", icon: <PeopleIcon size={22} />, color: "#1a73e8", path: "/admin/users" },
+  { key: "pendingFiles", label: "Εκκρεμή Αρχεία", icon: <HourglassTopIcon size={22} />, color: "#f57c00", path: "/admin/files" },
+  { key: "openRequests", label: "Ανοιχτά Αιτήματα", icon: <MarkEmailUnreadIcon size={22} />, color: "#d32f2f", path: "/admin/requests" },
+  { key: "adminApps", label: "Αιτήσεις Admin", icon: <AdminPanelSettingsIcon size={22} />, color: "#7b1fa2", path: "/admin/applications" },
 ];
 
 /* ─── NavItem ────────────────────────────────────── */
@@ -133,9 +134,7 @@ const Sidebar = ({ mini, mobile, location, navigate, onClose, onToggle }) => {
   return (
     <Box sx={{
       height: "100%", display: "flex", flexDirection: "column",
-      background: dark
-        ? "linear-gradient(180deg,#1c1d21 0%,#17181c 100%)"
-        : "linear-gradient(180deg,#ffffff 0%,#f6f8fd 100%)",
+      bgcolor: "background.paper",
       borderRight: "1px solid",
       borderColor: dark ? "rgba(255,255,255,0.05)" : "rgba(0,0,0,0.06)",
     }}>
@@ -153,10 +152,10 @@ const Sidebar = ({ mini, mobile, location, navigate, onClose, onToggle }) => {
         {(!mini || mobile) && (
           <Box sx={{ display: "flex", alignItems: "center", gap: 1.5 }}>
             <Box sx={{
-              width: 34, height: 34, borderRadius: "9px",
-              background: "linear-gradient(135deg,#1a73e8,#0052cc)",
+              width: 32, height: 32, borderRadius: "6px",
+              bgcolor: "primary.main",
               display: "flex", alignItems: "center", justifyContent: "center",
-              boxShadow: "0 4px 10px rgba(26,115,232,.4)", flexShrink: 0,
+              flexShrink: 0,
             }}>
               <Typography sx={{ color: "#fff", fontWeight: 900, fontSize: "0.75rem", letterSpacing: "-0.5px" }}>
                 DS
@@ -174,17 +173,16 @@ const Sidebar = ({ mini, mobile, location, navigate, onClose, onToggle }) => {
         )}
         {mini && !mobile && (
           <Box sx={{
-            width: 34, height: 34, borderRadius: "9px",
-            background: "linear-gradient(135deg,#1a73e8,#0052cc)",
+            width: 32, height: 32, borderRadius: "6px",
+            bgcolor: "primary.main",
             display: "flex", alignItems: "center", justifyContent: "center",
-            boxShadow: "0 4px 10px rgba(26,115,232,.4)",
           }}>
             <Typography sx={{ color: "#fff", fontWeight: 900, fontSize: "0.75rem" }}>DS</Typography>
           </Box>
         )}
         {mobile && (
           <IconButton size="small" onClick={onClose} sx={{ color: "text.secondary" }}>
-            <CloseIcon fontSize="small" />
+            <CloseIcon size={18} />
           </IconButton>
         )}
       </Box>
@@ -208,7 +206,7 @@ const Sidebar = ({ mini, mobile, location, navigate, onClose, onToggle }) => {
                 "&:hover": { background: dark ? alpha("#fff", 0.06) : alpha("#000", 0.04) },
               }}
             >
-              <HomeIcon sx={{ fontSize: 18, color: "text.secondary" }} />
+              <HomeIcon size={18} style={{ color: 'var(--mui-palette-text-secondary, #888)' }} />
               {(!mini || mobile) && (
                 <Typography sx={{ fontSize: "0.8rem", color: "text.secondary", fontWeight: 500 }}>
                   ← Επιστροφή στο site
@@ -222,7 +220,7 @@ const Sidebar = ({ mini, mobile, location, navigate, onClose, onToggle }) => {
 
         {/* Dashboard */}
         <NavItem
-          item={{ text: "Dashboard", sub: "Επισκόπηση", icon: <DashboardIcon /> }}
+          item={{ text: "Dashboard", sub: "Επισκόπηση", icon: <DashboardIcon size={20} /> }}
           active={isRoot}
           mini={mini && !mobile}
           onClick={() => { navigate("/admin"); if (mobile) onClose(); }}
@@ -279,7 +277,7 @@ const Sidebar = ({ mini, mobile, location, navigate, onClose, onToggle }) => {
               background: dark ? alpha("#1a73e8", 0.15) : alpha("#1a73e8", 0.1),
               display: "flex", alignItems: "center", justifyContent: "center",
             }}>
-              <AdminPanelSettingsIcon sx={{ fontSize: 18, color: "primary.main" }} />
+              <AdminPanelSettingsIcon size={18} color="var(--mui-palette-primary-main, #1a73e8)" />
             </Box>
           </Tooltip>
         )}
@@ -299,42 +297,29 @@ const MetricCard = ({ card, value, loading, onClick }) => {
       onClick={onClick}
       sx={{
         p: { xs: 2, sm: 2.5 },
-        borderRadius: "18px",
-        background: dark
-          ? `linear-gradient(135deg, ${alpha(c, 0.18)} 0%, ${alpha(c, 0.08)} 100%)`
-          : `linear-gradient(135deg, ${alpha(c, 0.1)} 0%, ${alpha(c, 0.04)} 100%)`,
+        borderRadius: "12px",
+        bgcolor: "background.paper",
         border: "1px solid",
-        borderColor: dark ? alpha(c, 0.18) : alpha(c, 0.18),
+        borderColor: "divider",
         cursor: "pointer",
-        transition: "transform 0.22s ease, box-shadow 0.22s ease",
-        position: "relative", overflow: "hidden",
+        transition: "border-color 0.15s ease",
         "&:hover": {
-          transform: "translateY(-4px)",
-          boxShadow: `0 16px 40px ${alpha(c, 0.22)}`,
+          borderColor: "primary.main",
         },
       }}
     >
-      {/* Decorative circle */}
-      <Box sx={{
-        position: "absolute", top: -24, right: -24,
-        width: 80, height: 80, borderRadius: "50%",
-        background: alpha(c, 0.07),
-      }} />
-
       {/* Icon */}
       <Box sx={{
-        width: 38, height: 38, borderRadius: "10px",
-        background: alpha(c, 0.16),
-        display: "flex", alignItems: "center", justifyContent: "center",
-        mb: 1.75,
-        "& svg": { fontSize: 20, color: c },
+        mb: 1.5,
+        color: "primary.main",
+        "& svg": { fontSize: 22 },
       }}>
         {card.icon}
       </Box>
 
       {/* Number */}
       <Typography sx={{
-        fontWeight: 800, color: c, lineHeight: 1, mb: 0.5,
+        fontWeight: 800, color: "text.primary", lineHeight: 1, mb: 0.5,
         fontSize: { xs: "1.85rem", sm: "2.25rem" },
       }}>
         {loading ? "—" : value ?? 0}
@@ -342,9 +327,9 @@ const MetricCard = ({ card, value, loading, onClick }) => {
 
       {/* Label */}
       <Typography sx={{
-        fontSize: { xs: "0.7rem", sm: "0.78rem" },
+        fontSize: { xs: "0.75rem", sm: "0.8125rem" },
         fontWeight: 600, lineHeight: 1.2,
-        color: dark ? alpha(c, 0.85) : alpha(c, 0.75),
+        color: "text.secondary",
       }}>
         {card.label}
       </Typography>
@@ -401,65 +386,67 @@ const AdminDashboard = () => {
 
   return (
     <AdminSidebarContext.Provider value={{ onToggle: handleToggle }}>
-      <Box sx={{ display: "flex", minHeight: "100vh", bgcolor: dark ? "#111214" : "#f1f3f8", overflowX: "hidden" }}>
+      <Box sx={{ display: "flex", minHeight: "100vh", width: "100%", maxWidth: "100vw", bgcolor: dark ? "#111214" : "#f1f3f8", overflowX: "hidden" }}>
 
         {/* ── Desktop Sidebar ── */}
-        {!isMobile && (
-          <Drawer
-            variant="permanent"
-            sx={{
+        <Drawer
+          variant="permanent"
+          sx={{
+            display: { xs: "none", md: "block" },
+            width: mini ? COLLAPSE_W : DRAWER_W,
+            flexShrink: 0,
+            transition: "width 0.28s cubic-bezier(.4,0,.2,1)",
+            "& .MuiDrawer-paper": {
+              display: { xs: "none", md: "block" },
               width: mini ? COLLAPSE_W : DRAWER_W,
-              flexShrink: 0,
+              border: "none",
+              overflowX: "hidden",
+              top: NAV_H,
+              height: `calc(100vh - ${NAV_H}px)`,
+              zIndex: 1100,
               transition: "width 0.28s cubic-bezier(.4,0,.2,1)",
-              "& .MuiDrawer-paper": {
-                width: mini ? COLLAPSE_W : DRAWER_W,
-                border: "none",
-                overflowX: "hidden",
-                top: NAV_H,
-                height: `calc(100vh - ${NAV_H}px)`,
-                zIndex: 1100,
-                transition: "width 0.28s cubic-bezier(.4,0,.2,1)",
-                boxShadow: dark ? "4px 0 20px rgba(0,0,0,.3)" : "4px 0 20px rgba(0,0,0,.04)",
-              },
-            }}
-          >
-            <Sidebar {...drawerProps} />
-          </Drawer>
-        )}
+              boxShadow: dark ? "4px 0 20px rgba(0,0,0,.3)" : "4px 0 20px rgba(0,0,0,.04)",
+            },
+          }}
+        >
+          <Sidebar {...drawerProps} />
+        </Drawer>
 
         {/* ── Mobile Sidebar ── */}
-        {isMobile && (
-          <Drawer
-            variant="temporary"
-            open={mobileOpen}
-            onClose={() => setMobileOpen(false)}
-            ModalProps={{ keepMounted: true }}
-            sx={{
-              "& .MuiDrawer-paper": {
-                width: DRAWER_W, border: "none",
-                borderRadius: 0,
-                boxShadow: "8px 0 32px rgba(0,0,0,.18)",
-                top: NAV_H_XS,
-                height: `calc(100vh - ${NAV_H_XS}px)`,
-                overflowX: 'hidden',
-                zIndex: 1300,
-              },
-            }}
-          >
-            <Sidebar {...drawerProps} mobile />
-          </Drawer>
-        )}
+        <Drawer
+          variant="temporary"
+          open={mobileOpen}
+          onClose={() => setMobileOpen(false)}
+          ModalProps={{ keepMounted: false }}
+          sx={{
+            display: { xs: "block", md: "none" },
+            "& .MuiDrawer-paper": {
+              width: DRAWER_W,
+              border: "none",
+              borderRadius: 0,
+              boxShadow: "8px 0 32px rgba(0,0,0,.18)",
+              top: 0,
+              height: "100%",
+              overflowX: "hidden",
+              zIndex: 1300,
+            },
+          }}
+        >
+          <Sidebar {...drawerProps} mobile />
+        </Drawer>
 
         {/* ── Main ── */}
         <Box
           component="main"
           sx={{
             flexGrow: 1,
+            width: { xs: "100%", md: `calc(100% - ${mini ? COLLAPSE_W : DRAWER_W}px)` },
+            maxWidth: "100%",
             ml: 0,
             transition: "margin-left 0.28s cubic-bezier(.4,0,.2,1)",
             minHeight: "100vh",
             minWidth: 0,
-            overflow: "hidden",
+            overflowX: "hidden",
             display: "flex", flexDirection: "column",
           }}
         >
@@ -488,7 +475,7 @@ const AdminDashboard = () => {
                       "&:hover": { bgcolor: dark ? alpha("#fff", 0.07) : alpha("#000", 0.05) },
                     }}
                   >
-                    {mini ? <ChevronRightIcon fontSize="small" /> : <ChevronLeftIcon fontSize="small" />}
+                    {mini ? <ChevronRightIcon size={18} /> : <ChevronLeftIcon size={18} />}
                   </IconButton>
                 </Tooltip>
                 <Box sx={{ width: "1px", height: 20, bgcolor: dark ? "rgba(255,255,255,0.08)" : "rgba(0,0,0,0.08)", mr: 1.5, flexShrink: 0 }} />
@@ -508,7 +495,7 @@ const AdminDashboard = () => {
                       "&:hover": { bgcolor: dark ? alpha("#fff", 0.07) : alpha("#000", 0.05) },
                     }}
                   >
-                    <MenuIcon fontSize="small" />
+                    <MenuIcon size={18} />
                   </IconButton>
                 </Tooltip>
                 {!isRoot && (
@@ -522,7 +509,7 @@ const AdminDashboard = () => {
                         "&:hover": { bgcolor: dark ? alpha("#fff", 0.07) : alpha("#000", 0.05) },
                       }}
                     >
-                      <ChevronLeftIcon fontSize="small" />
+                      <ChevronLeftIcon size={18} />
                     </IconButton>
                   </Tooltip>
                 )}
@@ -555,7 +542,7 @@ const AdminDashboard = () => {
 
               {!isRoot && (
                 <>
-                  <ChevronRightIcon sx={{ fontSize: 14, color: "text.secondary", opacity: 0.4, flexShrink: 0 }} />
+                  <ChevronRightIcon size={14} style={{ opacity: 0.4, flexShrink: 0 }} />
                   <Typography sx={{
                     fontSize: "0.8rem", fontWeight: 700,
                     color: "text.primary",
@@ -584,14 +571,7 @@ const AdminDashboard = () => {
               <Box>
                 {/* Page title */}
                 <Box sx={{ mb: 4, display: "flex", alignItems: "center", gap: 1.5 }}>
-                  <Box sx={{
-                    width: 44, height: 44, borderRadius: "13px",
-                    background: "linear-gradient(135deg,#1a73e8,#0052cc)",
-                    display: "flex", alignItems: "center", justifyContent: "center",
-                    boxShadow: "0 4px 14px rgba(26,115,232,.35)",
-                  }}>
-                    <DashboardIcon sx={{ color: "#fff", fontSize: 22 }} />
-                  </Box>
+                  <DashboardIcon size={28} color="var(--mui-palette-primary-main, #1a73e8)" />
                   <Box>
                     <Typography variant="h4" sx={{ fontWeight: 800, lineHeight: 1.1, fontSize: { xs: "1.45rem", sm: "1.8rem" } }}>
                       Dashboard
@@ -665,14 +645,20 @@ const AdminDashboard = () => {
                           {item.sub}
                         </Typography>
                       </Box>
-                      <ChevronRightIcon
+                      <Box
                         className="arr"
                         sx={{
-                          fontSize: 17, color: "primary.main",
-                          opacity: 0, transform: "translateX(-5px)",
-                          transition: "all 0.18s ease", flexShrink: 0,
+                          opacity: 0,
+                          transform: "translateX(-5px)",
+                          transition: "all 0.18s ease",
+                          flexShrink: 0,
+                          color: "primary.main",
+                          display: "flex",
+                          alignItems: "center",
                         }}
-                      />
+                      >
+                        <ChevronRightIcon size={17} />
+                      </Box>
                     </Box>
                   ))}
                 </Box>

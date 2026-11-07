@@ -5,12 +5,7 @@ import {
     Snackbar, Alert, useTheme, useMediaQuery, Stack, alpha,
     Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button
 } from '@mui/material';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import DownloadIcon from '@mui/icons-material/Download';
-import ShareIcon from '@mui/icons-material/Share';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import RefreshIcon from '@mui/icons-material/Refresh';
+import { ArrowLeft, Download, Share2, ExternalLink, AlertCircle, RefreshCw } from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { downloadFile, shareFile } from '../utils/nativeDownload';
 import PdfPreview from '../components/PdfPreview';
@@ -110,7 +105,7 @@ const FileViewer = () => {
                         onClick={() => navigate(-1)}
                         sx={{ mr: 1, color: 'text.primary' }}
                     >
-                        <ArrowBackIcon />
+                        <ArrowLeft size={20} />
                     </IconButton>
 
                     <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -130,19 +125,19 @@ const FileViewer = () => {
 
                     <Stack direction="row" spacing={0.5}>
                         <Tooltip title="Λήψη">
-                            <IconButton onClick={handleDownload} sx={{ color: 'primary.main' }}>
-                                <DownloadIcon />
+                            <IconButton aria-label="Λήψη αρχείου" onClick={handleDownload} sx={{ color: 'primary.main' }}>
+                                <Download size={19} />
                             </IconButton>
                         </Tooltip>
                         <Tooltip title="Κοινοποίηση">
-                            <IconButton onClick={handleShare} sx={{ color: 'primary.main' }}>
-                                <ShareIcon />
+                            <IconButton aria-label="Κοινοποίηση αρχείου" onClick={handleShare} sx={{ color: 'primary.main' }}>
+                                <Share2 size={19} />
                             </IconButton>
                         </Tooltip>
                         {!isMobile && (
                             <Tooltip title="Άνοιγμα σε νέα καρτέλα">
-                                <IconButton onClick={handleOpenExternal} sx={{ color: 'text.secondary' }}>
-                                    <OpenInNewIcon />
+                                <IconButton aria-label="Άνοιγμα σε νέα καρτέλα" onClick={handleOpenExternal} sx={{ color: 'text.secondary' }}>
+                                    <ExternalLink size={19} />
                                 </IconButton>
                             </Tooltip>
                         )}
@@ -246,7 +241,7 @@ const FileViewer = () => {
                         background: theme.palette.mode === 'dark' ? alpha('#d93025', 0.18) : alpha('#d93025', 0.1),
                         color: '#d93025', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
                     }}>
-                        <ErrorOutlineIcon />
+                        <AlertCircle size={22} />
                     </Box>
                     Σφάλμα φόρτωσης
                 </DialogTitle>
@@ -266,7 +261,7 @@ const FileViewer = () => {
                     <Button 
                         onClick={clearCacheAndReload} 
                         variant="contained" 
-                        startIcon={<RefreshIcon />}
+                        startIcon={<RefreshCw size={16} />}
                         sx={{ borderRadius: 100, textTransform: 'none', px: 2.5 }}
                     >
                         Ανανέωση

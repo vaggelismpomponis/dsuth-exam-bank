@@ -3,10 +3,7 @@ import { Container, Typography, Box, Button, TextField, MenuItem, Alert, Circula
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 import { trackEvent } from '../lib/analytics';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
-import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
-import DeleteIcon from '@mui/icons-material/Delete';
+import { Upload as UploadIcon, FileText, Trash2, UploadCloud } from 'lucide-react';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { useSnackbar } from 'notistack';
 import { validateTurnstileToken } from '../utils/turnstileValidation';
@@ -209,14 +206,16 @@ const Upload = () => {
   );
 
   if (!user) return (
-    <Box sx={{ minHeight: '60vh', display: 'flex', alignItems: 'center', justifyContent: 'center', pt: { xs: 2, md: 4 }, pb: { xs: 12, md: 4 }, px: 2 }}>
-      <Paper sx={{ width: '100%', maxWidth: 420, p: 4, textAlign: 'center', border: '1px solid', borderColor: 'divider' }}>
-        <UploadFileIcon sx={{ fontSize: 48, color: 'primary.main', mb: 2 }} />
-        <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>Ανέβασμα Αρχείου</Typography>
-        <Alert severity="info" sx={{ mb: 2.5, textAlign: 'center' }}>
-          Για να ανεβάσετε αρχεία, πρέπει να συνδεθείτε.
-        </Alert>
-        <Button variant="contained" fullWidth onClick={() => navigate('/login')} sx={{ py: 1.3 }}>
+    <Box sx={{ minHeight: '65vh', display: 'flex', alignItems: 'center', justifyContent: 'center', py: { xs: 4, md: 6 }, px: 2, pb: { xs: 12, md: 6 } }}>
+      <Paper sx={{ width: '100%', maxWidth: 420, p: 4, textAlign: 'center', border: '1px solid', borderColor: 'divider', borderRadius: '12px' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'center', mb: 1.5, color: 'primary.main' }}>
+          <UploadIcon size={36} />
+        </Box>
+        <Typography variant="h6" sx={{ fontWeight: 800, mb: 1 }}>Ανέβασμα Αρχείου</Typography>
+        <Typography variant="body2" sx={{ color: 'text.secondary', mb: 3 }}>
+          Για να ανεβάσετε θέματα εξετάσεων ή σημειώσεις, πρέπει να συνδεθείτε στον λογαριασμό σας.
+        </Typography>
+        <Button variant="contained" fullWidth onClick={() => navigate('/login')} sx={{ py: 1.25, borderRadius: '8px', fontWeight: 600 }}>
           Σύνδεση
         </Button>
       </Paper>
@@ -224,18 +223,28 @@ const Upload = () => {
   );
 
   return (
-    <Box sx={{ minHeight: '80vh', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', py: { xs: 2, md: 5 }, px: 2, pb: { xs: 12, md: 5 } }}>
-      <Paper sx={{ width: '100%', maxWidth: 500, p: { xs: 3, sm: 4 }, border: '1px solid', borderColor: 'divider' }}>
-        <Box sx={{ textAlign: 'center', mb: 3 }}>
-          <Box sx={{
-            width: 56, height: 56, borderRadius: 3, bgcolor: theme.palette.mode === 'light' ? '#e8f0fe' : 'rgba(138,180,248,0.15)',
-            display: 'inline-flex', alignItems: 'center', justifyContent: 'center', mb: 1.5,
-          }}>
-            <UploadFileIcon sx={{ color: 'primary.main', fontSize: 28 }} />
-          </Box>
-          <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary' }}>Ανέβασμα Αρχείου</Typography>
-          <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
-            PDF, Word, PNG, JPG
+    <Box sx={{ minHeight: '80vh', display: 'flex', alignItems: 'flex-start', justifyContent: 'center', py: { xs: 4, md: 6 }, px: 2, pb: { xs: 12, md: 6 } }}>
+      <Paper sx={{ width: '100%', maxWidth: 520, p: { xs: 3, sm: 4 }, border: '1px solid', borderColor: 'divider', borderRadius: '12px', bgcolor: 'background.paper' }}>
+        <Box sx={{ textAlign: 'center', mb: 3.5 }}>
+          <Typography
+            component="span"
+            sx={{
+              display: 'block',
+              fontSize: '0.75rem',
+              fontWeight: 700,
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              color: 'primary.main',
+              mb: 1,
+            }}
+          >
+            ΚΟΙΝΟΤΗΤΑ DSUth • ΣΥΝΕΙΣΦΟΡΑ ΥΛΙΚΟΥ
+          </Typography>
+          <Typography variant="h5" sx={{ fontWeight: 800, color: 'text.primary', letterSpacing: '-0.02em', mb: 0.5 }}>
+            Ανέβασμα Αρχείου
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            Υποστηρίζονται αρχεία PDF, Word, PNG και JPG (αυτόματη μετατροπή σε PDF)
           </Typography>
         </Box>
 
@@ -289,18 +298,18 @@ const Upload = () => {
               onDragOver={handleDrag}
               onDrop={handleDrop}
               sx={{
-                border: '2px dashed',
+                border: '1px dashed',
                 borderColor: dragActive ? 'primary.main' : 'divider',
-                borderRadius: 3,
+                borderRadius: '12px',
                 p: 3,
                 textAlign: 'center',
                 cursor: 'pointer',
-                bgcolor: (t) => dragActive ? (t.palette.mode === 'light' ? '#e8f0fe' : 'rgba(138,180,248,0.12)') : 'transparent',
-                transition: 'all 0.2s',
+                bgcolor: (t) => dragActive ? (t.palette.mode === 'light' ? 'rgba(26,115,232,0.06)' : 'rgba(26,115,232,0.12)') : 'transparent',
+                transition: 'border-color 0.15s ease',
                 WebkitTapHighlightColor: 'transparent',
                 '&:hover': {
                   borderColor: 'primary.main',
-                  bgcolor: (t) => t.palette.mode === 'light' ? '#f3f7fe' : 'rgba(138,180,248,0.08)'
+                  bgcolor: (t) => t.palette.mode === 'light' ? 'rgba(26,115,232,0.03)' : 'rgba(26,115,232,0.06)'
                 },
                 '&:active': {
                   bgcolor: (t) => t.palette.mode === 'light' ? '#e8f0fe' : 'rgba(138,180,248,0.12)'
@@ -328,7 +337,7 @@ const Upload = () => {
                       <Box component="iframe" src={`${previewUrl}#toolbar=0`} sx={{ width: '100%', height: 400, border: 'none', borderRadius: 2, boxShadow: 1 }} />
                     )
                   ) : (
-                    <InsertDriveFileIcon sx={{ color: 'primary.main', fontSize: 60 }} />
+                    <FileText size={56} color="var(--mui-palette-primary-main, #1a73e8)" />
                   )}
                   <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.primary', wordBreak: 'break-all' }}>Επιτυχής μετατροπή: {file.name}</Typography>
                   <Typography variant="caption" sx={{ color: 'success.main', fontWeight: 600 }}>Το αρχείο είναι έτοιμο για ανέβασμα!</Typography>
@@ -352,14 +361,16 @@ const Upload = () => {
                         borderColor: '#d32f2f !important'
                       }
                     }}
-                    startIcon={<DeleteIcon />}
+                    startIcon={<Trash2 size={16} />}
                   >
                     Διαγραφή Αρχείου
                   </Button>
                 </Box>
               ) : (
                 <>
-                  <CloudUploadIcon sx={{ color: 'text.secondary', fontSize: 36, mb: 1 }} />
+                  <Box sx={{ mb: 1, color: 'text.secondary', display: 'flex', justifyContent: 'center' }}>
+                    <UploadCloud size={36} />
+                  </Box>
                   <Typography variant="body2" sx={{ color: 'text.secondary', fontWeight: 500 }}>
                     Σύρε αρχείο εδώ ή πάτα για επιλογή
                   </Typography>
@@ -380,7 +391,7 @@ const Upload = () => {
                 onSuccess={(token) => { setTurnstileToken(token); setCanSubmit(true); }}
                 onExpire={() => { setTurnstileToken(''); setCanSubmit(false); }}
                 onError={() => { setTurnstileToken(''); setCanSubmit(false); }}
-                theme="light"
+                theme={theme.palette.mode === 'dark' ? 'dark' : 'light'}
                 size="normal"
               />
             </Box>

@@ -141,15 +141,8 @@ const AdminUpload = () => {
   return (
     <Box>
       {/* Header */}
-      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.75 }}>
-        <Box sx={{
-          width: 44, height: 44, borderRadius: '13px',
-          background: 'linear-gradient(135deg,#1a73e8,#0052cc)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          boxShadow: '0 4px 14px rgba(26,115,232,.35)',
-        }}>
-          <CloudUploadIcon sx={{ color: '#fff', fontSize: 22 }} />
-        </Box>
+      <Box sx={{ mb: 4, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <CloudUploadIcon sx={{ color: 'primary.main', fontSize: 28 }} />
         <Box>
           <Typography variant="h4" sx={{ fontWeight: 800, lineHeight: 1.15, fontSize: { xs: '1.35rem', sm: '1.7rem' } }}>
             Μαζικό Upload

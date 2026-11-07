@@ -1,8 +1,7 @@
 import React from 'react';
-import { Box, Typography, LinearProgress, Stack, Chip } from '@mui/material';
+import { Box, Typography, LinearProgress, Stack } from '@mui/material';
 import { validatePassword, getPasswordRequirements } from '../utils/passwordValidation';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
+import { CheckCircle2, XCircle } from 'lucide-react';
 
 const PasswordStrengthIndicator = ({ password, showRequirements = true }) => {
   if (!password) return null;
@@ -68,9 +67,9 @@ const PasswordStrengthIndicator = ({ password, showRequirements = true }) => {
                   }}
                 >
                   {isMet ? (
-                    <CheckCircleIcon sx={{ color: '#4caf50', fontSize: 16 }} />
+                    <CheckCircle2 size={15} color="#4caf50" style={{ flexShrink: 0 }} />
                   ) : (
-                    <CancelIcon sx={{ color: '#f44336', fontSize: 16 }} />
+                    <XCircle size={15} color="#f44336" style={{ flexShrink: 0 }} />
                   )}
                   <Typography
                     variant="body2"
@@ -80,7 +79,7 @@ const PasswordStrengthIndicator = ({ password, showRequirements = true }) => {
                       transition: 'all 0.2s ease'
                     }}
                   >
-                    {req.icon} {req.label}
+                    {req.label}
                   </Typography>
                 </Box>
               );

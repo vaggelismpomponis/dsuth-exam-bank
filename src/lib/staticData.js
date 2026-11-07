@@ -72,12 +72,22 @@ export async function withStaticFallback(staticPath, liveFn) {
     // If manifest is missing, no static data available → use live
     if (age === null) return liveFn();
 
-    // If static data is too old → use live (to avoid serving very stale exam lists)
+    // If static data is too old → try live query first, fallback to static if live is empty or fails
     if (age > maxStaticAge()) {
       if (import.meta.env.DEV) {
-        console.info(`[staticData] ${staticPath} → stale (${Math.round(age / 3600000)}h old), using live query`);
+        console.info(`[staticData] ${staticPath} → stale (${Math.round(age / 3600000)}h old), trying live query`);
       }
-      return liveFn();
+      try {
+        const liveRes = await liveFn();
+        if (liveRes && (!Array.isArray(liveRes) || liveRes.length > 0)) {
+          return liveRes;
+        }
+      } catch (liveErr) {
+        if (import.meta.env.DEV) {
+          console.warn(`[staticData] ${staticPath} live query failed:`, liveErr);
+        }
+      }
+      // Live query returned empty/failed — gracefully fall through to fetch static snapshot
     }
 
     // Attempt to fetch the static file

@@ -61,9 +61,9 @@ export const validatePasswordBackend = async (password) => {
 };
 
 export const getPasswordRequirements = () => [
-  { key: 'length', label: 'Τουλάχιστον 8 χαρακτήρες', icon: '🔢' },
-  { key: 'lowercase', label: 'Τουλάχιστον 1 πεζό γράμμα', icon: '📝' },
-  { key: 'uppercase', label: 'Τουλάχιστον 1 κεφαλαίο γράμμα', icon: '📝' },
-  { key: 'number', label: 'Τουλάχιστον 1 αριθμό', icon: '🔢' },
-  { key: 'symbol', label: 'Τουλάχιστον 1 σύμβολο (!@#$%^&*)', icon: '🔐' }
+  { key: 'length', label: 'Τουλάχιστον 8 χαρακτήρες' },
+  { key: 'lowercase', label: 'Τουλάχιστον 1 πεζό γράμμα' },
+  { key: 'uppercase', label: 'Τουλάχιστον 1 κεφαλαίο γράμμα' },
+  { key: 'number', label: 'Τουλάχιστον 1 αριθμό' },
+  { key: 'symbol', label: 'Τουλάχιστον 1 σύμβολο (!@#$%^&*)' }
 ]; 

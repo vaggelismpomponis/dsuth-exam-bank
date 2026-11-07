@@ -1,11 +1,7 @@
 import React, { useState } from 'react';
 import { Box, IconButton, Typography, CircularProgress, Dialog, AppBar, Toolbar, Slide } from '@mui/material';
 import { Document, Page } from 'react-pdf';
-import ZoomInIcon from '@mui/icons-material/ZoomIn';
-import ZoomOutIcon from '@mui/icons-material/ZoomOut';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
-import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
-import CloseIcon from '@mui/icons-material/Close';
+import { ZoomIn, ZoomOut, Maximize2, Minimize2, X } from 'lucide-react';
 import { useTheme } from '@mui/material/styles';
 import { pdfjs } from 'react-pdf';
 
@@ -100,13 +96,13 @@ const PdfPreview = ({ fileUrl, showAllPages = false, onLoadError }) => {
             width: '100%',
             flexShrink: 0,
         }}>
-            <IconButton onClick={handleZoomOut} disabled={zoom <= 0.5} size="small"><ZoomOutIcon /></IconButton>
+            <IconButton onClick={handleZoomOut} disabled={zoom <= 0.5} size="small"><ZoomOut size={18} /></IconButton>
             <Typography variant="body2" sx={{ minWidth: 45, textAlign: 'center', fontWeight: 600 }}>
                 {Math.round(zoom * 100)}%
             </Typography>
-            <IconButton onClick={handleZoomIn} disabled={zoom >= 4.0} size="small"><ZoomInIcon /></IconButton>
+            <IconButton onClick={handleZoomIn} disabled={zoom >= 4.0} size="small"><ZoomIn size={18} /></IconButton>
             {!isInDialog && (
-                <IconButton onClick={() => setIsFullscreen(true)} size="small" sx={{ ml: 1 }}><FullscreenIcon /></IconButton>
+                <IconButton onClick={() => setIsFullscreen(true)} size="small" sx={{ ml: 1 }}><Maximize2 size={18} /></IconButton>
             )}
         </Box>
     );
@@ -127,13 +123,13 @@ const PdfPreview = ({ fileUrl, showAllPages = false, onLoadError }) => {
                 <AppBar sx={{ position: 'relative', pt: 'env(safe-area-inset-top, 0px)', borderRadius: 0 }}>
                     <Toolbar>
                         <IconButton edge="start" color="inherit" onClick={() => setIsFullscreen(false)} aria-label="close">
-                            <CloseIcon />
+                            <X size={20} />
                         </IconButton>
                         <Typography sx={{ ml: 2, flex: 1 }} variant="h6" component="div">
                             Προβολή PDF
                         </Typography>
                         <IconButton color="inherit" onClick={() => setIsFullscreen(false)}>
-                            <FullscreenExitIcon />
+                            <Minimize2 size={20} />
                         </IconButton>
                     </Toolbar>
                 </AppBar>

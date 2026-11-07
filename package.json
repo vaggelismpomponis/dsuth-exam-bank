@@ -10,6 +10,7 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
+    "prepare-mobile": "npm run build && npx cap sync",
     "prebuild-data": "node scripts/prebuild-static-data.js",
     "migrate-r2": "node scripts/migrate-to-r2.js"
   },
@@ -37,6 +38,7 @@
     "git-filter-repo": "^0.0.30",
     "jspdf": "^4.2.0",
     "jszip": "^3.10.1",
+    "lucide-react": "^1.70.0",
     "mammoth": "^1.11.0",
     "notistack": "^3.0.2",
     "react": "^19.1.0",

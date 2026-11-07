@@ -4,19 +4,21 @@ import {
   useTheme, useMediaQuery, alpha, CircularProgress, Divider, Button,
   Snackbar, Alert, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions,
 } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import DownloadIcon from '@mui/icons-material/Download';
-import ShareIcon from '@mui/icons-material/Share';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
-import HourglassTopIcon from '@mui/icons-material/HourglassTop';
-import InsertDriveFileOutlinedIcon from '@mui/icons-material/InsertDriveFileOutlined';
-import CalendarTodayOutlinedIcon from '@mui/icons-material/CalendarTodayOutlined';
-import SchoolOutlinedIcon from '@mui/icons-material/SchoolOutlined';
-import DoneIcon from '@mui/icons-material/Done';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import RefreshIcon from '@mui/icons-material/Refresh';
+import {
+  X,
+  Download,
+  Share2,
+  ExternalLink,
+  CheckCircle2,
+  Trash2,
+  Clock,
+  FileText,
+  Calendar,
+  GraduationCap,
+  Check,
+  AlertCircle,
+  RefreshCw,
+} from 'lucide-react';
 import { Capacitor } from '@capacitor/core';
 import { downloadFile, shareFile } from '../utils/nativeDownload';
 import PdfPreview from './PdfPreview';
@@ -69,7 +71,9 @@ const MetaPill = ({ icon, label }) => {
       background: dark ? alpha('#fff', 0.06) : alpha('#1a73e8', 0.07),
       border: '1px solid', borderColor: dark ? 'rgba(255,255,255,0.08)' : alpha('#1a73e8', 0.15),
     }}>
-      {React.cloneElement(icon, { sx: { fontSize: 13, color: 'primary.main' } })}
+      {React.isValidElement(icon)
+        ? React.cloneElement(icon, { size: 13, style: { flexShrink: 0, color: '#1a73e8' } })
+        : icon}
       <Typography sx={{ fontSize: '0.75rem', fontWeight: 600, color: 'text.secondary' }}>{label}</Typography>
     </Box>
   );
@@ -183,10 +187,10 @@ const FilePreviewDrawer = ({
                 : (dark ? alpha('#1a73e8', 0.18) : alpha('#1a73e8', 0.1)),
             display: 'flex', alignItems: 'center', justifyContent: 'center',
           }}>
-            <InsertDriveFileOutlinedIcon sx={{
-              fontSize: 22,
-              color: isPdf ? '#d32f2f' : isImage ? '#1e8e3e' : 'primary.main',
-            }} />
+            <FileText
+              size={22}
+              color={isPdf ? '#d32f2f' : isImage ? '#1e8e3e' : '#1a73e8'}
+            />
           </Box>
 
           <Box sx={{ flex: 1, minWidth: 0 }}>
@@ -201,19 +205,19 @@ const FilePreviewDrawer = ({
           </Box>
 
           <IconButton size="small" onClick={onClose} sx={{ color: 'text.secondary', flexShrink: 0 }}>
-            <CloseIcon fontSize="small" />
+            <X size={18} />
           </IconButton>
         </Box>
 
         <Stack direction="row" flexWrap="wrap" gap={0.75}>
-          {file?.course && <MetaPill icon={<SchoolOutlinedIcon />} label={file.course} />}
-          {file?.year && <MetaPill icon={<CalendarTodayOutlinedIcon />} label={String(file.year)} />}
-          {file?.period && <MetaPill icon={<InsertDriveFileOutlinedIcon />} label={file.period} />}
+          {file?.course && <MetaPill icon={<GraduationCap />} label={file.course} />}
+          {file?.year && <MetaPill icon={<Calendar />} label={String(file.year)} />}
+          {file?.period && <MetaPill icon={<FileText />} label={file.period} />}
           <Chip
             size="small"
             icon={file?.approved
-              ? <CheckCircleOutlineIcon sx={{ fontSize: '13px !important' }} />
-              : <HourglassTopIcon sx={{ fontSize: '13px !important' }} />}
+              ? <CheckCircle2 size={13} style={{ flexShrink: 0 }} />
+              : <Clock size={13} style={{ flexShrink: 0 }} />}
             label={file?.approved ? 'Εγκεκριμένο' : 'Εκκρεμεί'}
             sx={{
               fontWeight: 700, fontSize: '0.7rem', borderRadius: '8px',
@@ -231,7 +235,7 @@ const FilePreviewDrawer = ({
       <Box sx={{ flex: 1, overflow: 'hidden', position: 'relative', bgcolor: dark ? '#111' : '#f0f2f5' }}>
         {!url ? (
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', gap: 2 }}>
-            <InsertDriveFileOutlinedIcon sx={{ fontSize: 60, color: 'text.secondary', opacity: 0.25 }} />
+            <FileText size={56} style={{ color: 'var(--mui-palette-text-secondary, #888)', opacity: 0.25 }} />
             <Typography sx={{ color: 'text.secondary' }}>Δεν υπάρχει αρχείο</Typography>
           </Box>
         ) : isImage ? (
@@ -279,7 +283,7 @@ const FilePreviewDrawer = ({
               background: dark ? alpha('#1a73e8', 0.14) : alpha('#1a73e8', 0.09),
               display: 'flex', alignItems: 'center', justifyContent: 'center',
             }}>
-              <InsertDriveFileOutlinedIcon sx={{ fontSize: 36, color: 'primary.main' }} />
+              <FileText size={36} color="#1a73e8" />
             </Box>
             <Typography sx={{ fontWeight: 600, color: 'text.primary' }}>
               Δεν υποστηρίζεται προεπισκόπηση
@@ -289,7 +293,7 @@ const FilePreviewDrawer = ({
             </Typography>
             <Button
               variant="contained"
-              startIcon={<DownloadIcon />}
+              startIcon={<Download size={16} />}
               onClick={handleDownload}
               disabled={dlLoading}
               sx={{ borderRadius: '12px', textTransform: 'none', fontWeight: 700, mt: 1 }}
@@ -310,21 +314,21 @@ const FilePreviewDrawer = ({
         <ActionBtn
           title="Λήψη"
           onClick={handleDownload}
-          icon={<DownloadIcon sx={{ fontSize: 18 }} />}
+          icon={<Download size={18} />}
           color="#7b1fa2"
           loading={dlLoading}
         />
         <ActionBtn
           title="Κοινοποίηση"
           onClick={handleShare}
-          icon={<ShareIcon sx={{ fontSize: 18 }} />}
+          icon={<Share2 size={18} />}
           color="#1a73e8"
         />
         {!isMobile && (
           <ActionBtn
             title="Άνοιγμα σε νέα καρτέλα"
             href={url}
-            icon={<OpenInNewIcon sx={{ fontSize: 18 }} />}
+            icon={<ExternalLink size={18} />}
             color="#0d47a1"
           />
         )}
@@ -336,7 +340,7 @@ const FilePreviewDrawer = ({
               <ActionBtn
                 title="Έγκριση"
                 onClick={() => onApprove?.(file?.id)}
-                icon={<DoneIcon sx={{ fontSize: 18 }} />}
+                icon={<Check size={18} />}
                 color="#1e8e3e"
                 disabled={approvingId === file?.id}
                 loading={approvingId === file?.id}
@@ -345,7 +349,7 @@ const FilePreviewDrawer = ({
             <ActionBtn
               title="Διαγραφή"
               onClick={() => onDelete?.(file?.id, file?.file_url)}
-              icon={<DeleteOutlineIcon sx={{ fontSize: 18 }} />}
+              icon={<Trash2 size={18} />}
               color="#d32f2f"
             />
           </>
@@ -450,7 +454,7 @@ const FilePreviewDrawer = ({
             background: dark ? alpha('#d93025', 0.18) : alpha('#d93025', 0.1),
             color: '#d93025', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0
           }}>
-            <ErrorOutlineIcon />
+            <AlertCircle size={22} />
           </Box>
           Σφάλμα φόρτωσης
         </DialogTitle>
@@ -470,7 +474,7 @@ const FilePreviewDrawer = ({
           <Button 
             onClick={clearCacheAndReload} 
             variant="contained" 
-            startIcon={<RefreshIcon />}
+            startIcon={<RefreshCw size={16} />}
             sx={{ borderRadius: 100, textTransform: 'none', px: 2.5 }}
           >
             Ανανέωση

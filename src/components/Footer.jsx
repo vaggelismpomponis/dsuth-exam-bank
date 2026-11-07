@@ -1,291 +1,181 @@
 import React from 'react';
-import { Box, Typography, Link, Stack, Divider, IconButton, Chip, useTheme } from '@mui/material';
-import GitHubIcon from '@mui/icons-material/GitHub';
-import EmailIcon from '@mui/icons-material/Email';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import LockIcon from '@mui/icons-material/Lock';
-import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import UploadFileIcon from '@mui/icons-material/UploadFile';
-import HomeIcon from '@mui/icons-material/Home';
-import GroupIcon from '@mui/icons-material/Group';
-import ContactSupportIcon from '@mui/icons-material/ContactSupport';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Container from '@mui/material/Container';
+import Stack from '@mui/material/Stack';
+import Link from '@mui/material/Link';
+import { Mail } from 'lucide-react';
+import { Link as RouterLink } from 'react-router-dom';
+import { AppLogo } from './common/AppLogo';
+
+const NAV_LINKS = [
+  { href: '/', label: 'Αρχική' },
+  { href: '/courses', label: 'Μαθήματα & Υλικό' },
+  { href: '/upload', label: 'Ανέβασμα Θεμάτων' },
+  { href: '/requests', label: 'Αιτήματα Φοιτητών' },
+  { href: '/favorites', label: 'Αγαπημένα' },
+];
+
+const LEGAL_LINKS = [
+  { href: '/contact#faq', label: 'Συχνές Ερωτήσεις (FAQ)' },
+  { href: '/privacy', label: 'Πολιτική Απορρήτου (GDPR)' },
+  { href: '/contact', label: 'Επικοινωνία' },
+];
 
 const Footer = () => {
-  const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
-
-  const navLinks = [
-    { href: '/', icon: <HomeIcon sx={{ fontSize: 15 }} />, label: 'Αρχική' },
-    { href: '/courses', icon: <MenuBookIcon sx={{ fontSize: 15 }} />, label: 'Μαθήματα' },
-    { href: '/upload', icon: <UploadFileIcon sx={{ fontSize: 15 }} />, label: 'Ανέβασμα' },
-    { href: '/students', icon: <GroupIcon sx={{ fontSize: 15 }} />, label: 'Φοιτητές' },
-    { href: '/contact', icon: <ContactSupportIcon sx={{ fontSize: 15 }} />, label: 'Επικοινωνία' },
-  ];
-
-  const legalLinks = [
-    { href: '/faq', label: 'FAQ' },
-    { href: '/privacy', label: 'Απόρρητο' },
-  ];
-
   return (
     <Box
       component="footer"
       sx={{
         width: '100%',
-        mt: 0,
-        bgcolor: isDark ? '#111214' : '#f8f9fa',
+        bgcolor: 'background.paper',
         borderTop: '1px solid',
-        borderColor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)',
-        pb: { xs: 'calc(80px + env(safe-area-inset-bottom, 0px))', md: 0 }
+        borderColor: 'divider',
+        borderRadius: 0,
+        mt: 'auto',
+        pb: { xs: 'calc(76px + env(safe-area-inset-bottom, 0px))', md: 0 },
       }}
     >
-      <Box
-        sx={{
-          maxWidth: 1200,
-          mx: 'auto',
-          px: { xs: 3, md: 6 },
-          py: { xs: 5, md: 7 },
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', md: '2fr 1fr 1fr' },
-          gap: { xs: 4, md: 8 },
-        }}
-      >
-        {/* Brand Column */}
-        <Box>
-          {/* Logo + name */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
-            <Box
-              component="img"
-              src="/favicon.png"
-              alt="DS Logo"
-              sx={{
-                width: 38,
-                height: 38,
-                borderRadius: 0,
-                boxShadow: '0 4px 12px rgba(26,115,232,0.3)',
-                flexShrink: 0,
-              }}
-            />
-            <Typography sx={{ fontWeight: 800, fontSize: '1.05rem', color: 'text.primary', letterSpacing: '-0.02em' }}>
-              DSUth Exam Bank
+      <Container maxWidth="lg" sx={{ px: { xs: 3, sm: 4, md: 6 }, py: { xs: 6, md: 8 } }}>
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: '2.2fr 1fr 1fr' },
+            gap: { xs: 4, sm: 5, md: 6 },
+          }}
+        >
+          {/* Brand & Mission */}
+          <Box>
+            <Box sx={{ mb: 2 }}>
+              <AppLogo size={32} showText={true} />
+            </Box>
+
+            <Typography variant="body2" sx={{ color: 'text.secondary', lineHeight: 1.7, maxWidth: 360, mb: 2.5 }}>
+              Ανοιχτή φοιτητική πλατφόρμα αρχειοθέτησης και διαμοιρασμού παλαιών θεμάτων εξετάσεων και εκπαιδευτικού υλικού.
             </Typography>
+
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2.5 }}>
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: 'success.main', shrink: 0 }} />
+              <Typography variant="caption" sx={{ color: 'text.secondary', fontWeight: 600 }}>
+                Πανεπιστήμιο Θεσσαλίας • Τμήμα Ψηφιακών Συστημάτων
+              </Typography>
+            </Box>
+
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <Link
+                href="mailto:dsuthexambank@gmail.com"
+                sx={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                  fontSize: '0.8125rem',
+                  fontWeight: 600,
+                  color: 'text.secondary',
+                  textDecoration: 'none',
+                  '&:hover': { color: 'text.primary' },
+                }}
+              >
+                <Mail size={16} />
+                <span>Email Υποστήριξης</span>
+              </Link>
+            </Box>
           </Box>
 
-          <Typography
-            sx={{
-              color: 'text.secondary',
-              fontSize: '0.875rem',
-              lineHeight: 1.75,
-              maxWidth: 340,
-              mb: 2.5,
-            }}
-          >
-            Ανοιχτή πλατφόρμα διαμοιρασμού αρχείων εξετάσεων και σημειώσεων για φοιτητές Ψηφιακών Συστημάτων UTH. Δωρεάν, πάντα.
-          </Typography>
-
-          {/* Badges */}
-          <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
-            <Chip
-              label="Open Source"
-              size="small"
+          {/* Navigation Links */}
+          <Box>
+            <Typography
+              component="h4"
               sx={{
-                fontSize: '0.72rem',
+                fontSize: '0.7rem',
                 fontWeight: 700,
-                bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
                 color: 'text.secondary',
-                borderRadius: '8px',
-                border: `1px solid ${isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
-              }}
-            />
-            <Chip
-              label="Ψηφιακά Συστήματα UTH"
-              size="small"
-              sx={{
-                fontSize: '0.72rem',
-                fontWeight: 700,
-                bgcolor: isDark ? 'rgba(26,115,232,0.12)' : 'rgba(26,115,232,0.07)',
-                color: isDark ? '#8ab4f8' : '#1a73e8',
-                borderRadius: '8px',
-                border: `1px solid ${isDark ? 'rgba(26,115,232,0.2)' : 'rgba(26,115,232,0.15)'}`,
-              }}
-            />
-          </Stack>
-
-          {/* Social icons */}
-          <Stack direction="row" spacing={1} sx={{ mt: 3 }}>
-            <IconButton
-              component={Link}
-              href="https://github.com/vaggelismpomponis/dsuth-exam-bank"
-              target="_blank"
-              rel="noopener"
-              size="small"
-              sx={{
-                width: 36,
-                height: 36,
-                borderRadius: '10px',
-                color: 'text.secondary',
-                bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
-                border: '1px solid',
-                borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)',
-                '&:hover': {
-                  color: 'text.primary',
-                  bgcolor: isDark ? 'rgba(255,255,255,0.10)' : 'rgba(0,0,0,0.08)',
-                },
+                mb: 2,
               }}
             >
-              <GitHubIcon sx={{ fontSize: 17 }} />
-            </IconButton>
-            <IconButton
-              component={Link}
-              href="mailto:dsuthexambank@gmail.com"
-              size="small"
+              Πλοήγηση
+            </Typography>
+            <Stack spacing={1.25}>
+              {NAV_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  component={RouterLink}
+                  to={link.href}
+                  sx={{
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    color: 'text.secondary',
+                    textDecoration: 'none',
+                    transition: 'color 0.15s ease',
+                    '&:hover': { color: 'primary.main' },
+                  }}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </Stack>
+          </Box>
+
+          {/* Help & Legal Links */}
+          <Box>
+            <Typography
+              component="h4"
               sx={{
-                width: 36,
-                height: 36,
-                borderRadius: '10px',
+                fontSize: '0.7rem',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                letterSpacing: '0.08em',
                 color: 'text.secondary',
-                bgcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.05)',
-                border: '1px solid',
-                borderColor: isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.07)',
-                '&:hover': {
-                  color: '#1a73e8',
-                  bgcolor: isDark ? 'rgba(26,115,232,0.12)' : 'rgba(26,115,232,0.07)',
-                },
+                mb: 2,
               }}
             >
-              <EmailIcon sx={{ fontSize: 17 }} />
-            </IconButton>
-          </Stack>
+              Βοήθεια & Νομικά
+            </Typography>
+            <Stack spacing={1.25}>
+              {LEGAL_LINKS.map((link) => (
+                <Link
+                  key={link.href}
+                  component={RouterLink}
+                  to={link.href}
+                  sx={{
+                    fontSize: '0.875rem',
+                    fontWeight: 500,
+                    color: 'text.secondary',
+                    textDecoration: 'none',
+                    transition: 'color 0.15s ease',
+                    '&:hover': { color: 'primary.main' },
+                  }}
+                >
+                  {link.label}
+                </Link>
+              ))}
+            </Stack>
+          </Box>
         </Box>
 
-        {/* Navigation Column */}
-        <Box>
-          <Typography
-            sx={{
-              fontWeight: 700,
-              fontSize: '0.75rem',
-              color: 'text.secondary',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              mb: 2.5,
-            }}
-          >
-            Πλοήγηση
+        {/* Bottom Bar */}
+        <Box
+          sx={{
+            mt: { xs: 5, md: 6 },
+            pt: 3,
+            borderTop: '1px solid',
+            borderColor: 'divider',
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
+            alignItems: { xs: 'flex-start', sm: 'center' },
+            justifyContent: 'space-between',
+            gap: 1.5,
+          }}
+        >
+          <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.775rem' }}>
+            © {new Date().getFullYear()} DSUth Exam Bank. Ανεξάρτητη φοιτητική πρωτοβουλία.
           </Typography>
-          <Stack spacing={1.5}>
-            {navLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                underline="none"
-                sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 1.2,
-                  fontSize: '0.875rem',
-                  fontWeight: 500,
-                  color: 'text.secondary',
-                  transition: 'color 0.15s',
-                  '&:hover': { color: 'primary.main' },
-                }}
-              >
-                {link.icon} {link.label}
-              </Link>
-            ))}
-          </Stack>
+          <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.75rem' }}>
+            Πανεπιστήμιο Θεσσαλίας • Τμήμα Ψηφιακών Συστημάτων
+          </Typography>
         </Box>
-
-        {/* Contact Column */}
-        <Box>
-          <Typography
-            sx={{
-              fontWeight: 700,
-              fontSize: '0.75rem',
-              color: 'text.secondary',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              mb: 2.5,
-            }}
-          >
-            Επικοινωνία
-          </Typography>
-
-          <Link
-            href="mailto:dsuthexambank@gmail.com"
-            underline="none"
-            sx={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 1.2,
-              fontSize: '0.85rem',
-              fontWeight: 500,
-              color: 'text.secondary',
-              mb: 2,
-              transition: 'color 0.15s',
-              '&:hover': { color: 'primary.main' },
-            }}
-          >
-            <EmailIcon sx={{ fontSize: 15 }} />
-            dsuthexambank@gmail.com
-          </Link>
-
-          <Typography
-            sx={{
-              fontWeight: 700,
-              fontSize: '0.75rem',
-              color: 'text.secondary',
-              textTransform: 'uppercase',
-              letterSpacing: '0.08em',
-              mb: 2,
-              mt: 3,
-            }}
-          >
-            Νομικά
-          </Typography>
-          <Stack spacing={1.5}>
-            {legalLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                underline="none"
-                sx={{
-                  fontSize: '0.875rem',
-                  fontWeight: 500,
-                  color: 'text.secondary',
-                  transition: 'color 0.15s',
-                  '&:hover': { color: 'primary.main' },
-                }}
-              >
-                {link.label}
-              </Link>
-            ))}
-          </Stack>
-        </Box>
-      </Box>
-
-      {/* Bottom bar */}
-      <Box
-        sx={{
-          borderTop: '1px solid',
-          borderColor: isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
-          px: { xs: 3, md: 6 },
-          py: 2.5,
-          maxWidth: 1200,
-          mx: 'auto',
-          display: 'flex',
-          flexDirection: { xs: 'column', sm: 'row' },
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: 1,
-        }}
-      >
-        <Typography variant="body2" sx={{ color: 'text.disabled', fontSize: '0.8rem' }}>
-          © {new Date().getFullYear()} Τράπεζα Θεμάτων UTH
-        </Typography>
-        <Typography variant="body2" sx={{ color: 'text.disabled', fontSize: '0.78rem' }}>
-          Ψηφιακά Συστήματα, Πανεπιστήμιο Θεσσαλίας
-        </Typography>
-      </Box>
+      </Container>
     </Box>
   );
 };

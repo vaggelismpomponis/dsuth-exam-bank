@@ -4,7 +4,6 @@ import Box from '@mui/material/Box';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Upload from './pages/Upload';
-import AdminPanel from './pages/AdminPanel';
 import Register from './pages/Register';
 import Profile from './pages/Profile';
 import Contact from './pages/Contact';
@@ -21,16 +20,14 @@ import Footer from './components/Footer';
 import Favorites from './pages/Favorites';
 import FileViewer from './pages/FileViewer';
 import { SnackbarProvider } from 'notistack';
+import { AppToast } from './components/common/AppToast';
 import AdminUpload from './pages/admin/AdminUpload';
 import RequireAdmin from './components/RequireAdmin';
 import { trackEvent } from './lib/analytics';
-import FAQ from './pages/FAQ';
 import Privacy from './pages/Privacy';
 import Requests from './pages/Requests';
 import BottomNav from './components/BottomNav';
-import StudentsDirectory from './pages/StudentsDirectory';
 import { useMediaQuery } from '@mui/material';
-import RefreshIcon from '@mui/icons-material/Refresh';
 import PublicOnly from './components/PublicOnly';
 import { ColorModeContext } from './context/ColorModeContext';
 import { AdminSidebarContext } from './context/AdminSidebarContext';
@@ -98,8 +95,8 @@ const getDesignTokens = (mode) => ({
       },
       styleOverrides: {
         root: {
-          borderRadius: 100,
-          padding: '10px 24px',
+          borderRadius: 8,
+          padding: '10px 20px',
           fontSize: '0.938rem',
           textTransform: 'none',
           fontWeight: 600,
@@ -125,11 +122,11 @@ const getDesignTokens = (mode) => ({
       },
       styleOverrides: {
         root: {
-          borderRadius: 16,
-          border: `1px solid ${mode === 'light' ? '#e0e0e0' : '#333'}`,
-          transition: 'box-shadow 0.2s ease, transform 0.2s ease',
+          borderRadius: 12,
+          border: `1px solid ${mode === 'light' ? '#e2e8f0' : '#2d3139'}`,
+          transition: 'border-color 0.15s ease, background-color 0.15s ease',
           '&:hover': {
-            boxShadow: mode === 'light' ? '0 4px 20px rgba(0,0,0,0.08)' : '0 4px 20px rgba(0,0,0,0.4)',
+            borderColor: '#1a73e8',
           },
         },
       },
@@ -140,7 +137,7 @@ const getDesignTokens = (mode) => ({
       },
       styleOverrides: {
         root: {
-          borderRadius: 16,
+          borderRadius: 12,
         },
       },
     },
@@ -188,8 +185,8 @@ const getDesignTokens = (mode) => ({
     MuiChip: {
       styleOverrides: {
         root: {
-          borderRadius: 8,
-          fontWeight: 500,
+          borderRadius: 6,
+          fontWeight: 600,
         },
       },
     },
@@ -212,6 +209,11 @@ const getDesignTokens = (mode) => ({
       defaultProps: {
         elevation: 0,
       },
+      styleOverrides: {
+        root: {
+          borderRadius: 0,
+        },
+      },
     },
     MuiIconButton: {
       styleOverrides: {
@@ -227,7 +229,7 @@ const getDesignTokens = (mode) => ({
       },
       styleOverrides: {
         paper: {
-          borderRadius: '24px 0 0 24px',
+          borderRadius: 0,
         },
       },
     },
@@ -302,22 +304,38 @@ function ScrollToTop() {
 
 function App() {
   const prefersDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
-  const [mode, setMode] = useState(() => {
+  const [themePreference, setThemePreferenceState] = useState(() => {
     const savedMode = localStorage.getItem('themeMode');
-    return savedMode ? savedMode : (prefersDarkMode ? 'dark' : 'light');
+    if (savedMode === 'light' || savedMode === 'dark' || savedMode === 'system') {
+      return savedMode;
+    }
+    return 'system';
   });
+
+  const mode = themePreference === 'system'
+    ? (prefersDarkMode ? 'dark' : 'light')
+    : themePreference;
+
+  const setThemePreference = React.useCallback((pref) => {
+    setThemePreferenceState(pref);
+    try {
+      localStorage.setItem('themeMode', pref);
+    } catch (e) {
+      console.warn('Failed to save theme preference', e);
+    }
+  }, []);
 
   const colorMode = React.useMemo(
     () => ({
+      mode,
+      themePreference,
+      setThemePreference,
       toggleColorMode: () => {
-        setMode((prevMode) => {
-          const newMode = prevMode === 'light' ? 'dark' : 'light';
-          localStorage.setItem('themeMode', newMode);
-          return newMode;
-        });
+        const next = mode === 'light' ? 'dark' : 'light';
+        setThemePreference(next);
       },
     }),
-    [],
+    [mode, themePreference, setThemePreference],
   );
 
   const activeTheme = React.useMemo(() => createTheme(getDesignTokens(mode)), [mode]);
@@ -381,7 +399,6 @@ function App() {
     location.pathname.startsWith('/courses') ||
     location.pathname === '/upload' ||
     location.pathname === '/favorites' ||
-    location.pathname === '/students' ||
     location.pathname === '/profile' ||
     location.pathname === '/requests';
   const backPressedRef = useRef(false);
@@ -440,11 +457,23 @@ function App() {
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={activeTheme}>
         <ScrollToTop />
-        <SnackbarProvider maxSnack={3} anchorOrigin={{ vertical: 'top', horizontal: 'center' }} autoHideDuration={2500}>
+        <SnackbarProvider
+          maxSnack={3}
+          anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+          autoHideDuration={2600}
+          Components={{
+            default: AppToast,
+            success: AppToast,
+            error: AppToast,
+            warning: AppToast,
+            info: AppToast,
+          }}
+        >
           <CssBaseline />
           <Box sx={{
             overflowX: 'hidden',
-            maxWidth: '100%',
+            width: '100%',
+            maxWidth: '100vw',
             pt: { xs: 'calc(56px + env(safe-area-inset-top, 0px))', md: 'calc(64px + env(safe-area-inset-top, 0px))' },
           }}>
 
@@ -473,10 +502,8 @@ function App() {
               <Route path="/admin-application" element={<AdminApplication />} />
               <Route path="/courses" element={<Courses />} />
               <Route path="/courses/:id" element={<CourseFiles />} />
-              <Route path="/faq" element={<FAQ />} />
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/requests" element={<Requests />} />
-              <Route path="/students" element={<StudentsDirectory />} />
               <Route path="/viewer" element={<FileViewer />} />
             </Routes>
           </Box>
