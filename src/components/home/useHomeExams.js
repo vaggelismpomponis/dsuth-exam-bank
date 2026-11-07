@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../../supabaseClient';
 import { cachedQuery } from '../../lib/queryCache';
 import { withStaticFallback } from '../../lib/staticData';
+import { getFriendlyErrorMessage } from '../../utils/errorUtils';
 
 export const useHomeExams = () => {
   const [exams, setExams] = useState([]);
@@ -32,7 +33,7 @@ export const useHomeExams = () => {
       );
       setExams(data || []);
     } catch (err) {
-      setError(err?.message || 'Αποτυχία φόρτωσης αρχείων');
+      setError(getFriendlyErrorMessage(err, 'Αποτυχία φόρτωσης αρχείων.'));
       setExams([]);
     } finally {
       setLoading(false);

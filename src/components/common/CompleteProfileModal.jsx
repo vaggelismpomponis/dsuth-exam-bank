@@ -13,6 +13,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { Check, LogOut, User } from 'lucide-react';
 import { useSnackbar } from 'notistack';
 import { supabase } from '../../supabaseClient';
+import { getFriendlyErrorMessage } from '../../utils/errorUtils';
 
 export const CompleteProfileModal = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -61,11 +62,29 @@ export const CompleteProfileModal = () => {
 
       // If both metadata names exist, try auto-syncing to profiles
       if (metaFirst && metaLast) {
+        // Try update first (avoids Postgres INSERT RLS evaluation)
+        const { data: updated, error: updateErr } = await supabase
+          .from('profiles')
+          .update({
+            first_name: metaFirst,
+            last_name: metaLast,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', currentUser.id)
+          .select('id');
+
+        if (!updateErr && updated && updated.length > 0) {
+          setIsOpen(false);
+          return;
+        }
+
+        // If row doesn't exist yet, try upsert
         const { error: upsertErr } = await supabase.from('profiles').upsert({
           id: currentUser.id,
           email: currentUser.email,
           first_name: metaFirst,
           last_name: metaLast,
+          role: 'student',
           updated_at: new Date().toISOString(),
         }, { onConflict: 'id' });
 
@@ -117,23 +136,46 @@ export const CompleteProfileModal = () => {
     setError('');
 
     try {
-      const { error: profErr } = await supabase.from('profiles').upsert({
-        id: user.id,
-        email: user.email,
-        first_name: trimmedFirst,
-        last_name: trimmedLast,
-        updated_at: new Date().toISOString(),
-      }, { onConflict: 'id' });
+      // 1. Try UPDATE on profiles first (matches FOR UPDATE policy without triggering INSERT RLS check)
+      const { data: updatedRows, error: updateErr } = await supabase
+        .from('profiles')
+        .update({
+          first_name: trimmedFirst,
+          last_name: trimmedLast,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', user.id)
+        .select('id');
 
-      if (profErr) throw profErr;
+      // If update failed or row didn't exist in profiles yet, try upsert
+      if (updateErr || !updatedRows || updatedRows.length === 0) {
+        console.warn('Profile update notice, attempting upsert fallback:', updateErr);
+        const { error: upsertErr } = await supabase.from('profiles').upsert({
+          id: user.id,
+          email: user.email,
+          first_name: trimmedFirst,
+          last_name: trimmedLast,
+          role: 'student',
+          updated_at: new Date().toISOString(),
+        }, { onConflict: 'id' });
 
-      await supabase.auth.updateUser({
+        if (upsertErr && updateErr) {
+          throw updateErr || upsertErr;
+        }
+      }
+
+      // 2. Always sync user_metadata in Supabase Auth
+      const { error: authErr } = await supabase.auth.updateUser({
         data: {
           first_name: trimmedFirst,
           last_name: trimmedLast,
           full_name: `${trimmedFirst} ${trimmedLast}`,
         },
       });
+
+      if (authErr) {
+        console.warn('Auth metadata update notice:', authErr);
+      }
 
       enqueueSnackbar('Τα στοιχεία σας καταχωρήθηκαν επιτυχώς!', { variant: 'success' });
       setIsOpen(false);
@@ -142,7 +184,13 @@ export const CompleteProfileModal = () => {
         detail: { first_name: trimmedFirst, last_name: trimmedLast },
       }));
     } catch (err) {
-      setError(err?.message || 'Σφάλμα κατά την αποθήκευση. Δοκιμάστε ξανά.');
+      console.error('CompleteProfileModal save error:', err);
+      setError(
+        getFriendlyErrorMessage(
+          err,
+          'Παρουσιάστηκε σφάλμα κατά την αποθήκευση των στοιχείων σας. Παρακαλούμε δοκιμάστε ξανά.'
+        )
+      );
     } finally {
       setSaving(false);
     }

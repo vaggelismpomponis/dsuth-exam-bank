@@ -3,6 +3,7 @@ import { supabase } from '../../supabaseClient';
 import { cachedQuery, invalidateCacheByPrefix } from '../../lib/queryCache';
 import { withStaticFallback } from '../../lib/staticData';
 import { isUserAdmin } from '../../utils/adminUtils';
+import { getFriendlyErrorMessage } from '../../utils/errorUtils';
 
 export const useCourseFilesData = (courseId) => {
   const [course, setCourse] = useState(null);
@@ -81,7 +82,7 @@ export const useCourseFilesData = (courseId) => {
 
       setFiles(filesData || []);
     } catch (err) {
-      setError(err?.message || 'Αποτυχία ανάκτησης αρχείων.');
+      setError(getFriendlyErrorMessage(err, 'Αποτυχία ανάκτησης αρχείων.'));
     } finally {
       setLoading(false);
     }
@@ -94,7 +95,7 @@ export const useCourseFilesData = (courseId) => {
   const approveFile = async (fileId) => {
     const { error: err } = await supabase.from('exams').update({ approved: true }).eq('id', fileId);
     if (err) {
-      setError('Σφάλμα έγκρισης: ' + err.message);
+      setError(getFriendlyErrorMessage(err, 'Σφάλμα κατά την έγκριση του αρχείου.'));
     } else {
       setSuccess('Το αρχείο εγκρίθηκε!');
       setFiles((prev) => prev.map((f) => (f.id === fileId ? { ...f, approved: true } : f)));
@@ -108,7 +109,7 @@ export const useCourseFilesData = (courseId) => {
     }
     const { error: err } = await supabase.from('exams').delete().eq('id', fileId);
     if (err) {
-      setError('Σφάλμα διαγραφής: ' + err.message);
+      setError(getFriendlyErrorMessage(err, 'Σφάλμα κατά τη διαγραφή του αρχείου.'));
     } else {
       setSuccess('Το αρχείο διαγράφηκε.');
       setFiles((prev) => prev.filter((f) => f.id !== fileId));

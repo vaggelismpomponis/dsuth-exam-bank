@@ -9,6 +9,7 @@ import { supabase } from '../supabaseClient';
 import { isUserAdminSync } from '../utils/adminUtils';
 import { downloadFile } from '../utils/nativeDownload';
 import { validatePassword } from '../utils/passwordValidation';
+import { getFriendlyErrorMessage } from '../utils/errorUtils';
 import { ProfileHero } from '../components/profile/ProfileHero';
 import { PersonalInfoCard } from '../components/profile/PersonalInfoCard';
 import { OtherSettingsCard } from '../components/profile/OtherSettingsCard';
@@ -46,7 +47,7 @@ const Profile = () => {
           .maybeSingle();
 
         if (!ignore) {
-          if (profErr) setError('Σφάλμα ανάκτησης προφίλ: ' + profErr.message);
+          if (profErr) setError(getFriendlyErrorMessage(profErr, 'Σφάλμα ανάκτησης στοιχείων προφίλ.'));
           else if (!prof) setError('Δεν βρέθηκε προφίλ χρήστη. Παρακαλώ επικοινωνήστε με τον διαχειριστή.');
           else setProfile(prof);
           setLoading(false);
@@ -70,7 +71,7 @@ const Profile = () => {
     };
     if (isUserAdminSync(user, profile)) updateObj.role = profile.role;
     const { error: updateErr } = await supabase.from('profiles').update(updateObj).eq('id', user.id);
-    if (updateErr) setError('Σφάλμα αποθήκευσης: ' + updateErr.message);
+    if (updateErr) setError(getFriendlyErrorMessage(updateErr, 'Σφάλμα κατά την αποθήκευση των στοιχείων.'));
     else setSuccess('Τα στοιχεία αποθηκεύτηκαν επιτυχώς!');
     setSaving(false);
   };
@@ -81,7 +82,7 @@ const Profile = () => {
     if (!validation.isValid) { setPasswordError('Ο κωδικός δεν πληροί τις απαιτήσεις.'); return; }
     const { error: passErr } = await supabase.auth.updateUser({ password: newPassword });
     if (passErr) {
-      setPasswordError(passErr.message);
+      setPasswordError(getFriendlyErrorMessage(passErr, 'Σφάλμα κατά την αλλαγή κωδικού πρόσβασης.'));
     } else {
       setPasswordSuccess('Ο κωδικός πρόσβασης ενημερώθηκε επιτυχώς!');
       setShowPasswordDialog(false);
@@ -104,7 +105,7 @@ const Profile = () => {
       setUser(data.user);
       setSuccess('Η εικόνα προφίλ ενημερώθηκε επιτυχώς!');
     } catch (err) {
-      setError('Σφάλμα μεταφόρτωσης: ' + err.message);
+      setError(getFriendlyErrorMessage(err, 'Σφάλμα μεταφόρτωσης εικόνας προφίλ.'));
     } finally {
       setUploadingAvatar(false);
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -120,7 +121,7 @@ const Profile = () => {
       setUser(data.user);
       setSuccess('Η εικόνα προφίλ αφαιρέθηκε.');
     } catch (err) {
-      setError('Σφάλμα διαγραφής: ' + err.message);
+      setError(getFriendlyErrorMessage(err, 'Σφάλμα διαγραφής εικόνας προφίλ.'));
     } finally {
       setUploadingAvatar(false);
     }

@@ -17,7 +17,9 @@ import { supabase } from '../supabaseClient';
 import { Turnstile } from '@marsidev/react-turnstile';
 import { validateTurnstileToken } from '../utils/turnstileValidation';
 import { getGreekAuthError } from '../utils/authErrors';
+import { getAuthRedirectUrl } from '../utils/authUtils';
 import { AppLogo } from '../components/common/AppLogo';
+import { ForgotPasswordModal } from '../components/auth/ForgotPasswordModal';
 
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 18 18">
@@ -38,6 +40,7 @@ const Login = () => {
   const [message, setMessage] = useState('');
   const [turnstileToken, setTurnstileToken] = useState('');
   const [canSubmit, setCanSubmit] = useState(false);
+  const [forgotPasswordOpen, setForgotPasswordOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -74,7 +77,7 @@ const Login = () => {
     setLoading(true);
     setError('');
     try {
-      const redirectTo = `${window.location.origin}/`;
+      const redirectTo = getAuthRedirectUrl('/');
       const { error: oauthErr } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
@@ -151,6 +154,12 @@ const Login = () => {
             </Alert>
           )}
 
+          {location.state?.passwordReset && (
+            <Alert severity="success" sx={{ mb: 2.5, borderRadius: '8px' }}>
+              Ο κωδικός πρόσβασης ενημερώθηκε επιτυχώς! Μπορείτε τώρα να συνδεθείτε.
+            </Alert>
+          )}
+
           <Button
             variant="outlined"
             fullWidth
@@ -188,6 +197,28 @@ const Login = () => {
                 }}
               />
 
+              <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: -1 }}>
+                <MuiLink
+                  component="button"
+                  type="button"
+                  variant="caption"
+                  onClick={() => setForgotPasswordOpen(true)}
+                  sx={{
+                    color: 'primary.main',
+                    fontWeight: 600,
+                    textDecoration: 'none',
+                    cursor: 'pointer',
+                    fontSize: '0.8125rem',
+                    border: 'none',
+                    background: 'none',
+                    padding: 0,
+                    '&:hover': { textDecoration: 'underline' },
+                  }}
+                >
+                  Ξέχασες τον κωδικό σου;
+                </MuiLink>
+              </Box>
+
               <Box sx={{ display: 'flex', justifyContent: 'center', py: 0.5 }}>
                 <Turnstile
                   siteKey={import.meta.env.VITE_TURNSTILE_SITE_KEY || '0x4AAAAAABiQtKNjlTVw7zFL'}
@@ -223,6 +254,12 @@ const Login = () => {
           </Box>
         </Box>
       </Box>
+
+      <ForgotPasswordModal
+        open={forgotPasswordOpen}
+        onClose={() => setForgotPasswordOpen(false)}
+        initialEmail={email}
+      />
     </Box>
   );
 };

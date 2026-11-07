@@ -17,6 +17,7 @@ import { Turnstile } from '@marsidev/react-turnstile';
 import { validateTurnstileToken } from '../utils/turnstileValidation';
 import { validatePassword } from '../utils/passwordValidation';
 import { getGreekAuthError } from '../utils/authErrors';
+import { getAuthRedirectUrl } from '../utils/authUtils';
 import PasswordStrengthIndicator from '../components/PasswordStrengthIndicator';
 import { AppLogo } from '../components/common/AppLogo';
 
@@ -70,7 +71,7 @@ const Register = () => {
       return;
     }
 
-    const redirectTo = `${window.location.origin}/login`;
+    const redirectTo = getAuthRedirectUrl('/login');
     const { data: signUpData, error: signUpErr } = await supabase.auth.signUp({
       email: email.trim(),
       password,
@@ -109,7 +110,7 @@ const Register = () => {
     setLoading(true);
     setError('');
     try {
-      const redirectTo = `${window.location.origin}/`;
+      const redirectTo = getAuthRedirectUrl('/');
       const { error: oauthErr } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {

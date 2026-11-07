@@ -72,8 +72,30 @@ CREATE POLICY "profiles_select_admin_all"
   USING (public.is_admin());
 
 -- ============================================================
+-- STEP 5: Create INSERT and UPDATE policies for profiles
+-- (Fixes "new row violates row-level security policy for table 'profiles'")
+-- ============================================================
+
+DROP POLICY IF EXISTS "profiles_insert_own" ON profiles;
+CREATE POLICY "profiles_insert_own"
+  ON profiles
+  FOR INSERT
+  TO authenticated
+  WITH CHECK (auth.uid() = id);
+
+DROP POLICY IF EXISTS "profiles_update_own" ON profiles;
+CREATE POLICY "profiles_update_own"
+  ON profiles
+  FOR UPDATE
+  TO authenticated
+  USING (auth.uid() = id)
+  WITH CHECK (auth.uid() = id);
+
+-- ============================================================
 -- Result:
 -- • Regular users → see their own row + all student rows
+-- • Regular users → can insert their own profile row
+-- • Regular users → can update their own profile row
 -- • Admins        → see ALL rows (own + students + other admins)
 -- • Policies are OR'd, so any matching policy grants access
 -- ============================================================

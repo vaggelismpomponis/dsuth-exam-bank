@@ -5,6 +5,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Upload from './pages/Upload';
 import Register from './pages/Register';
+import ResetPassword from './pages/ResetPassword';
 import Profile from './pages/Profile';
 import Contact from './pages/Contact';
 import AdminApplication from './pages/AdminApplication';
@@ -395,7 +396,7 @@ function App() {
 
 
   const isAdminRoute = location.pathname.startsWith('/admin');
-  const isAuthRoute = location.pathname === '/login' || location.pathname === '/register';
+  const isAuthRoute = location.pathname === '/login' || location.pathname === '/register' || location.pathname === '/reset-password';
   const isFooterlessRoute =
     location.pathname.startsWith('/courses') ||
     location.pathname === '/upload' ||
@@ -482,6 +483,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<PublicOnly><Login /></PublicOnly>} />
+              <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/upload" element={<Upload />} />
               <Route path="/favorites" element={<Favorites />} />
               <Route path="/contact" element={<Contact />} />
