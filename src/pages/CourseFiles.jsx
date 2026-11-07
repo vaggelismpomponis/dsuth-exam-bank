@@ -21,6 +21,7 @@ import { CourseFilesFilterBar } from '../components/courseFiles/CourseFilesFilte
 import { CourseFileItem } from '../components/courseFiles/CourseFileItem';
 import { downloadFile, shareFile } from '../utils/nativeDownload';
 import { normalizeFileUrl } from '../lib/urlNormalizer';
+import { trackEvent } from '../lib/analytics';
 
 const CourseFiles = () => {
   const { id } = useParams();
@@ -50,20 +51,34 @@ const CourseFiles = () => {
     setDownloadingAll(true);
     try {
       const zip = new JSZip();
+      let addedCount = 0;
+
       for (const f of files) {
         const url = normalizeFileUrl(f.file_url);
         if (!url) continue;
-        const res = await fetch(url);
-        const blob = await res.blob();
-        const filename = `${course?.name || 'course'}_${f.year || ''}_${f.period || ''}.pdf`;
-        zip.file(filename, blob);
+        try {
+          const res = await fetch(url);
+          if (!res.ok) continue;
+          const blob = await res.blob();
+          const filename = `${course?.name || 'course'}_${f.year || ''}_${f.period || ''}.pdf`;
+          zip.file(filename, blob);
+          addedCount += 1;
+        } catch (fetchErr) {
+          console.warn('Skipping file fetch error:', fetchErr);
+        }
       }
+
+      if (addedCount === 0) {
+        throw new Error('Δεν βρέθηκαν διαθέσιμα αρχεία για λήψη.');
+      }
+
       const content = await zip.generateAsync({ type: 'blob' });
       saveAs(content, `${course?.name || 'course'}_all_exams.zip`);
-      trackEvent?.('download_all', { courseId: id, filesCount: files.length });
-      enqueueSnackbar('Η λήψη ολοκληρώθηκε!', { variant: 'success' });
-    } catch {
-      enqueueSnackbar('Σφάλμα κατά τη λήψη αρχείων.', { variant: 'error' });
+      trackEvent('download_all', { courseId: id, filesCount: addedCount });
+      enqueueSnackbar('Η λήψη ολοκληρώθηκε επιτυχώς!', { variant: 'success' });
+    } catch (err) {
+      console.error('Download all error:', err);
+      enqueueSnackbar(err?.message || 'Σφάλμα κατά τη λήψη αρχείων.', { variant: 'error' });
     } finally {
       setDownloadingAll(false);
     }
