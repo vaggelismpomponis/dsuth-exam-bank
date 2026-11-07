@@ -13,6 +13,7 @@ import { getFriendlyErrorMessage } from '../utils/errorUtils';
 import { ProfileHero } from '../components/profile/ProfileHero';
 import { PersonalInfoCard } from '../components/profile/PersonalInfoCard';
 import { OtherSettingsCard } from '../components/profile/OtherSettingsCard';
+import { SpendlorePromoCard } from '../components/profile/SpendlorePromoCard';
 import { ChangePasswordDialog } from '../components/profile/ChangePasswordDialog';
 import { DeleteAccountDialog } from '../components/profile/DeleteAccountDialog';
 
@@ -235,6 +236,10 @@ const Profile = () => {
             onOpenDeleteDialog={() => setDeleteDialogOpen(true)}
             onLogout={handleLogout}
           />
+        </Box>
+
+        <Box sx={{ mt: { xs: 3, md: 3.5 } }}>
+          <SpendlorePromoCard />
         </Box>
       </Container>
 

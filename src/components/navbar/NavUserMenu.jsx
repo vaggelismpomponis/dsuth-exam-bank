@@ -7,7 +7,7 @@ import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Divider from '@mui/material/Divider';
-import { User, LayoutDashboard, LogOut, LogIn } from 'lucide-react';
+import { User, LayoutDashboard, LogOut, LogIn, Wallet, ExternalLink, Users } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 
 export const NavUserMenu = ({ user, isAdmin, onLogout, isMobile }) => {
@@ -139,6 +139,46 @@ export const NavUserMenu = ({ user, isAdmin, onLogout, isMobile }) => {
             <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Admin Dashboard</Typography>
           </MenuItem>
         )}
+
+        <MenuItem
+          component="a"
+          href="https://app.spendlore.gr/"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => setAnchorEl(null)}
+          sx={{ borderRadius: '8px', py: 1, px: 1.5, gap: 1.5 }}
+        >
+          <Box sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center' }}>
+            <Wallet size={16} />
+          </Box>
+          <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', gap: 0.75 }}>
+            <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Spendlore</Typography>
+            <Typography sx={{ fontSize: '0.675rem', fontWeight: 700, color: 'text.secondary' }}>
+              (Beta)
+            </Typography>
+          </Box>
+          <ExternalLink size={13} style={{ color: 'var(--mui-palette-text-disabled, #999)' }} />
+        </MenuItem>
+
+        <MenuItem
+          component="a"
+          href="https://groups.google.com/g/spendlore-beta-testers"
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={() => setAnchorEl(null)}
+          sx={{ borderRadius: '8px', py: 1, px: 1.5, gap: 1.5 }}
+        >
+          <Box sx={{ color: 'text.secondary', display: 'flex', alignItems: 'center' }}>
+            <Users size={16} />
+          </Box>
+          <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', gap: 0.75 }}>
+            <Typography sx={{ fontWeight: 600, fontSize: '0.875rem' }}>Γίνε Tester</Typography>
+            <Typography sx={{ fontSize: '0.675rem', fontWeight: 700, color: 'text.secondary' }}>
+              (Android)
+            </Typography>
+          </Box>
+          <ExternalLink size={13} style={{ color: 'var(--mui-palette-text-disabled, #999)' }} />
+        </MenuItem>
 
         <Divider sx={{ my: 0.5 }} />
 

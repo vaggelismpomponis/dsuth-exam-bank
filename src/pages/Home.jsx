@@ -3,6 +3,7 @@ import Box from '@mui/material/Box';
 import { HomeHero } from '../components/home/HomeHero';
 import { HomeRecentFiles } from '../components/home/HomeRecentFiles';
 import { HomeFeatures } from '../components/home/HomeFeatures';
+import { HomeSpendlorePromo } from '../components/home/HomeSpendlorePromo';
 import { HomeCta } from '../components/home/HomeCta';
 import { HomeAdminBanner } from '../components/home/HomeAdminBanner';
 
@@ -21,6 +22,7 @@ const Home = () => {
       <HomeHero />
       <HomeRecentFiles />
       <HomeFeatures />
+      <HomeSpendlorePromo />
       <HomeCta />
       <HomeAdminBanner />
     </Box>

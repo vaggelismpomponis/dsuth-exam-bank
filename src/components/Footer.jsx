@@ -4,7 +4,8 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Stack from '@mui/material/Stack';
 import Link from '@mui/material/Link';
-import { Mail } from 'lucide-react';
+import Button from '@mui/material/Button';
+import { Mail, Wallet, ExternalLink, Users } from 'lucide-react';
 import { Link as RouterLink } from 'react-router-dom';
 import { AppLogo } from './common/AppLogo';
 
@@ -151,6 +152,108 @@ const Footer = () => {
                 </Link>
               ))}
             </Stack>
+          </Box>
+        </Box>
+
+        {/* Spendlore Spotlight */}
+        <Box
+          sx={{
+            mt: { xs: 5, md: 6 },
+            p: { xs: 2.5, sm: 3 },
+            borderRadius: '12px',
+            border: '1px solid',
+            borderColor: 'divider',
+            bgcolor: 'action.hover',
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            alignItems: { xs: 'flex-start', md: 'center' },
+            justifyContent: 'space-between',
+            gap: 2,
+          }}
+        >
+          <Box sx={{ maxWidth: 680 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.75 }}>
+              <Wallet size={16} className="text-primary shrink-0" />
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  fontWeight: 800,
+                  fontSize: '0.9rem',
+                  color: 'text.primary',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 0.75,
+                }}
+              >
+                Spendlore
+              </Typography>
+              <Box
+                component="span"
+                sx={{
+                  fontSize: '0.625rem',
+                  fontWeight: 800,
+                  letterSpacing: '0.05em',
+                  px: 0.7,
+                  py: 0.15,
+                  borderRadius: '4px',
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  color: 'text.secondary',
+                  lineHeight: 1.2,
+                }}
+              >
+                BETA
+              </Box>
+            </Box>
+            <Typography variant="body2" sx={{ color: 'text.secondary', fontSize: '0.8125rem', lineHeight: 1.55 }}>
+              Συνεργαζόμενη εφαρμογή έξυπνης διαχείρισης προσωπικών οικονομικών και φοιτητικού προϋπολογισμού. Καταγράψτε έσοδα, έξοδα και δείτε στατιστικά στο Web & κινητό.
+            </Typography>
+          </Box>
+
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'stretch', sm: 'center' }, gap: 1.25, shrink: 0 }}>
+            <Button
+              component="a"
+              href="https://groups.google.com/g/spendlore-beta-testers"
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="outlined"
+              size="small"
+              startIcon={<Users size={14} />}
+              endIcon={<ExternalLink size={13} />}
+              sx={{
+                minHeight: 36,
+                px: 2,
+                borderRadius: '8px',
+                fontWeight: 600,
+                fontSize: '0.8125rem',
+                whiteSpace: 'nowrap',
+                textTransform: 'none',
+              }}
+            >
+              Γίνε Tester (Android)
+            </Button>
+
+            <Button
+              component="a"
+              href="https://app.spendlore.gr/"
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="contained"
+              size="small"
+              startIcon={<Wallet size={15} />}
+              endIcon={<ExternalLink size={13} />}
+              sx={{
+                minHeight: 36,
+                px: 2,
+                borderRadius: '8px',
+                fontWeight: 700,
+                fontSize: '0.8125rem',
+                whiteSpace: 'nowrap',
+                textTransform: 'none',
+              }}
+            >
+              Άνοιγμα Spendlore
+            </Button>
           </Box>
         </Box>
 

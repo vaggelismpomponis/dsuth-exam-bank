@@ -11,7 +11,7 @@ import Button from '@mui/material/Button';
 import Avatar from '@mui/material/Avatar';
 import Divider from '@mui/material/Divider';
 import Collapse from '@mui/material/Collapse';
-import { X, LogOut, LayoutDashboard, User, ChevronDown } from 'lucide-react';
+import { X, LogOut, LayoutDashboard, User, ChevronDown, Wallet, ExternalLink, Users } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { AppLogo } from '../common/AppLogo';
 
@@ -140,6 +140,31 @@ export const NavDrawer = ({ open, onClose, items, user, isAdmin, onLogout }) => 
                   </ListItemButton>
                 )}
 
+                <ListItemButton
+                  component="a"
+                  href="https://app.spendlore.gr/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={onClose}
+                  sx={{ borderRadius: '6px', py: 0.8, px: 1.5, gap: 1 }}
+                >
+                  <ListItemIcon sx={{ minWidth: 28, color: 'primary.main' }}>
+                    <Wallet size={18} />
+                  </ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                        <span>Spendlore</span>
+                        <Typography component="span" sx={{ fontSize: '0.65rem', color: 'text.secondary', fontWeight: 700 }}>
+                          (Beta)
+                        </Typography>
+                      </Box>
+                    }
+                    primaryTypographyProps={{ fontSize: '0.825rem', fontWeight: 600 }}
+                  />
+                  <ExternalLink size={14} style={{ color: 'var(--mui-palette-text-disabled, #999)' }} />
+                </ListItemButton>
+
                 <Divider sx={{ my: 0.5 }} />
 
                 <ListItemButton
@@ -203,6 +228,110 @@ export const NavDrawer = ({ open, onClose, items, user, isAdmin, onLogout }) => 
               </ListItemButton>
             );
           })}
+
+          <Divider sx={{ my: 1.5 }} />
+
+          <Typography
+            variant="caption"
+            sx={{
+              px: 1.5,
+              py: 0.5,
+              display: 'block',
+              fontSize: '0.6875rem',
+              fontWeight: 800,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: 'text.secondary',
+            }}
+          >
+            Συνεργατες
+          </Typography>
+
+          <ListItemButton
+            component="a"
+            href="https://app.spendlore.gr/"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onClose}
+            sx={{
+              borderRadius: '8px',
+              mb: 0.5,
+              py: 0.9,
+              px: 1.5,
+              '&:hover': { bgcolor: 'action.hover' },
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 32, color: 'text.secondary' }}>
+              <Wallet size={18} />
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                  <span>Spendlore</span>
+                  <Box
+                    component="span"
+                    sx={{
+                      fontSize: '0.625rem',
+                      fontWeight: 800,
+                      px: 0.6,
+                      py: 0.1,
+                      borderRadius: '4px',
+                      border: '1px solid',
+                      borderColor: 'divider',
+                      color: 'text.secondary',
+                      lineHeight: 1.2,
+                    }}
+                  >
+                    BETA
+                  </Box>
+                </Box>
+              }
+              secondary="Προσωπικά Οικονομικά"
+              primaryTypographyProps={{
+                fontWeight: 600,
+                fontSize: '0.85rem',
+                color: 'text.primary',
+              }}
+              secondaryTypographyProps={{
+                fontSize: '0.72rem',
+                color: 'text.secondary',
+              }}
+            />
+            <ExternalLink size={14} style={{ color: 'var(--mui-palette-text-disabled, #999)', marginLeft: 8 }} />
+          </ListItemButton>
+
+          <ListItemButton
+            component="a"
+            href="https://groups.google.com/g/spendlore-beta-testers"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onClose}
+            sx={{
+              borderRadius: '8px',
+              mb: 0.5,
+              py: 0.75,
+              px: 1.5,
+              '&:hover': { bgcolor: 'action.hover' },
+            }}
+          >
+            <ListItemIcon sx={{ minWidth: 32, color: 'text.secondary' }}>
+              <Users size={18} />
+            </ListItemIcon>
+            <ListItemText
+              primary="Γίνε Tester (Android)"
+              secondary="Google Group Closed Beta"
+              primaryTypographyProps={{
+                fontWeight: 600,
+                fontSize: '0.825rem',
+                color: 'text.primary',
+              }}
+              secondaryTypographyProps={{
+                fontSize: '0.7rem',
+                color: 'text.secondary',
+              }}
+            />
+            <ExternalLink size={13} style={{ color: 'var(--mui-palette-text-disabled, #999)', marginLeft: 8 }} />
+          </ListItemButton>
         </List>
       </Box>
     </Drawer>
