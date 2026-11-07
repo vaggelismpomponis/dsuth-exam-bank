@@ -9,6 +9,7 @@ import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import MuiLink from '@mui/material/Link';
 import Divider from '@mui/material/Divider';
+import { useTheme } from '@mui/material/styles';
 import { Eye, EyeOff, GraduationCap, UserPlus } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
@@ -29,6 +30,7 @@ const GoogleIcon = () => (
 );
 
 const Register = () => {
+  const theme = useTheme();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -200,7 +202,7 @@ const Register = () => {
                   onSuccess={(token) => { setTurnstileToken(token); setCanSubmit(true); setError(''); }}
                   onExpire={() => { setTurnstileToken(''); setCanSubmit(false); }}
                   onError={() => { setTurnstileToken(''); setCanSubmit(false); }}
-                  theme="light"
+                  theme={theme.palette.mode === 'dark' ? 'dark' : 'light'}
                   size="normal"
                 />
               </Box>
