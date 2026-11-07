@@ -25,7 +25,7 @@ export const CompleteProfileModal = () => {
   const { enqueueSnackbar } = useSnackbar();
 
   const checkUserProfile = async (currentUser) => {
-    if (!currentUser) {
+    if (!currentUser || (typeof window !== 'undefined' && window.location.pathname === '/reset-password')) {
       setIsOpen(false);
       setUser(null);
       return;
